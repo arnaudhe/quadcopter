@@ -38,8 +38,8 @@ function R = rotation(angles)
 end
 
 % Compute thrust given current inputs and thrust coefficient.
-function thurst_b = thrust(quad_constants, motors_speed)
-    thurst_b = [0; 0; quad_constants.ct * sum(motors_speed.*motors_speed)];
+function thrust_b = thrust(quad_constants, motors_speed)
+    thrust_b = [0; 0; quad_constants.ct * sum(motors_speed.*motors_speed)];
 end
 
 % Compute torques, given current inputs, length, drag coefficient, and thrust coefficient.
@@ -55,8 +55,8 @@ end
 function acc_i = acceleration(quad_constants, motors_speed, angles)
     gravity_i = [0; 0; - quad_constants.g * quad_constants.mass];
     R_bi = rotation(angles);
-    Thurst_i = R_bi * thrust(quad_constants, motors_speed);
-    acc_i = (gravity_i + Thurst_i) / quad_constants.mass;
+    thrust_i = R_bi * thrust(quad_constants, motors_speed);
+    acc_i = (gravity_i + thrust_i) / quad_constants.mass;
 end
 
 function omega_dot_b = angular_acceleration(quad_constants, motors_speed, omega_b)

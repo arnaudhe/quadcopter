@@ -1,3 +1,6 @@
+clear all
+close all
+
 load('quad_constants.mat')
 
 speed = 4400
@@ -16,3 +19,5 @@ for t = 0:dt:10
     [theta, theta_dot, x, x_do] = plant_step(quad_constants, theta, theta_dot, x, x_dot, motors_speed, dt);
     result = [result; [t, theta', theta_dot', x', x_dot']];
 end
+
+visualize(result)

@@ -48,7 +48,7 @@ function tau_b = torques(quad_constants, motors_speed)
     tau_b = [
         quad_constants.arms_L * quad_constants.ct * (inputs(1) - inputs(3))
         quad_constants.arms_L * quad_constants.ct * (inputs(2) - inputs(4))
-        quad_constants.cq * (-inputs(1) + inputs(2) - inputs(3) + inputs(4))
+        quad_constants.cq * (inputs(1) - inputs(2) + inputs(3) - inputs(4))
     ];
 end
 

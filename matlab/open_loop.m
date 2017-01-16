@@ -10,7 +10,9 @@ x_dot     = [0; 0; 0];
 theta     = [0; 0; 0];
 theta_dot = [0; 0; 0];
 
+result = [0, theta', theta_dot', x', x_dot'];
+
 for t = 0:dt:10
-    [x, x_dot, theta, theta_dot] = plant_step(quad_constants, theta, theta_dot, x, x_dot, motors_speed, dt);
-    x
+    [theta, theta_dot, x, x_do] = plant_step(quad_constants, theta, theta_dot, x, x_dot, motors_speed, dt);
+    result = [result; [t, theta', theta_dot', x', x_dot']];
 end

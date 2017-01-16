@@ -3,8 +3,8 @@ close all
 
 load('quad_constants.mat')
 
-speed = 4400
-motors_speed = [speed + 200, speed + 200, speed - 200, speed - 200];
+speed = sqrt(quad_constants.mass * quad_constants.g/(4*quad_constants.ct));
+motors_speed = [speed, speed, speed, speed];
 dt = 0.01;
 
 % Initial conditions

@@ -1,6 +1,6 @@
 function visualize(result)
 
-close all
+figure
 
 subplot(2,2,1)
 plot(result(:, 1), result(:, 2),'g',result(:, 1), result(:, 3),'b',result(:, 1), result(:, 4),'r')

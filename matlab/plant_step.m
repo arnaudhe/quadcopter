@@ -1,55 +1,51 @@
 % Compute evolution of the plant
-function [theta, theta_dot, x, x_dot] = plant_step(quad_constants, theta, theta_dot, x, x_dot, motors_speed, dt)
+function [ang_pos_i, ang_vel_i, lin_pos_i, lin_vel_i] = plant_step(quad_constants, ang_pos_i, ang_vel_i, lin_pos_i, lin_vel_i, motors_speed, dt)
 
     % Compute forces, torques, and accelerations.
-    acc_i     = acceleration(quad_constants, motors_speed, theta);
-    omega_dot = angular_acceleration(quad_constants, motors_speed, theta_dot_to_omega(theta_dot, theta));
+    lin_acc_i = acceleration(quad_constants, motors_speed, ang_pos_i);
+    ang_acc_b = angular_acceleration(quad_constants, motors_speed, ang_vel_i_to_ang_vel_b(ang_vel_i, ang_pos_i));
     
     % Advance system state.
-    theta_dot = omega_to_theta_dot(theta_dot_to_omega(theta_dot, theta) + dt * omega_dot, theta); 
-    theta     = theta + dt * theta_dot;
-    x_dot     = x_dot + dt * acc_i;
-    x         = x + dt * x_dot;
+    ang_vel_i = ang_vel_b_to_ang_vel_i(ang_vel_i_to_ang_vel_b(ang_vel_i, ang_pos_i) + dt * ang_acc_b, ang_pos_i); 
+    ang_pos_i = ang_pos_i + dt * ang_vel_i;
+    lin_vel_i = lin_vel_i + dt * lin_acc_i;
+    lin_pos_i = lin_pos_i + dt * lin_vel_i;
     
-end
-
-% Compute rotation matrix for a set of angles.
-function R = rotation(angles)
-    phi   = angles(3);
-    theta = angles(2);
-    psi   = angles(1);
-
-    R = zeros(3);
-    R(:, 1) = [
-        cos(phi) * cos(theta)
-        cos(theta) * sin(phi)
-        - sin(theta)
-    ];
-    R(:, 2) = [
-        cos(phi) * sin(theta) * sin(psi) - cos(psi) * sin(phi)
-        cos(phi) * cos(psi) + sin(phi) * sin(theta) * sin(psi)
-        cos(theta) * sin(psi)
-    ];
-    R(:, 3) = [
-        sin(phi) * sin(psi) + cos(phi) * cos(psi) * sin(theta)
-        cos(psi) * sin(phi) * sin(theta) - cos(phi) * sin(psi)
-        cos(theta) * cos(psi)
-    ];
 end
 
 % Compute thrust given current inputs and thrust coefficient.
 function thrust_b = thrust(quad_constants, motors_speed)
-    thrust_b = [0; 0; quad_constants.ct * sum(motors_speed.*motors_speed)];
+    square = motors_speed.*motors_speed;
+    thrust_b = thrust_matrix(quad_constants) * square; 
 end
 
 % Compute torques, given current inputs, length, drag coefficient, and thrust coefficient.
 function tau_b = torques(quad_constants, motors_speed)
-    inputs = motors_speed.*motors_speed;
-    tau_b = [
-        quad_constants.arms_L * quad_constants.ct * (inputs(1) - inputs(3))
-        quad_constants.arms_L * quad_constants.ct * (inputs(2) - inputs(4))
-        quad_constants.cq * (inputs(1) - inputs(2) + inputs(3) - inputs(4))
-    ];
+    square = motors_speed.*motors_speed;
+    tau_b = torques_matrix_x(quad_constants) * square;
+end
+
+function M_x = torques_matrix_x(quad_constants)
+    ct = quad_constants.d * quad_constants.ct * sin(pi/4);
+    cq = quad_constants.cq;
+    M_x = [-ct,  ct,  ct, -ct;
+           -ct, -ct,  ct,  ct;
+           -cq,  cq, -cq,  cq];
+end
+
+function M_plus = torques_matrix_plus(quad_constants)
+    ct = quad_constants.d * quad_constants.ct;
+    cq = quad_constants.cq;
+    M_plus = [-ct,   0,  ct,   0;
+                0, -ct,   0,  ct;
+              -cq,  cq, -cq,  cq];
+end
+
+function T_x = thrust_matrix(quad_constants)
+    ct = quad_constants.ct;
+    T_x = [ 0,  0,  0,  0;
+            0,  0,  0,  0;
+           ct, ct, ct, ct];
 end
 
 function acc_i = acceleration(quad_constants, motors_speed, angles)
@@ -61,11 +57,11 @@ end
 
 function omega_dot_b = angular_acceleration(quad_constants, motors_speed, omega_b)
     tau_b = torques(quad_constants, motors_speed);
-    omega_dot_b = inv(quad_constants.J_b) * (tau_b - cross(omega_b, quad_constants.J_b * omega_b));
+    omega_dot_b = quad_constants.J_binv * (tau_b - cross(omega_b, quad_constants.J_b * omega_b));
 end
 
 % Convert derivatives of roll, pitch, yaw to omega.
-function omega = theta_dot_to_omega(theta_dot, angles)
+function omega = ang_vel_i_to_ang_vel_b(theta_dot, angles)
     phi   = angles(1);
     theta = angles(2);
     psi   = angles(3);
@@ -76,7 +72,7 @@ function omega = theta_dot_to_omega(theta_dot, angles)
 end
 
 % Convert omega to roll, pitch, yaw derivatives
-function theta_dot = omega_to_theta_dot(omega, angles)
+function theta_dot = ang_vel_b_to_ang_vel_i(omega, angles)
     phi   = angles(1);
     theta = angles(2);
     psi   = angles(3);

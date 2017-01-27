@@ -96,8 +96,8 @@ function multiplot(data, values, ind)
     % Set axes to remain constant throughout plotting.
     xmin = min(data.t);
     xmax = max(data.t);
-    ymin = 1.1 * min(values)
-    ymax = 1.1 * max(values)
+    ymin = 1.1 * min(values);
+    ymax = 1.1 * max(values);
     %axis([xmin xmax ymin ymax]);
 end
 
@@ -107,25 +107,25 @@ end
 % relative thrust forces.
 function [h thrusts] = quadcopter()
     % Draw arms.
-    h(1) = prism(-5, -0.25, -0.25, 10, 0.5, 0.5);
-    h(2) = prism(-0.25, -5, -0.25, 0.5, 10, 0.5);
+    h(1) = arm_1();
+    h(2) = arm_2();
 
     % Draw bulbs representing propellers at the end of each arm.
     [x y z] = sphere;
     x = 0.5 * x;
     y = 0.5 * y;
     z = 0.5 * z;
-    h(3) = surf(x - 5, y, z, 'EdgeColor', 'none', 'FaceColor', 'b');
-    h(4) = surf(x + 5, y, z, 'EdgeColor', 'none', 'FaceColor', 'b');
-    h(5) = surf(x, y - 5, z, 'EdgeColor', 'none', 'FaceColor', 'b');
-    h(6) = surf(x, y + 5, z, 'EdgeColor', 'none', 'FaceColor', 'b');
+    h(3) = surf(x + 3.53, y - 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'g');
+    h(4) = surf(x + 3.53, y + 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'b');
+    h(5) = surf(x - 3.53, y + 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'b');
+    h(6) = surf(x - 3.53, y - 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'b');
 
     % Draw thrust cylinders.
     [x y z] = cylinder(0.1, 7);
-    thrusts(1) = surf(x, y + 5, z, 'EdgeColor', 'none', 'FaceColor', 'm');
-    thrusts(2) = surf(x + 5, y, z, 'EdgeColor', 'none', 'FaceColor', 'y');
-    thrusts(3) = surf(x, y - 5, z, 'EdgeColor', 'none', 'FaceColor', 'm');
-    thrusts(4) = surf(x - 5, y, z, 'EdgeColor', 'none', 'FaceColor', 'y');
+    thrusts(1) = surf(x + 3.53, y - 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'y');
+    thrusts(2) = surf(x + 3.53, y + 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'm');
+    thrusts(3) = surf(x - 3.53, y + 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'y');
+    thrusts(4) = surf(x - 3.53, y - 3.53, z, 'EdgeColor', 'none', 'FaceColor', 'm');
 
     % Create handles for each of the thrust cylinders.
     for i = 1:4
@@ -143,9 +143,25 @@ end
 % Draw a 3D prism at (x, y, z) with width w,
 % length l, and height h. Return a handle to
 % the prism object.
-function h = prism(x, y, z, w, l, h)
-    [X Y Z] = prism_faces(x, y, z, w, l, h);
+function h = arm_1()
 
+    X = [-3.63 -3.63 -3.43 -3.43  3.63  3.63  3.43  3.43];
+    Y = [-3.63 -3.63 -3.43 -3.43  3.63  3.63  3.43  3.43];
+    Z = [-0.25  0.25 -0.25  0.25 -0.25  0.25 -0.25  0.25];
+
+    h = arm(X,Y,Z);
+end
+
+function h = arm_2()
+
+    X = [-3.63 -3.63 -3.43 -3.43  3.63  3.63  3.43  3.43];
+    Y = [ 3.63  3.63  3.43  3.43 -3.63 -3.63 -3.43 -3.43];
+    Z = [-0.25  0.25 -0.25  0.25 -0.25  0.25 -0.25  0.25];
+
+    h = arm(X,Y,Z);
+end
+
+function h = arm(X, Y, Z)
     faces(1, :) = [4 2 1 3];
     faces(2, :) = [4 2 1 3] + 4;
     faces(3, :) = [4 2 6 8];
@@ -163,11 +179,4 @@ function h = prism(x, y, z, w, l, h)
     h = t;
 end
 
-% Compute the points on the edge of a prism at
-% location (x, y, z) with width w, length l, and height h.
-function [X Y Z] = prism_faces(x, y, z, w, l, h)
-    X = [x x x x x+w x+w x+w x+w];
-    Y = [y y y+l y+l y y y+l y+l];
-    Z = [z z+h z z+h z z+h z z+h];
-end
 

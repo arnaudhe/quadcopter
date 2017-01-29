@@ -4,31 +4,31 @@ close all
 load('quad_constants.mat')
 
 speed = sqrt(quad_constants.mass * quad_constants.g/(4*quad_constants.ct));
-motors_speed = [speed + 20; speed - 20; speed + 20; speed - 20];
-dt = 0.01;
+motors_speed = [speed + 10; speed + 10; speed; speed];
+dt = 0.01; 
 
-x         = [0; 0; 10];
-x_dot     = [0; 0; 0];
-theta     = [0; 0; 0];
-theta_dot = [0.5; 0; 0];
+lin_pos = [0; 0; 10];
+lin_vel = [0; 0; 0];
+ang_pos = [0; 0; 0];
+ang_vel = [0; 0; 0];
 
-result.t      = 0;
-result.dt     = dt;
-result.x      = x;
-result.vel    = x_dot;
-result.theta  = theta;
-result.angvel = theta_dot;
-result.input  = motors_speed;
+result.t       = 0;
+result.dt      = dt;
+result.lin_pos = lin_pos;
+result.lin_vel = lin_vel;
+result.ang_pos = ang_pos;
+result.ang_vel = ang_vel;
+result.input   = motors_speed;
 
-for t = dt:dt:20
-    [theta, theta_dot, x, x_dot] = plant_step_2(quad_constants, theta, theta_dot, x, x_dot, motors_speed, dt);
-    result.t      = [result.t, t];
-    result.dt     = [result.dt, dt];
-    result.x      = [result.x, x];
-    result.vel    = [result.vel, x_dot];
-    result.theta  = [result.theta, theta];
-    result.angvel = [result.angvel, theta_dot];
-    result.input  = [result.input, motors_speed];
+for t = dt:dt:20-dt
+    [ang_pos, ang_vel, lin_pos, lin_vel] = plant_step_2(quad_constants, ang_pos, ang_vel, lin_pos, lin_vel, motors_speed, dt);
+    result.t       = [result.t, t];
+    result.dt      = [result.dt, dt];
+    result.lin_pos = [result.lin_pos, lin_pos];
+    result.lin_vel = [result.lin_vel, lin_vel];
+    result.ang_pos = [result.ang_pos, ang_pos];
+    result.ang_vel = [result.ang_vel, ang_vel];
+    result.input   = [result.input, motors_speed];
 end
 
-visualize_3D(result)
+visualize_2D(result)

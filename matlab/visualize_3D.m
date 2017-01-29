@@ -28,12 +28,12 @@ function animate(data, model, thrusts, plots)
         subplot(plots(1));
 
         % Compute translation to correct linear position coordinates.
-        dx = data.x(:, t);
+        dx = data.lin_pos(:, t);
         move = makehgtform('translate', dx);
 
         % Compute rotation to correct angles. Then, turn this rotation
         % into a 4x4 matrix represting this affine transformation.
-        angles = data.theta(:, t);
+        angles = data.ang_pos(:, t);
         rotate = rotation(angles);
         rotate = [rotate zeros(3, 1); zeros(1, 3) 1];
 
@@ -60,24 +60,24 @@ function animate(data, model, thrusts, plots)
         end
 
         % Update the drawing.      
-        xmin = data.x(1,t)-20;
-        xmax = data.x(1,t)+20;
-        ymin = data.x(2,t)-20;
-        ymax = data.x(2,t)+20;
-        zmin = data.x(3,t)-5;
-        zmax = data.x(3,t)+5;
+        xmin = data.lin_pos(1,t)-20;
+        xmax = data.lin_pos(1,t)+20;
+        ymin = data.lin_pos(2,t)-20;
+        ymax = data.lin_pos(2,t)+20;
+        zmin = data.lin_pos(3,t)-5;
+        zmax = data.lin_pos(3,t)+5;
         axis([xmin xmax ymin ymax zmin zmax]);
         drawnow;
 
         % Use the bottom two parts for angular velocity and displacement.
         subplot(plots(2));
-        multiplot(data, data.angvel, t);
+        multiplot(data, data.ang_vel, t);
         xlabel('Time (s)');
         ylabel('Angular Velocity (rad/s)');
         title('Angular Velocity');
 
         subplot(plots(3));
-        multiplot(data, data.theta, t);
+        multiplot(data, data.ang_pos, t);
         xlabel('Time (s)');
         ylabel('Angular Displacement (rad)');
         title('Angular Displacement');

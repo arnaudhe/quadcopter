@@ -4,7 +4,7 @@ close all
 load('quad_constants.mat')
 
 speed = sqrt(quad_constants.mass * quad_constants.g/(4*quad_constants.ct));
-motors_speed = [speed + 10; speed + 10; speed; speed];
+motors_speed = [speed + 10; speed - 10; speed + 10; speed - 10];
 dt = 0.01; 
 
 lin_pos = [0; 0; 10];
@@ -20,7 +20,7 @@ result.ang_pos = ang_pos;
 result.ang_vel = ang_vel;
 result.input   = motors_speed;
 
-for t = dt:dt:20-dt
+for t = dt:dt:10
     [ang_pos, ang_vel, lin_pos, lin_vel] = plant_step_2(quad_constants, ang_pos, ang_vel, lin_pos, lin_vel, motors_speed, dt);
     result.t       = [result.t, t];
     result.dt      = [result.dt, dt];

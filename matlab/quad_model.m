@@ -1,4 +1,4 @@
-function [ang_pos_i, ang_vel_b, lin_pos_i, lin_vel_b] = plant_step_2(quad_constants, ang_pos_i, ang_vel_b, lin_pos_i, lin_vel_b, motors_speed, dt)
+function [ang_pos_i, ang_vel_b, lin_pos_i, lin_vel_b] = quad_model(quad_constants, ang_pos_i, ang_vel_b, lin_pos_i, lin_vel_b, motors_speed, dt)
     % P Q R in units of rad/sec
     P = ang_vel_b(1);
     Q = ang_vel_b(2);
@@ -58,29 +58,21 @@ end
 % Compute torques, given current inputs, length, drag coefficient, and thrust coefficient.
 function tau_b = torques(quad_constants, motors_speed)
     square = motors_speed.*motors_speed;
-    tau_b = torques_matrix_x(quad_constants) * square;
+    tau_b = torques_matrix(quad_constants) * square;
 end
 
-function M_x = torques_matrix_x(quad_constants)
+function M = torques_matrix(quad_constants)
     ct = quad_constants.d * quad_constants.ct * sin(pi/4);
     cq = quad_constants.cq;
-    M_x = [-ct,  ct,  ct, -ct;
-           -ct, -ct,  ct,  ct;
-           -cq,  cq, -cq,  cq];
+    M = [-ct,  ct,  ct, -ct;
+         -ct, -ct,  ct,  ct;
+         -cq,  cq, -cq,  cq];
 end
 
-function M_plus = torques_matrix_plus(quad_constants)
-    ct = quad_constants.d * quad_constants.ct;
-    cq = quad_constants.cq;
-    M_plus = [-ct,   0,  ct,   0;
-                0, -ct,   0,  ct;
-              -cq,  cq, -cq,  cq];
-end
-
-function T_x = thrust_matrix(quad_constants)
+function T = thrust_matrix(quad_constants)
     ct = quad_constants.ct;
-    T_x = [ 0,  0,  0,  0;
-            0,  0,  0,  0;
-           ct, ct, ct, ct];
+    T = [ 0,  0,  0,  0;
+          0,  0,  0,  0;
+         ct, ct, ct, ct];
 end
 

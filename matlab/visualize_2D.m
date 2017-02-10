@@ -1,4 +1,4 @@
-function visualize(result)
+function visualize_2D(result)
 
 figure
 

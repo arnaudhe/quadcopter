@@ -1,6 +1,7 @@
 clear all
 close all
 
+addpath('quaternion_library');
 load('quad_constants.mat')
 
 dt = 0.01; 
@@ -17,10 +18,11 @@ result.dt      = dt;
 result.lin_pos = lin_pos;
 result.lin_vel = lin_vel;
 result.ang_pos = ang_pos;
+result.ang_pos_hat = ang_pos;
 result.ang_vel = ang_vel;
 result.input   = motors_speed;
 
-attitude_consign = [0; pi/20; 0; 10];
+attitude_consign = [pi/4; pi/4; pi/2; 15];
 
 kp = [2; 2; 4; 5];
 kd = [1; 1; 6; 5];
@@ -31,10 +33,20 @@ offset = [0; 0; 0; altitude_command_offset];
 attitude = [ang_pos; lin_pos(3)];
 integrates = [0; 0; 0; 0];
 
-for t = dt:dt:20-dt
+AHRS = MadgwickAHRS('SamplePeriod', dt, 'Beta', 0.1);
+
+for t = dt:dt:10-dt
+    
+    % Measure MARG sensor values
+    [acc, gyr, mag]  = marg(ang_pos, ang_vel);
+    
+    % Rebuild Euler angle with Madgwick filter
+    AHRS.Update(gyr', acc', mag');
+    ang_pos_hat = quatern2euler(quaternConj(AHRS.Quaternion))';
+    
     % Estimate attitude error
     previous       = attitude;
-    attitude       = [ang_pos; lin_pos(3)];
+    attitude       = [ang_pos_hat; lin_pos(3)];
     attitude_error = attitude_consign - attitude;
     integrates     = integrates + attitude_error * dt;
     derivates      = (previous - attitude)/dt;
@@ -52,18 +64,16 @@ for t = dt:dt:20-dt
     [ang_pos, ang_vel, lin_pos, lin_vel] = plant_step_2(quad_constants, ang_pos, ang_vel, lin_pos, lin_vel, motors_speed, dt);
     
     % Store outputs
-    result.t       = [result.t, t];
-    result.dt      = [result.dt, dt];
-    result.lin_pos = [result.lin_pos, lin_pos];
-    result.lin_vel = [result.lin_vel, lin_vel];
-    result.ang_pos = [result.ang_pos, ang_pos];
-    result.ang_vel = [result.ang_vel, ang_vel];
-    result.input   = [result.input, motors_speed];
+    result.t            = [result.t, t];
+    result.dt           = [result.dt, dt];
+    result.lin_pos      = [result.lin_pos, lin_pos];
+    result.lin_vel      = [result.lin_vel, lin_vel];
+    result.ang_pos      = [result.ang_pos, ang_pos];
+    result.ang_pos_hat  = [result.ang_pos_hat ang_pos_hat];
+    result.ang_vel      = [result.ang_vel, ang_vel];
+    result.input        = [result.input, motors_speed];
     
-    if t == 4
-        attitude_consign = [0; pi/20; pi/2; 10];
-    end
 end
 
-visualize_2D(result)
-visualize_3D(result)
+%visualize_2D(result)
+%visualize_3D(result)

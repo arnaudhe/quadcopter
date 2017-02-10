@@ -21,16 +21,28 @@ subplot(4,3,4)
 plot(result.t, result.ang_pos(1,:), 'b')
 title('Phi')
 grid on
+hold on
+%if exist('result.ang_pos_hat', 'var')
+    plot(result.t, result.ang_pos_hat(1,:), 'c')
+%end
 
 subplot(4,3,5)
 plot(result.t, result.ang_pos(2,:), 'r')
 title('Theta')
 grid on
+hold on
+%if exist('result.ang_pos_hat', 'var')
+    plot(result.t, result.ang_pos_hat(2,:), 'm')
+%end
 
 subplot(4,3,6)
 plot(result.t, result.ang_pos(3,:), 'g')
 title('Psi')
 grid on
+hold on
+%if exist('result.ang_pos_hat', 'var')
+    plot(result.t, result.ang_pos_hat(3,:), 'k')
+%end
 
 subplot(4,3,7)
 plot(result.t, result.lin_vel(1,:), 'b')

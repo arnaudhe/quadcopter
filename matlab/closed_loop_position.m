@@ -12,7 +12,7 @@ lin_vel = [0; 0; 0];
 ang_pos = [0; 0; 0];
 ang_vel = [0; 0; 0];
 
-attitude_consign = [0; 0; 2; 10];
+position_consign = [10; 0; 10];
 attitude_initial = [ang_pos; lin_pos(3)]; % Initial state
 
 motors_speed_initial = [500; 500; 500; 500];
@@ -28,9 +28,13 @@ result.input       = motors_speed_initial;
 
 ahrs  = ahrs('sample_period', dt, 'beta', 0.1);
 controller = attitude_controller('sample_period', dt, ...
-                                 'consign', attitude_consign, ...
+                                 'consign', attitude_initial, ...
                                  'initial', attitude_initial, ...
                                  'quad_constants', quad_constants);
+
+kp = [0.02; 0.02];
+kd = [0.05; 0.05];
+ki = [0; 0];
 
 for t = dt:dt:(max_time-dt)
     
@@ -40,6 +44,15 @@ for t = dt:dt:(max_time-dt)
     % Build Euler angle with Madgwick filter
     ahrs.update(gyr', acc', mag');
     ang_pos_hat = quatern2euler(quaternConj(ahrs.quaternion))';
+    
+    error_pos = position_consign - lin_pos;
+    command = kp .* [error_pos(1, 1); error_pos(2, 1)] - ...
+              kd .* [lin_vel(1, 1); lin_vel(2, 1)];
+          
+    controller.consign = [command(2) * cos(ang_pos_hat(3)) + command(1) * sin(ang_pos_hat(3));
+                          command(2) * sin(ang_pos_hat(3)) + command(1) * cos(ang_pos_hat(3));
+                          ang_pos_hat(3);
+                          position_consign(3)];
     
     % Compute attitude controller
     attitude = [ang_pos_hat; lin_pos(3)];

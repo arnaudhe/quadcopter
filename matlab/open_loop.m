@@ -8,7 +8,7 @@ dt = 0.01;
 max_time = 10;
 
 speed = sqrt(quad_constants.mass * quad_constants.g/(4*quad_constants.ct));
-motors_speed = [speed + 10; speed - 10; speed + 10; speed - 10];
+motors_speed = [speed + 20; speed + 5; speed + 50; speed - 10];
 
 lin_pos = [0; 0; 10];
 lin_vel = [0; 0; 0];

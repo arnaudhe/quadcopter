@@ -27,12 +27,14 @@ classdef ahrs < handle
         function obj = update(obj, gyr, acc, mag)
             q = obj.quaternion; % short name local variable for readability
 
-            % Normalise accelerometer measurement
-            if(norm(acc) == 0), return; end	% handle NaN
-            acc = acc / norm(acc);	% normalise magnitude
+            if(norm(acc) == 0) % handle NaN
+                return;
+            end
+            acc = acc / norm(acc);	% normalise acceleration
 
-            % Normalise magnetometer measurement
-            if(norm(mag) == 0), return; end	% handle NaN
+            if(norm(mag) == 0) 	% handle NaN
+                return; 
+            end
             mag = mag / norm(mag);	% normalise magnitude
 
             % Reference direction of Earth's magnetic feild

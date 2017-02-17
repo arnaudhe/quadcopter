@@ -1,1 +1,3 @@
 matlab/*.m~
+soft/build
+soft/main/wifi_credentials.h

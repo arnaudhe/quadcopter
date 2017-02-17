@@ -9,6 +9,7 @@
 #include "driver/i2c.h"
 
 #include "wifi_credentials.h"
+#include "hal/mpu6050_defs.h"
 
 
 #define DATA_LENGTH                   512               /*!< Data buffer length for test buffer*/
@@ -21,9 +22,6 @@
 #define I2C_MASTER_TX_BUF_DISABLE     0                 /*!< I2C master do not need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE     0                 /*!< I2C master do not need buffer */
 #define I2C_MASTER_FREQ_HZ            100000            /*!< I2C master clock frequency */
-
-#define MPU_6050_SENSOR_ADDR          0x68              /*!< slave address for MPU_6050 sensor */
-#define MPU_6050_REG_WHO_I_AM         0x75              /*!< Command to set measure mode */
 
 #define WRITE_BIT                     I2C_MASTER_WRITE  /*!< I2C master write */
 #define READ_BIT                      I2C_MASTER_READ   /*!< I2C master read */
@@ -84,6 +82,13 @@ esp_err_t _read_register(i2c_port_t i2c_num, uint8_t address, uint8_t reg, uint8
     return ret;
 }
 
+esp_err_t _write_register(i2c_port_t i2c_num, uint8_t address, uint8_t reg, uint8_t value)
+{
+    esp_err_t ret;
+    uint8_t buffer[2] = {reg, value};
+
+    return _write(i2c_num, address, buffer, 2);
+}
 
 /**
  * @brief i2c master initialization
@@ -128,7 +133,7 @@ void i2c_test(void)
     esp_err_t ret;
     uint8_t   who_i_am;
     
-    ret = _read_register( I2C_MASTER_NUM, MPU_6050_SENSOR_ADDR, MPU_6050_REG_WHO_I_AM, &who_i_am);
+    ret = _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_WHO_AM_I, &who_i_am);
     
     printf("********************\n");
     printf(" MASTER READ SENSOR \n");
@@ -144,9 +149,48 @@ void i2c_test(void)
     }
 }
 
+void _i2c_enable(void)
+{
+    uint8_t current;
+    uint8_t count = 0;
+
+    while (count++ < 3)
+    {
+        if (_read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, &current) == ESP_OK)
+        {
+            if (_write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, current & (~ (1 << MPU6050_PWR1_SLEEP_BIT))) == ESP_OK)
+            {
+                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, &current);
+                return;
+            }
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
+esp_err_t i2c_read_acc(int16_t * acc_x, int16_t * acc_y, int16_t * acc_z)
+{
+    uint8_t high, low;
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &low);
+    *acc_x = (high << 8) + low;
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_YOUT_L, &low);
+    *acc_y = (high << 8) + low;
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &low);
+    *acc_z = (high << 8) + low;
+
+    return ESP_OK;
+}
+
 void app_main(void)
 {
     int level = 0;
+    int16_t acc_x, acc_y, acc_z;
 
     nvs_flash_init();
     tcpip_adapter_init();
@@ -171,6 +215,8 @@ void app_main(void)
     gpio_set_direction(GPIO_NUM_4, GPIO_MODE_OUTPUT);
 
     i2c_master_init();
+    
+    _i2c_enable();
 
     while (true)
     {
@@ -180,6 +226,10 @@ void app_main(void)
         vTaskDelay(300 / portTICK_PERIOD_MS);
 
         i2c_test();
+
+        i2c_read_acc(&acc_x, &acc_y, &acc_z);
+        printf("acceleration : %d %d %d\n", acc_x, acc_y, acc_z);
+
     }
 }
 

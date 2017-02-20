@@ -9,7 +9,9 @@
 #include "driver/i2c.h"
 
 #include "wifi_credentials.h"
+#include "MadgwickAHRS.h"
 #include "hal/mpu6050_defs.h"
+#include "hal/hmc5883L_defs.h"
 
 
 #define DATA_LENGTH                   512               /*!< Data buffer length for test buffer*/
@@ -21,7 +23,7 @@
 #define I2C_MASTER_NUM                I2C_NUM_1         /*!< I2C port number for master dev */
 #define I2C_MASTER_TX_BUF_DISABLE     0                 /*!< I2C master do not need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE     0                 /*!< I2C master do not need buffer */
-#define I2C_MASTER_FREQ_HZ            100000            /*!< I2C master clock frequency */
+#define I2C_MASTER_FREQ_HZ            200000            /*!< I2C master clock frequency */
 
 #define WRITE_BIT                     I2C_MASTER_WRITE  /*!< I2C master write */
 #define READ_BIT                      I2C_MASTER_READ   /*!< I2C master read */
@@ -149,10 +151,22 @@ void i2c_test(void)
     }
 }
 
-void _i2c_enable(void)
+#define ACC_SENSIVITY_SEL       MPU6050_ACCEL_FS_8
+#define ACC_SENSIVITY           ((16384.0f) / (1 << ACC_SENSIVITY_SEL))
+
+#define GYRO_SENSIVITY_SEL      MPU6050_GYRO_FS_1000
+#define GYRO_SENSIVITY          ((131.07f) / (1 << GYRO_SENSIVITY_SEL))
+
+#define DEG_TO_RAD(a)           (((a) * 3.1416f)/(180.0f))
+
+void _mpu6050_init(void)
 {
     uint8_t current;
     uint8_t count = 0;
+
+    i2c_master_init();
+
+    vTaskDelay(10 / portTICK_PERIOD_MS);
 
     while (count++ < 3)
     {
@@ -160,7 +174,14 @@ void _i2c_enable(void)
         {
             if (_write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, current & (~ (1 << MPU6050_PWR1_SLEEP_BIT))) == ESP_OK)
             {
-                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, &current);
+                _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, (GYRO_SENSIVITY_SEL << MPU6050_GCONFIG_FS_SEL_BIT));
+                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, &current );
+                printf("gyro config = %02x\n", current);
+
+                _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, (ACC_SENSIVITY_SEL << MPU6050_ACONFIG_AFS_SEL_BIT));
+                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, &current );
+                printf("accel config = %02x\n", current);
+
                 return;
             }
         }
@@ -168,21 +189,114 @@ void _i2c_enable(void)
     }
 }
 
-esp_err_t i2c_read_acc(int16_t * acc_x, int16_t * acc_y, int16_t * acc_z)
+esp_err_t _mpu6050_read_acc(float * acc_x, float * acc_y, float * acc_z)
 {
     uint8_t high, low;
+    int16_t temp;
 
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &high);
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &low);
-    *acc_x = (high << 8) + low;
+    temp = (high << 8) + low;
+    *acc_x = (float)((int)temp) / ACC_SENSIVITY;
 
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &high);
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_YOUT_L, &low);
-    *acc_y = (high << 8) + low;
+    temp = (high << 8) + low;
+    *acc_y = (float)((int)temp) / ACC_SENSIVITY;
 
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &high);
     _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &low);
-    *acc_z = (high << 8) + low;
+    temp = (high << 8) + low;
+    *acc_z = (float)((int)temp) / ACC_SENSIVITY;
+
+    return ESP_OK;
+}
+
+esp_err_t _mpu6050_read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
+{
+    uint8_t high, low;
+    int16_t temp;
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_XOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_XOUT_H, &low);
+    temp = (high << 8) + low;
+    *gyro_x = DEG_TO_RAD((float)((int)temp) / GYRO_SENSIVITY);
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_YOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_YOUT_L, &low);
+    temp = (high << 8) + low;
+    *gyro_y = DEG_TO_RAD((float)((int)temp) / GYRO_SENSIVITY);
+
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_ZOUT_H, &high);
+    _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_ZOUT_L, &low);
+    temp = (high << 8) + low;
+    *gyro_z = DEG_TO_RAD((float)((int)temp) / GYRO_SENSIVITY);
+
+    return ESP_OK;
+}
+
+#define MAG_SENSIVITY_SEL      HMC5883L_RANGE_1_9GA
+#define MAG_SENSIVITY          1.22f        ///< milliGauss per digit
+
+void _hmc5883_init(void)
+{
+    uint8_t ident_a, ident_b, ident_c;
+    uint8_t count = 0;
+
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+
+    while (count++ < 3)
+    {
+        if (  (_read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_IDENT_A, &ident_a) == ESP_OK)
+            &&(_read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_IDENT_B, &ident_b) == ESP_OK)
+            &&(_read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_IDENT_C, &ident_c) == ESP_OK))
+        {
+            if ((ident_a == HMC5885L_IDENT_A) && (ident_b == HMC5885L_IDENT_B) && (ident_c == HMC5885L_IDENT_C))
+            {
+
+                printf("WHO_I_AM response OK %02x %02x %02x\n", ident_a, ident_b, ident_c);
+
+                _write_register(I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_CONFIG_A, HMC5883L_SAMPLES_8 | HMC5883L_DATARATE_75HZ);
+
+                _write_register(I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_CONFIG_B, MAG_SENSIVITY_SEL);
+
+                _write_register(I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_MODE, HMC5883L_CONTINOUS);
+
+                vTaskDelay(6 / portTICK_PERIOD_MS);
+            }
+            else
+            {
+                printf("Bad WHO_I_AM response %02x %02x %02x\n", ident_a, ident_b, ident_c);
+            }
+            return;
+        }
+        else
+        {
+            printf("J'ai un probleme\n");
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
+esp_err_t _hmc5883_read_mag(float * mag_x, float * mag_y, float * mag_z)
+{
+    uint8_t high, low;
+    int16_t temp;
+
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_X_M, &high);
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_X_L, &low);
+    temp = (high << 8) + low;
+    *mag_x = (float)((int)temp) * MAG_SENSIVITY;
+
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_Y_M, &high);
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_Y_L, &low);
+    temp = (high << 8) + low;
+    *mag_y = (float)((int)temp) * MAG_SENSIVITY;
+
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_Z_M, &high);
+    _read_register( I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_OUT_Z_L, &low);
+    temp = (high << 8) + low;
+    *mag_z = (float)((int)temp) * MAG_SENSIVITY;
 
     return ESP_OK;
 }
@@ -190,7 +304,10 @@ esp_err_t i2c_read_acc(int16_t * acc_x, int16_t * acc_y, int16_t * acc_z)
 void app_main(void)
 {
     int level = 0;
-    int16_t acc_x, acc_y, acc_z;
+    float acc_x, acc_y, acc_z;
+    float gyro_x, gyro_y, gyro_z;
+    float mag_x, mag_y, mag_z;
+    float phi, theta, psi;
 
     nvs_flash_init();
     tcpip_adapter_init();
@@ -213,22 +330,28 @@ void app_main(void)
     ESP_ERROR_CHECK( esp_wifi_connect() );
 
     gpio_set_direction(GPIO_NUM_4, GPIO_MODE_OUTPUT);
-
-    i2c_master_init();
     
-    _i2c_enable();
+    i2c_master_init();
+    _mpu6050_init();
+    _hmc5883_init();
 
     while (true)
     {
         gpio_set_level(GPIO_NUM_4, level);
         level = !level;
 
-        vTaskDelay(300 / portTICK_PERIOD_MS);
+        vTaskDelay(6 / portTICK_PERIOD_MS);
 
-        i2c_test();
+        _mpu6050_read_acc(&acc_x, &acc_y, &acc_z);
+        _mpu6050_read_gyro(&gyro_x, &gyro_y, &gyro_z);
+        //_hmc5883_read_mag(&mag_x, &mag_y, &mag_z);
 
-        i2c_read_acc(&acc_x, &acc_y, &acc_z);
-        printf("acceleration : %d %d %d\n", acc_x, acc_y, acc_z);
+        MadgwickAHRSupdateIMU(gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z);
+        MadgwickAHRSGetEuler(&phi, &theta, &psi);
+
+        //printf("%f\t%f\t%f\t", acc_x,  acc_y,  acc_z);
+        //printf("%f\t%f\t%f\n", gyro_x, gyro_y, gyro_z);
+        printf("%f\t%f\t%f\n", phi, theta, psi);
 
     }
 }

@@ -5,6 +5,8 @@
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
 
+#include <math.h>
+
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 
@@ -92,6 +94,39 @@ esp_err_t _write_register(i2c_port_t i2c_num, uint8_t address, uint8_t reg, uint
     return _write(i2c_num, address, buffer, 2);
 }
 
+esp_err_t _write_bit(i2c_port_t i2c_num, uint8_t address, uint8_t reg, uint8_t bit_num, bool value)
+{
+    uint8_t   b;
+    esp_err_t ret;
+    
+    ret = _read_register(i2c_num, address, reg, &b);
+
+    if (ret == ESP_OK)
+    {
+        b = (value != 0) ? (b | (1 << bit_num)) : (b & ~(1 << bit_num));
+        return _write_register(i2c_num, address, reg, b);
+    }
+    else
+    {
+        return ret;
+    }
+}
+
+esp_err_t _read_bit(i2c_port_t i2c_num, uint8_t address, uint8_t reg, uint8_t bit_num, bool * value)
+{
+    uint8_t   b;
+    esp_err_t ret;
+    
+    ret = _read_register(i2c_num, address, reg, &b);
+
+    if (ret == ESP_OK)
+    {
+        *value = (bool)((b >> bit_num) & 0x01);
+    }
+    
+    return ret;
+}
+
 /**
  * @brief i2c master initialization
  */
@@ -159,6 +194,16 @@ void i2c_test(void)
 
 #define DEG_TO_RAD(a)           (((a) * 3.1416f)/(180.0f))
 
+void _mpu6050_set_i2c_master_mode_enabled(bool enabled) 
+{
+    _write_bit(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_USER_CTRL, MPU6050_USERCTRL_I2C_MST_EN_BIT, enabled);
+}
+
+void _mpu6050_set_i2c_bypass_enabled(bool enabled) 
+{
+    _write_bit(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_I2C_BYPASS_EN_BIT, enabled);
+}
+
 void _mpu6050_init(void)
 {
     uint8_t current;
@@ -170,20 +215,21 @@ void _mpu6050_init(void)
 
     while (count++ < 3)
     {
-        if (_read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, &current) == ESP_OK)
+        if (_write_bit( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false) == ESP_OK)
         {
-            if (_write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_PWR_MGMT_1, current & (~ (1 << MPU6050_PWR1_SLEEP_BIT))) == ESP_OK)
-            {
-                _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, (GYRO_SENSIVITY_SEL << MPU6050_GCONFIG_FS_SEL_BIT));
-                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, &current );
-                printf("gyro config = %02x\n", current);
+            _mpu6050_set_i2c_master_mode_enabled(false);
 
-                _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, (ACC_SENSIVITY_SEL << MPU6050_ACONFIG_AFS_SEL_BIT));
-                _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, &current );
-                printf("accel config = %02x\n", current);
+            _mpu6050_set_i2c_bypass_enabled(true);
 
-                return;
-            }
+            _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, (GYRO_SENSIVITY_SEL << MPU6050_GCONFIG_FS_SEL_BIT));
+            _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_GYRO_CONFIG, &current );
+            printf("gyro config = %02x\n", current);
+
+            _write_register(I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, (ACC_SENSIVITY_SEL << MPU6050_ACONFIG_AFS_SEL_BIT));
+            _read_register( I2C_MASTER_NUM, MPU6050_ADDRESS, MPU6050_RA_ACCEL_CONFIG, &current );
+            printf("accel config = %02x\n", current);
+
+            return;
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
@@ -253,7 +299,6 @@ void _hmc5883_init(void)
         {
             if ((ident_a == HMC5885L_IDENT_A) && (ident_b == HMC5885L_IDENT_B) && (ident_c == HMC5885L_IDENT_C))
             {
-
                 printf("WHO_I_AM response OK %02x %02x %02x\n", ident_a, ident_b, ident_c);
 
                 _write_register(I2C_MASTER_NUM, HMC5883L_ADDRESS, HMC5883L_REG_CONFIG_A, HMC5883L_SAMPLES_8 | HMC5883L_DATARATE_75HZ);
@@ -344,14 +389,15 @@ void app_main(void)
 
         _mpu6050_read_acc(&acc_x, &acc_y, &acc_z);
         _mpu6050_read_gyro(&gyro_x, &gyro_y, &gyro_z);
-        //_hmc5883_read_mag(&mag_x, &mag_y, &mag_z);
+        _hmc5883_read_mag(&mag_x, &mag_y, &mag_z);
 
-        MadgwickAHRSupdateIMU(gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z);
+        MadgwickAHRSupdate(gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, mag_x, mag_y, mag_z);
         MadgwickAHRSGetEuler(&phi, &theta, &psi);
 
         //printf("%f\t%f\t%f\t", acc_x,  acc_y,  acc_z);
         //printf("%f\t%f\t%f\n", gyro_x, gyro_y, gyro_z);
         printf("%f\t%f\t%f\n", phi, theta, psi);
+        //printf("%f\n", atan2(mag_x, mag_y) * 180.0 / 3.1416);
 
     }
 }

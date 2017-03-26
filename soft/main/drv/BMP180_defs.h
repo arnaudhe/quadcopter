@@ -1,5 +1,4 @@
-#ifndef BMP_180_DEFS_H
-#define BMP_180_DEFS_H                       
+#pragma once                      
 
 /***************************************************************/
 /* 	I2C ADDRESS DEFINITION OF BMP180                           */
@@ -177,6 +176,3 @@ struct bmp180_t
 #define BMP180_AL_VERSION__LEN          (4)
 #define BMP180_AL_VERSION__MSK          (0xF0)
 #define BMP180_AL_VERSION__REG          (BMP180_VERSION_REG)
-
-
-#endif

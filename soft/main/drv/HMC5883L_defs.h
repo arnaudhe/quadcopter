@@ -1,7 +1,5 @@
-#ifndef HMC5883L_DEFS_H
-#define HMC5883L_DEFS_H
+#pragma once
 
-#define HMC5883L_ADDRESS              (0x1E)
 #define HMC5883L_REG_CONFIG_A         (0x00)
 #define HMC5883L_REG_CONFIG_B         (0x01)
 #define HMC5883L_REG_MODE             (0x02)
@@ -57,5 +55,3 @@ typedef enum
     HMC5883L_SINGLE        = 0x01,
     HMC5883L_CONTINOUS     = 0x00
 } hmc5883l_mode_t;
-
-#endif

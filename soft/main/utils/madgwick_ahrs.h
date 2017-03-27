@@ -9,15 +9,19 @@ class marg
 
     /* Attributes */
 
-    float _frequency;
+    float _sampling_frequency;
     float _beta;               ///< 2 * proportional gain (Kp)
     float _q0, _q1, _q2, _q3;  ///< quaternion of sensor frame relative to auxiliary frame
+
+    /* Methods */
+
+    float inv_sqrt(float x);
 
   public:
 
     /* Constructors */
 
-    madgwick_ahrs(float frequency);
+    madgwick_ahrs(float sampling_frequency);
 
     /* Accessors*/
 

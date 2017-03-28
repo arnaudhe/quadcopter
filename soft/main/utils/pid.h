@@ -1,5 +1,4 @@
-#ifndef POINT_H
-#define POINT_H
+#pragma once
 
 #include <iostream>
 
@@ -43,5 +42,3 @@ class Pid
     float update(float input);
 
 };
-
-#endif

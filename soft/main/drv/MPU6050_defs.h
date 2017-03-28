@@ -1,9 +1,7 @@
-#ifndef MPU_6050_DEFS_H
-#define MPU_6050_DEFS_H                         
+#pragma once                     
 
 #define MPU6050_ADDRESS_AD0_LOW                 (0x68) 		///< address pin low (GND), default for InvenSense evaluation board
 #define MPU6050_ADDRESS_AD0_HIGH                (0x69) 		///< address pin high (VCC)
-#define MPU6050_ADDRESS                 		MPU6050_ADDRESS_AD0_LOW
 
 #define MPU6050_RA_XG_OFFS_TC                   (0x00) 		///< [7] PWR_MO DE, [6:1] XG_OFFS_TC, [0] OTP_BNK_VLD
 #define MPU6050_RA_YG_OFFS_TC                   (0x01) 		///< [7] PWR_MODE, [6:1] YG_OFFS_TC, [0] OTP_BNK_VLD
@@ -170,7 +168,7 @@
 #define MPU6050_DLPF_BW_10                      (0x05)
 #define MPU6050_DLPF_BW_5                       (0x06)
 
-#define MPU6050_GCONFIG_FS_SEL_BIT              (4)
+#define MPU6050_GCONFIG_FS_SEL_BIT              (3)
 #define MPU6050_GCONFIG_FS_SEL_LENGTH           (2)
 
 #define MPU6050_GYRO_FS_250                     (0x00)
@@ -181,7 +179,7 @@
 #define MPU6050_ACONFIG_XA_ST_BIT               (7)
 #define MPU6050_ACONFIG_YA_ST_BIT               (6)
 #define MPU6050_ACONFIG_ZA_ST_BIT               (5)
-#define MPU6050_ACONFIG_AFS_SEL_BIT             (4)
+#define MPU6050_ACONFIG_AFS_SEL_BIT             (3)
 #define MPU6050_ACONFIG_AFS_SEL_LENGTH          (2)
 #define MPU6050_ACONFIG_ACCEL_HPF_BIT           (2)
 #define MPU6050_ACONFIG_ACCEL_HPF_LENGTH        (3)
@@ -378,5 +376,3 @@
 #define MPU6050_DMP_MEMORY_BANKS                (8)
 #define MPU6050_DMP_MEMORY_BANK_SIZE            (256)
 #define MPU6050_DMP_MEMORY_CHUNK_SIZE           (16)
-
-#endif

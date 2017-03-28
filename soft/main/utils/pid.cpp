@@ -1,65 +1,68 @@
 #include <utils/pid.h>
 
 Pid::Pid(float period, float kp, float ki, float kd) 
-    : _period(period), _kp(kp), _ki(ki), _kd(kd)
 {
-    this->_consign   = 0;
-    this->_previous  = 0;
-    this->_integrate = 0;
+    _consign   = 0;
+    _previous  = 0;
+    _integrate = 0;
+    _period    = period;
+    _kp        = kp;
+    _ki        = ki;
+    _kd        = kd;
 }
 
 float Pid::update(float input)
 {
-    float error     = this->_consign - input;
-    float derivate  = (input - this->_previous) / (this->_period);
-    float integrate = this->_integrate + (error * this->_period);
+    float error     = _consign - input;
+    float derivate  = (input - _previous) / (_period);
+    float integrate = _integrate + (error * _period);
 
-    float output    = this->_kp * error +
-                      this->_ki * integrate + 
-                      this->_kd * derivate;
+    float output    = _kp * error +
+                      _ki * integrate + 
+                      _kd * derivate;
 
-    this->_integrate = integrate;
-    this->_previous  = input;
+    _integrate = integrate;
+    _previous  = input;
 
     return output;
 }
 
 void Pid::set_kp(float kp)
 {
-    this->_kp = kp;
+    _kp = kp;
 }
 
 void Pid::set_ki(float ki)
 {
-    this->_ki = ki;
+    _ki = ki;
 }
 
 void Pid::set_kd(float kd)
 {
-    this->_kd = kd;
+    _kd = kd;
 } 
 
 void Pid::set_consign(float consign)
 {
-    this->_consign = consign;
+    _consign = consign;
 } 
 
 float Pid::kp() const
 {
-    return this->_kp;
+    return _kp;
 }
 
 float Pid::ki() const
 {
-    return this->_ki;
+    return _ki;
 }
 
 float Pid::kd() const
 {
-    return this->_kd;
+    return _kd;
 }
 
 float Pid::consign() const
 {
-    return this->_consign;
+    return _consign;
 }

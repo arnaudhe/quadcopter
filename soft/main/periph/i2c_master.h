@@ -1,6 +1,6 @@
 #pragma once
 
-#include "driver/i2c.h"
+#include <driver/i2c.h>
 
 using namespace std;
 
@@ -24,7 +24,7 @@ class i2c_master
 
     /* Constructors */
 
-    i2c_master(i2c_port_t port, int frequency_hz);
+    i2c_master(i2c_port_t port);
 
     /* Accessors*/
 

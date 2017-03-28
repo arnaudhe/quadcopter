@@ -12,8 +12,8 @@
 
 typedef struct
 {
-    int sda_io_num;
-    int scl_io_num;
+    gpio_num_t sda_io_num;
+    gpio_num_t scl_io_num;
 }i2c_io_mapping_t;
 
 typedef struct

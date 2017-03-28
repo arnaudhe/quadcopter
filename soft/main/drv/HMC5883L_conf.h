@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HMC5883L_defs.h"
+#include <drv/HMC5883L_defs.h>
 
 #define HMC5883L_ADDRESS             (0x1E)
 

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-class marg
+class madgwick_ahrs
 {
   
   private: 

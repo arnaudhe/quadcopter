@@ -1,6 +1,6 @@
-#include "marg.h"
+#include <hal/marg.h>
 
-void marg::marg(i2c_master * i2c)
+marg::marg(i2c_master * i2c)
 {
     _i2c = i2c;
     _mpu = new MPU6050(_i2c);
@@ -16,6 +16,8 @@ esp_err_t marg::init(void)
         
         return _hmc->init();
     }
+
+    return ESP_FAIL;
 }
 
 esp_err_t marg::read_acc(float * acc_x, float * acc_y, float * acc_z)
@@ -30,5 +32,5 @@ esp_err_t marg::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
 
 esp_err_t marg::read_mag(float * mag_x, float * mag_y, float * mag_z)
 {
-    return _hmc->read_gyro(mag_x, mag_y, mag_z);
+    return _hmc->read_mag(mag_x, mag_y, mag_z);
 }

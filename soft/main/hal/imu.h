@@ -1,8 +1,7 @@
 #pragma once
 
-#include "periph/i2c_master.h"
-#include "drv/MPU6050.h"
-#include "drv/HMC5883L.h"
+#include <periph/i2c_master.h>
+#include <drv/MPU6050.h>
 
 using namespace std;
 

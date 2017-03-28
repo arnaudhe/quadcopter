@@ -1,13 +1,13 @@
 #pragma once
 
-#include "mpu6050_defs.h"
+#include <drv/MPU6050_defs.h>
 
 #define MPU6050_WAKEUP_DELAY_ms         10
 
 #define MPU6050_ADDRESS                 MPU6050_ADDRESS_AD0_LOW
 
 #define MPU6050_ACC_SENSIVITY_SEL       MPU6050_ACCEL_FS_8
-#define MPU6050_ACC_SENSIVITY           ((16384.0f) / (1 << ACC_SENSIVITY_SEL))
+#define MPU6050_ACC_SENSIVITY           ((16384.0f) / (1 << MPU6050_ACC_SENSIVITY_SEL))
 
 #define MPU6050_GYRO_SENSIVITY_SEL      MPU6050_GYRO_FS_1000
-#define MPU6050_GYRO_SENSIVITY          ((131.07f) / (1 << GYRO_SENSIVITY_SEL))
+#define MPU6050_GYRO_SENSIVITY          ((131.07f) / (1 << MPU6050_GYRO_SENSIVITY_SEL))

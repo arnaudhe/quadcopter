@@ -1,4 +1,6 @@
-#include <drv/i2c_master.h>
+#include <periph/i2c_master.h>
+#include <periph/i2c_master_defs.h>
+#include <periph/i2c_master_conf.h>
 
 i2c_master::i2c_master(i2c_port_t port)
 {
@@ -25,7 +27,7 @@ esp_err_t i2c_master::init()
 
         if ((ret = i2c_driver_install(_port, conf.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0)) != ESP_OK) return ret;
 
-        init = true;
+        _init = true;
     }
 
     return ESP_OK;
@@ -45,7 +47,7 @@ esp_err_t i2c_master::_write(uint8_t address, uint8_t * data, uint8_t data_len)
     i2c_master_write_byte(cmd, (address << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write(cmd, data, data_len, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    ret = i2c_master_cmd_begin(_port, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
     
     return ret;
@@ -84,7 +86,6 @@ esp_err_t i2c_master::read_register(uint8_t address, uint8_t reg, uint8_t * valu
 
 esp_err_t i2c_master::write_register(uint8_t address, uint8_t reg, uint8_t value)
 {
-    esp_err_t ret;
     uint8_t buffer[2] = {reg, value};
 
     return _write(address, buffer, 2);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "periph/i2c_master.h"
+#include <periph/i2c_master.h>
 
 using namespace std;
 
@@ -12,6 +12,7 @@ class HMC5883L
     /* Attributes */
 
     i2c_master * _i2c;      ///< i2c device
+    uint8_t      _address;  ///< i2c address
 
   public:
 

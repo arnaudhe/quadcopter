@@ -1,17 +1,19 @@
-#include "HCM5883L.h"
-#include "HCM5883L_defs.h"
-#include "HCM5883L_conf.h"
+#include <drv/HMC5883L.h>
+#include <drv/HMC5883L_conf.h>
+#include <drv/HMC5883L_defs.h>
 
-void HMC5883L::HMC5883L(i2c_master * i2c)
+#include <stdio.h>
+
+HMC5883L::HMC5883L(i2c_master * i2c)
 {
     _i2c     = i2c;
     _address = HMC5883L_ADDRESS;
 }
 
-void HMC5883L::init(void)
+esp_err_t HMC5883L::init(void)
 {
-    uint8_t ident_a, ident_b, ident_c;
-    uint8_t count = 0;
+    uint8_t   ident_a, ident_b, ident_c;
+    uint8_t   count = 0;
 
     do
     {
@@ -30,18 +32,23 @@ void HMC5883L::init(void)
                 _i2c->write_register(_address, HMC5883L_REG_MODE, HMC5883L_CONTINOUS);
 
                 vTaskDelay(HMC5883L_CONFIG_DELAY_ms / portTICK_PERIOD_MS);
+
+                return ESP_OK;
             }
             else
             {
                 printf("Bad WHO_I_AM response %02x %02x %02x\n", ident_a, ident_b, ident_c);
+
+                return ESP_FAIL;
             }
-            return;
         }
         else
         {
             printf("Hi Houston, we've had a problem\n");
         }
-    }while (count++ < 3)
+    }while (count++ < 3);
+
+    return ESP_FAIL;
 }
 
 esp_err_t HMC5883L::read_mag(float * mag_x, float * mag_y, float * mag_z)

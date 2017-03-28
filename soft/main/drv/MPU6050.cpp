@@ -1,8 +1,10 @@
-#include "mpu6050.h"
-#include "mpu6050_defs.h"
-#include "mpu6050_conf.h"
+#include <drv/mpu6050.h>
+#include <drv/mpu6050_defs.h>
+#include <drv/mpu6050_conf.h>
 
-void MPU6050::MPU6050(i2c_master * i2c)
+#define DEG_TO_RAD(a) ((a * 180.0) / (3.1416))
+
+MPU6050::MPU6050(i2c_master * i2c)
 {
     _i2c     = i2c;
     _address = MPU6050_ADDRESS;
@@ -10,14 +12,17 @@ void MPU6050::MPU6050(i2c_master * i2c)
 
 esp_err_t MPU6050::init(void)
 {
-    uint8_t current;
-    uint8_t count = 0;
+    uint8_t   current;
+    uint8_t   count = 0;
+    esp_err_t ret;
     
     do
     {
         vTaskDelay(MPU6050_WAKEUP_DELAY_ms / portTICK_PERIOD_MS);
         
-        if (_i2c->write_bit(_address, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false) == ESP_OK)
+        ret = _i2c->write_register_bit(_address, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false);
+
+        if (ret == ESP_OK)
         {
             _i2c->write_register(_address, MPU6050_RA_GYRO_CONFIG, (MPU6050_GYRO_SENSIVITY_SEL << MPU6050_GCONFIG_FS_SEL_BIT));
             _i2c->read_register(_address, MPU6050_RA_GYRO_CONFIG, &current );
@@ -30,7 +35,7 @@ esp_err_t MPU6050::init(void)
         
     }while (count++ < 3);
 
-    return 
+    return ret;
 }
 
 esp_err_t MPU6050::read_acc(float * acc_x, float * acc_y, float * acc_z)
@@ -81,10 +86,10 @@ esp_err_t MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
 
 esp_err_t MPU6050::set_i2c_master_mode_enabled(bool enabled) 
 {
-    return _i2c->write_bit(_address, MPU6050_RA_USER_CTRL, MPU6050_USERCTRL_I2C_MST_EN_BIT, enabled);
+    return _i2c->write_register_bit(_address, MPU6050_RA_USER_CTRL, MPU6050_USERCTRL_I2C_MST_EN_BIT, enabled);
 }
 
 esp_err_t MPU6050::set_i2c_bypass_enabled(bool enabled) 
 {
-    return _i2c->write_bit(_address, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_I2C_BYPASS_EN_BIT, enabled);
+    return _i2c->write_register_bit(_address, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_I2C_BYPASS_EN_BIT, enabled);
 }

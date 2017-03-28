@@ -1,14 +1,14 @@
-#include "madgwick_ahrs.h"
+#include <utils/madgwick_ahrs.h>
 #include <math.h>
 
 #define MADGWICK_AHRS_SAMPLING_FREQUENCY  100.0f      // sample frequency in Hz
 #define MADGWICK_AHRS_GAIN                0.1f        // 2 * proportional gain
 
-void madgwick_ahrs(float sampling_frequency)
+madgwick_ahrs::madgwick_ahrs(float sampling_frequency)
 {
     _sampling_frequency = sampling_frequency;
 
-    _beta = MADGWICK_GAIN;
+    _beta = MADGWICK_AHRS_GAIN;
 
     _q0 = 1.0f;
     _q1 = 0.0f;

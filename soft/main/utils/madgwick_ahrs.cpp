@@ -185,9 +185,9 @@ void madgwick_ahrs::update_imu(float gx, float gy, float gz, float ax, float ay,
 
 void madgwick_ahrs::get_euler(float * phi, float * theta, float * psi)
 {
-    *phi   = atan2(2*_q1*_q2 - 2*_q0*_q3, 2*_q0*_q0 + 2*_q1*_q1 - 1);
-    *theta = -asin(2*_q1*_q3 + 2*_q0*_q2);
-    *psi   = atan2(2*_q2*_q3 - 2*_q0*_q1, 2*_q0*_q0 + 2*_q3*_q3 - 1);
+    *phi   = atan2(2.0f * (_q1 * _q2 + _q0 * _q3), _q0 * _q0 + _q1 * _q1 - _q2 * _q2 - _q3 * _q3);   
+    *theta = -asin(2.0f * (_q1 * _q3 - _q0 * _q2));
+    *psi   = atan2(2.0f * (_q0 * _q1 + _q2 * _q3), _q0 * _q0 - _q1 * _q1 - _q2 * _q2 + _q3 * _q3);
 }
 
 float madgwick_ahrs::inv_sqrt(float x) 

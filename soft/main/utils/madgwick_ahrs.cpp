@@ -190,6 +190,14 @@ void madgwick_ahrs::get_euler(float * phi, float * theta, float * psi)
     *psi   = atan2(2.0f * (_q0 * _q1 + _q2 * _q3), _q0 * _q0 - _q1 * _q1 - _q2 * _q2 + _q3 * _q3);
 }
 
+void madgwick_ahrs::get_quaternion(float * q0, float * q1, float * q2, float * q3)
+{
+    *q0 = _q0;
+    *q1 = _q1;
+    *q2 = _q2;
+    *q3 = _q3;
+}
+
 float madgwick_ahrs::inv_sqrt(float x) 
 {
     float halfx = 0.5f * x;

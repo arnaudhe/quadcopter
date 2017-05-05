@@ -33,4 +33,6 @@ class madgwick_ahrs
 
     void get_euler(float * phi, float * theta, float * psi);
 
+    void get_quaternion(float * q0, float * q1, float * q2, float * q3);
+
 };

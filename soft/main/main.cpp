@@ -6,6 +6,7 @@
 #include <nvs_flash.h>
 
 #include <string.h>
+#include <math.h>
 
 #include <driver/gpio.h>
 
@@ -74,10 +75,7 @@ extern "C" void app_main(void)
         ahrs->update_marg(gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, mag_x, mag_y, mag_z);
         ahrs->get_euler(&phi, &theta, &psi);
 
-        //printf("%f\t%f\t%f\t", acc_x,  acc_y,  acc_z);
-        //printf("%f\t%f\t%f\n", gyro_x, gyro_y, gyro_z);
-        printf("%f\t%f\t%f\n", phi, theta, psi);
-        //printf("%f\n", atan2(mag_x, mag_y) * 180.0 / 3.1416);
+        printf("%f;%f;%f\n", phi, theta, psi);
     }
 }
 

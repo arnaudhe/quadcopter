@@ -2,7 +2,7 @@
 #include <drv/mpu6050_defs.h>
 #include <drv/mpu6050_conf.h>
 
-#define DEG_TO_RAD(a) ((a * 180.0) / (3.1416))
+#define DEG_TO_RAD(a) ((a * 3.1416) / (180.0))
 
 MPU6050::MPU6050(i2c_master * i2c)
 {

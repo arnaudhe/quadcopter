@@ -59,17 +59,17 @@ esp_err_t HMC5883L::read_mag(float * mag_x, float * mag_y, float * mag_z)
     _i2c->read_register(_address, HMC5883L_REG_OUT_X_M, &high);
     _i2c->read_register(_address, HMC5883L_REG_OUT_X_L, &low);
     temp = (high << 8) + low;
-    *mag_x = (float)((int)temp) * HMC5883L_MAG_SENSIVITY;
+    *mag_x = ((float)((int)temp) + 200.0) / 9.73;
 
     _i2c->read_register(_address, HMC5883L_REG_OUT_Y_M, &high);
     _i2c->read_register(_address, HMC5883L_REG_OUT_Y_L, &low);
     temp = (high << 8) + low;
-    *mag_y = (float)((int)temp) * HMC5883L_MAG_SENSIVITY;
+    *mag_y = ((float)((int)temp) + 67.0) / 8.94;
 
     _i2c->read_register(_address, HMC5883L_REG_OUT_Z_M, &high);
     _i2c->read_register(_address, HMC5883L_REG_OUT_Z_L, &low);
     temp = (high << 8) + low;
-    *mag_z = (float)((int)temp) * HMC5883L_MAG_SENSIVITY;
+    *mag_z = ((float)((int)temp) + 235.0) / 10.21;
 
     return ESP_OK;
 }

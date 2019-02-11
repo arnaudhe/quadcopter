@@ -12,6 +12,7 @@
 
 #include <wifi_credentials.h>
 #include <periph/i2c_master.h>
+#include <periph/pulse.h>
 #include <hal/marg.h>
 #include <utils/madgwick_ahrs.h>
 
@@ -30,6 +31,7 @@ extern "C" void app_main(void)
     float           mag_x, mag_y, mag_z;
     float           phi, theta, psi;
     i2c_master    * i2c;
+    pulse         * puls;
     marg          * mymarg;
     madgwick_ahrs * ahrs;
 
@@ -56,9 +58,41 @@ extern "C" void app_main(void)
     i2c    = new i2c_master(I2C_MASTER_NUM);
     mymarg = new marg(i2c);
     ahrs   = new madgwick_ahrs(100.0f);
+    puls   = new pulse(2000, 16);
 
     i2c->init();
     mymarg->init();
+    puls->init();
+
+    vTaskDelay(4000 / portTICK_PERIOD_MS);
+
+    puls->set(1000);
+
+    gpio_set_level(GPIO_NUM_4, 1);
+
+    vTaskDelay(4000 / portTICK_PERIOD_MS);
+
+    puls->set(1100);
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+    puls->set(1120);
+
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    puls->set(1140);
+
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    puls->set(1160);
+
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    puls->set(1180);
+
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+
+    puls->set(1200);
 
     while (true)
     {

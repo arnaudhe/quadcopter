@@ -16,26 +16,21 @@
 #define ATTITUDE_PID_PITCH_KD                       (0)
 #define ATTITUDE_PID_PITCH_CONSIGN                  (0)
 
-#define ATTITUDE_PID_ALTITUDE_KP                    (0)
-#define ATTITUDE_PID_ALTITUDE_KI                    (0)
-#define ATTITUDE_PID_ALTITUDE_KD                    (0)
-#define ATTITUDE_PID_ALTITUDE_CONSIGN               (0)
+#define ATTITUDE_PID_HEIGHT_KP                      (0)
+#define ATTITUDE_PID_HEIGHT_KI                      (0)
+#define ATTITUDE_PID_HEIGHT_KD                      (0)
+#define ATTITUDE_PID_HEIGHT_CONSIGN                 (0)
 
 #define ATTITUDE_MOTOR_FRONT_LEFT_PULSE_CHANNEL     (0)
 #define ATTITUDE_MOTOR_FRONT_LEFT_PULSE_PIN         (0)
-#define ATTITUDE_MOTOR_FRONT_LEFT_PULSE_VALUE       (0)
 
 #define ATTITUDE_MOTOR_FRONT_RIGHT_PULSE_CHANNEL    (0)
 #define ATTITUDE_MOTOR_FRONT_RIGHT_PULSE_PIN        (0)
-#define ATTITUDE_MOTOR_FRONT_RIGHT_PULSE_VALUE      (0)
 
 #define ATTITUDE_MOTOR_REAR_LEFT_PULSE_CHANNEL      (0)
 #define ATTITUDE_MOTOR_REAR_LEFT_PULSE_PIN          (0)
-#define ATTITUDE_MOTOR_REAR_LEFT_PULSE_VALUE        (0)
 
 #define ATTITUDE_MOTOR_REAR_RIGHT_PULSE_CHANNEL     (0)
 #define ATTITUDE_MOTOR_REAR_RIGHT_PULSE_PIN         (0)
-#define ATTITUDE_MOTOR_REAR_RIGHT_PULSE_VALUE       (0)
-
 
 #endif

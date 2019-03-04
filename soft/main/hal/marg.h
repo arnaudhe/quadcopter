@@ -6,14 +6,14 @@
 
 using namespace std;
 
-class marg
+class Marg
 {
-  
+
   private: 
 
     /* Attributes */
 
-    i2c_master * _i2c;      ///< i2c device
+    I2cMaster  * _i2c;      ///< i2c device
     MPU6050    * _mpu;
     HMC5883L   * _hmc;
 
@@ -21,7 +21,7 @@ class marg
 
     /* Constructors */
 
-    marg(i2c_master * i2c);
+    Marg(I2cMaster * i2c);
 
     /* Accessors*/
 

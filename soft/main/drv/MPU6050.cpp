@@ -4,7 +4,7 @@
 
 #define DEG_TO_RAD(a) ((a * 3.1416) / (180.0))
 
-MPU6050::MPU6050(i2c_master * i2c)
+MPU6050::MPU6050(I2cMaster * i2c)
 {
     _i2c     = i2c;
     _address = MPU6050_ADDRESS;

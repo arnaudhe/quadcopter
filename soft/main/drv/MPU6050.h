@@ -11,14 +11,14 @@ class MPU6050
 
     /* Attributes */
 
-    i2c_master * _i2c;      ///< i2c device
+    I2cMaster  * _i2c;      ///< i2c device
     uint8_t      _address;  ///< i2c address
 
   public:
 
     /* Constructors */
 
-    MPU6050(i2c_master * i2c);
+    MPU6050(I2cMaster * i2c);
 
     /* Accessors*/
 

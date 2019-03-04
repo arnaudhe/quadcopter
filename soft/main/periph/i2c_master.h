@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class i2c_master
+class I2cMaster
 {
   
   private: 
@@ -24,7 +24,7 @@ class i2c_master
 
     /* Constructors */
 
-    i2c_master(i2c_port_t port);
+    I2cMaster(i2c_port_t port);
 
     /* Accessors*/
 

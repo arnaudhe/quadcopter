@@ -1,38 +1,44 @@
 #pragma once
 
+#include <utils/ahrs.h>
+#include <utils/matrix.h>
+#include <utils/quaternion.h>
+
 using namespace std;
 
-class madgwick_ahrs
+class MadgwickAhrs : public Ahrs
 {
   
   private: 
 
     /* Attributes */
 
-    float _sampling_frequency;
+    float _period;
     float _beta;               ///< 2 * proportional gain (Kp)
-    float _q0, _q1, _q2, _q3;  ///< quaternion of sensor frame relative to auxiliary frame
+    Quaternion _q;
 
     /* Methods */
 
-    float inv_sqrt(float x);
+    Vect compute_F(Quaternion acc, Quaternion mag, Quaternion B);
+    Matrix compute_J(Quaternion B);
 
   public:
 
     /* Constructors */
 
-    madgwick_ahrs(float sampling_frequency);
+    MadgwickAhrs(float period);
+    ~MadgwickAhrs();
 
     /* Accessors*/
 
     /* Other methods */
 
-    void update_marg(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
+    void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
 
-    void update_imu(float gx, float gy, float gz, float ax, float ay, float az);
+    float roll(void);
+    float pitch(void);
+    float yaw(void);
 
-    void get_euler(float * phi, float * theta, float * psi);
-
-    void get_quaternion(float * q0, float * q1, float * q2, float * q3);
+    void rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r);
 
 };

@@ -12,3 +12,12 @@ test_ahrs = executable('test_ahrs',
                         'tests/test_ahrs.cpp'], 
                        include_directories : includes, 
                        cpp_args : c_flags)
+
+test_height = executable('test_height', 
+                         ['utils/height_observer.cpp', 
+                          'utils/matrix.cpp', 
+                          'utils/vector.cpp', 
+                          'utils/csv_reader.cpp', 
+                          'tests/test_height.cpp'], 
+                          include_directories : includes, 
+                          cpp_args : c_flags)

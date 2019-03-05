@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-HMC5883L::HMC5883L(i2c_master * i2c)
+HMC5883L::HMC5883L(I2cMaster * i2c)
 {
     _i2c     = i2c;
     _address = HMC5883L_ADDRESS;

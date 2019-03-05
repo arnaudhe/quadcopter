@@ -3,7 +3,7 @@
 Controller::Controller(float period, Pid * pid_speed, Pid * pid_position)
 {
     _period       = period;
-    _set_point    = 0.0f;
+    _target       = 0.0f;
     _command      = 0.0f;
     _mode         = Mode::DISABLED;
     _pid_speed    = pid_speed;
@@ -13,7 +13,22 @@ Controller::Controller(float period, Pid * pid_speed, Pid * pid_position)
 void Controller::update_target(Mode mode, float value)
 {
     _mode = mode;
-    _set_point = value;
+    _target = value;
+
+    switch (_mode)
+    {
+        case Mode::SPEED:
+            _pid_speed->set_consign(value);
+            break;
+
+        case Mode::POSITION:
+            _pid_position->set_consign(value);
+            break;
+
+        case Mode::DISABLED:
+        default:
+            break;
+    }
 }
 
 void Controller::update(float position, float speed)
@@ -26,6 +41,7 @@ void Controller::update(float position, float speed)
 
         case Mode::POSITION:
             _command = _pid_position->update(position);
+            break;
 
         case Mode::DISABLED:
         default:

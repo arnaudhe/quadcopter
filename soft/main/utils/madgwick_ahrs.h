@@ -1,12 +1,11 @@
 #pragma once
 
-#include <utils/ahrs.h>
 #include <utils/matrix.h>
 #include <utils/quaternion.h>
 
 using namespace std;
 
-class MadgwickAhrs : public Ahrs
+class MadgwickAhrs
 {
   
   private: 

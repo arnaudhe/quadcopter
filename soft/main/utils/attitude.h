@@ -1,6 +1,5 @@
 #pragma once
 
-#include <utils/ahrs.h>
 #include <utils/madgwick_ahrs.h>
 #include <utils/height_observer.h>
 #include <hal/marg.h>
@@ -17,7 +16,7 @@ class Attitude
     /* Attributes */
 
     I2cMaster      * _i2c;
-    Ahrs           * _ahrs;
+    MadgwickAhrs   * _ahrs;
     HeightObserver * _height;
     Marg           * _marg;
     Barometer      * _baro;

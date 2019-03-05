@@ -105,7 +105,7 @@ Matrix Matrix::operator*(Matrix B)
     }
     else
     {
-        throw string("Bad matrix dimensions");
+        return Matrix(0, 0);
     }
 }
 

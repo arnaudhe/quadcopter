@@ -7,7 +7,10 @@
             "label": "make",
             "type": "shell",
             "command": "make",
-            "problemMatcher":"$gcc",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true

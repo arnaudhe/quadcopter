@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class pulse
+class Pulse
 {
   
   private: 
@@ -15,13 +15,14 @@ class pulse
     ledc_channel_config_t _ledc_conf;
     uint16_t              _duty;
     int                   _gpio;
+    int                   _channel;
     bool                  _init;
 
   public:
 
     /* Constructors */
 
-    pulse(uint16_t pulse_width_us, int gpio);
+    Pulse(uint16_t pulse_width_us, int gpio, int channel);
 
     /* Accessors*/
 

@@ -12,14 +12,14 @@ class imu
 
     /* Attributes */
 
-    i2c_master * _i2c;      ///< i2c device
+    I2cMaster  * _i2c;      ///< i2c device
     MPU6050    * _mpu;
 
   public:
 
     /* Constructors */
 
-    imu(i2c_master * i2c);
+    imu(I2cMaster * i2c);
 
     /* Accessors*/
 

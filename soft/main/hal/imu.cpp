@@ -1,6 +1,6 @@
 #include <hal/imu.h>
 
-imu::imu(i2c_master * i2c)
+imu::imu(I2cMaster * i2c)
 {
     _i2c = i2c;
     _mpu = new MPU6050(_i2c);

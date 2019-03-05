@@ -1,12 +1,13 @@
 #pragma once
 
 #include <periph/i2c_master.h>
+#include <drv/BMP180.h>
 
 class Barometer
 {
 private:
 
-    I2cMaster * _i2c;
+    BMP180 * _bmp;
 
 public:
 

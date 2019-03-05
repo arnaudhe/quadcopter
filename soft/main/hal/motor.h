@@ -1,12 +1,13 @@
 #pragma once
 
+#include <periph/pulse.h>
+
 class Motor
 {
 
 private:
 
-    int _channel;
-    int _pin;
+    Pulse * _pulse;
 
 public:
 

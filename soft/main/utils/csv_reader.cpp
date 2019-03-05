@@ -15,7 +15,7 @@ std::vector<float> CSVReader::splitRow(std::string line)
 
     while(std::getline(lineStream, cell, ','))
     {
-        vect.push_back(std::stof(cell));
+        // vect.push_back(std::stof(cell));
     }
 
     // This checks for a trailing comma with no data after it.

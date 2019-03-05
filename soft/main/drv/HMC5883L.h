@@ -11,14 +11,14 @@ class HMC5883L
 
     /* Attributes */
 
-    i2c_master * _i2c;      ///< i2c device
+    I2cMaster  * _i2c;      ///< i2c device
     uint8_t      _address;  ///< i2c address
 
   public:
 
     /* Constructors */
 
-    HMC5883L(i2c_master * i2c);
+    HMC5883L(I2cMaster * i2c);
 
     /* Accessors*/
 

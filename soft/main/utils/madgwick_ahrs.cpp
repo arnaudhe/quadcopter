@@ -5,10 +5,10 @@
 #define MADGWICK_AHRS_GAIN                0.1f       // 2 * proportional gain
 
 MadgwickAhrs::MadgwickAhrs(float period):
-    Ahrs(period),
     _q()
 {
-    _beta = MADGWICK_AHRS_GAIN;
+    _period = period;
+    _beta   = MADGWICK_AHRS_GAIN;
 }
 
 Vect MadgwickAhrs::compute_F(Quaternion acc, Quaternion mag, Quaternion B)

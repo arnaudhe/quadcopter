@@ -1,6 +1,6 @@
-#include <drv/mpu6050.h>
-#include <drv/mpu6050_defs.h>
-#include <drv/mpu6050_conf.h>
+#include <drv/MPU6050.h>
+#include <drv/MPU6050_defs.h>
+#include <drv/MPU6050_conf.h>
 
 #define DEG_TO_RAD(a) ((a * 3.1416) / (180.0))
 

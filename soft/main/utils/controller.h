@@ -17,7 +17,7 @@ public:
 private:
 
     float   _period;
-    float   _set_point;
+    float   _target;
     float   _command;
     Mode    _mode;
     Pid   * _pid_speed;

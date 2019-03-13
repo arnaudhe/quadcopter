@@ -17,12 +17,12 @@ $EndDescr
 $Comp
 L quadcopter:ESP-WROOM-32-board U2
 U 1 1 5C8407DB
-P 3200 1900
-F 0 "U2" H 3450 2600 60  0000 C CNN
-F 1 "ESP-WROOM-32-board" H 3950 300 60  0000 C CNN
-F 2 "quadcopter:ESP32-VROOM-board" H 3200 1900 60  0001 C CNN
-F 3 "" H 3200 1900 60  0001 C CNN
-	1    3200 1900
+P 2450 1900
+F 0 "U2" H 2700 2600 60  0000 C CNN
+F 1 "ESP-WROOM-32-board" H 3200 300 60  0000 C CNN
+F 2 "quadcopter:ESP32-VROOM-board" H 2450 1900 60  0001 C CNN
+F 3 "" H 2450 1900 60  0001 C CNN
+	1    2450 1900
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -31,7 +31,7 @@ U 1 1 5C840820
 P 7650 5700
 F 0 "K1" H 7550 5950 60  0000 C CNN
 F 1 "BATTERY" H 7700 5450 60  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7600 5700 60  0001 C CNN
+F 2 "quadcopter:battery-connector" H 7600 5700 60  0001 C CNN
 F 3 "" H 7600 5700 60  0001 C CNN
 	1    7650 5700
 	1    0    0    -1  
@@ -53,7 +53,7 @@ U 1 1 5C8408C5
 P 1400 4800
 F 0 "J1" H 1350 5100 60  0000 C CNN
 F 1 "CONN-MOTOR" H 1650 4500 60  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1350 4700 60  0001 C CNN
+F 2 "quadcopter:motor-connector" H 1350 4700 60  0001 C CNN
 F 3 "" H 1350 4700 60  0001 C CNN
 	1    1400 4800
 	-1   0    0    -1  
@@ -64,7 +64,7 @@ U 1 1 5C84090F
 P 1400 5600
 F 0 "J2" H 1350 5900 60  0000 C CNN
 F 1 "CONN-MOTOR" H 1650 5300 60  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1350 5500 60  0001 C CNN
+F 2 "quadcopter:motor-connector" H 1350 5500 60  0001 C CNN
 F 3 "" H 1350 5500 60  0001 C CNN
 	1    1400 5600
 	-1   0    0    -1  
@@ -75,7 +75,7 @@ U 1 1 5C84094E
 P 1400 6350
 F 0 "J3" H 1350 6650 60  0000 C CNN
 F 1 "CONN-MOTOR" H 1650 6050 60  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1350 6250 60  0001 C CNN
+F 2 "quadcopter:motor-connector" H 1350 6250 60  0001 C CNN
 F 3 "" H 1350 6250 60  0001 C CNN
 	1    1400 6350
 	-1   0    0    -1  
@@ -86,7 +86,7 @@ U 1 1 5C84098A
 P 1400 7150
 F 0 "J4" H 1350 7450 60  0000 C CNN
 F 1 "CONN-MOTOR" H 1650 6850 60  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1350 7050 60  0001 C CNN
+F 2 "quadcopter:motor-connector" H 1350 7050 60  0001 C CNN
 F 3 "" H 1350 7050 60  0001 C CNN
 	1    1400 7150
 	-1   0    0    -1  
@@ -138,12 +138,12 @@ $EndComp
 $Comp
 L power:+3.3V #PWR08
 U 1 1 5C84130A
-P 3100 1100
-F 0 "#PWR08" H 3100 950 50  0001 C CNN
-F 1 "+3.3V" H 3100 1240 50  0000 C CNN
-F 2 "" H 3100 1100 50  0001 C CNN
-F 3 "" H 3100 1100 50  0001 C CNN
-	1    3100 1100
+P 2350 1100
+F 0 "#PWR08" H 2350 950 50  0001 C CNN
+F 1 "+3.3V" H 2350 1240 50  0000 C CNN
+F 2 "" H 2350 1100 50  0001 C CNN
+F 3 "" H 2350 1100 50  0001 C CNN
+	1    2350 1100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -178,45 +178,45 @@ SDA
 $Comp
 L power:GND #PWR07
 U 1 1 5C841576
-P 3050 3600
-F 0 "#PWR07" H 3050 3350 50  0001 C CNN
-F 1 "GND" H 3050 3450 50  0000 C CNN
-F 2 "" H 3050 3600 50  0001 C CNN
-F 3 "" H 3050 3600 50  0001 C CNN
-	1    3050 3600
+P 2300 3600
+F 0 "#PWR07" H 2300 3350 50  0001 C CNN
+F 1 "GND" H 2300 3450 50  0000 C CNN
+F 2 "" H 2300 3600 50  0001 C CNN
+F 3 "" H 2300 3600 50  0001 C CNN
+	1    2300 3600
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR09
 U 1 1 5C8416A8
-P 3150 3600
-F 0 "#PWR09" H 3150 3350 50  0001 C CNN
-F 1 "GND" H 3150 3450 50  0000 C CNN
-F 2 "" H 3150 3600 50  0001 C CNN
-F 3 "" H 3150 3600 50  0001 C CNN
-	1    3150 3600
+P 2400 3600
+F 0 "#PWR09" H 2400 3350 50  0001 C CNN
+F 1 "GND" H 2400 3450 50  0000 C CNN
+F 2 "" H 2400 3600 50  0001 C CNN
+F 3 "" H 2400 3600 50  0001 C CNN
+	1    2400 3600
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR010
 U 1 1 5C8416E8
-P 3250 3600
-F 0 "#PWR010" H 3250 3350 50  0001 C CNN
-F 1 "GND" H 3250 3450 50  0000 C CNN
-F 2 "" H 3250 3600 50  0001 C CNN
-F 3 "" H 3250 3600 50  0001 C CNN
-	1    3250 3600
+P 2500 3600
+F 0 "#PWR010" H 2500 3350 50  0001 C CNN
+F 1 "GND" H 2500 3450 50  0000 C CNN
+F 2 "" H 2500 3600 50  0001 C CNN
+F 3 "" H 2500 3600 50  0001 C CNN
+	1    2500 3600
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR012
 U 1 1 5C841728
-P 3350 3600
-F 0 "#PWR012" H 3350 3350 50  0001 C CNN
-F 1 "GND" H 3350 3450 50  0000 C CNN
-F 2 "" H 3350 3600 50  0001 C CNN
-F 3 "" H 3350 3600 50  0001 C CNN
-	1    3350 3600
+P 2600 3600
+F 0 "#PWR012" H 2600 3350 50  0001 C CNN
+F 1 "GND" H 2600 3450 50  0000 C CNN
+F 2 "" H 2600 3600 50  0001 C CNN
+F 3 "" H 2600 3600 50  0001 C CNN
+	1    2600 3600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -472,12 +472,12 @@ $EndComp
 $Comp
 L power:+5V #PWR011
 U 1 1 5C84441E
-P 3300 1100
-F 0 "#PWR011" H 3300 950 50  0001 C CNN
-F 1 "+5V" H 3300 1240 50  0000 C CNN
-F 2 "" H 3300 1100 50  0001 C CNN
-F 3 "" H 3300 1100 50  0001 C CNN
-	1    3300 1100
+P 2550 1100
+F 0 "#PWR011" H 2550 950 50  0001 C CNN
+F 1 "+5V" H 2550 1240 50  0000 C CNN
+F 2 "" H 2550 1100 50  0001 C CNN
+F 3 "" H 2550 1100 50  0001 C CNN
+	1    2550 1100
 	1    0    0    -1  
 $EndComp
 NoConn ~ 6200 1400
@@ -509,7 +509,7 @@ U 1 1 5C844F89
 P 5200 5700
 F 0 "C1" H 5225 5800 50  0000 L CNN
 F 1 "22u" H 5225 5600 50  0000 L CNN
-F 2 "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm" H 5238 5550 50  0001 C CNN
+F 2 "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm" H 5238 5550 50  0001 C CNN
 F 3 "" H 5200 5700 50  0001 C CNN
 	1    5200 5700
 	1    0    0    -1  
@@ -563,16 +563,6 @@ Text Notes 800  4300 0    55   ~ 0
 MOTORS CONTROL
 Text Notes 800  850  0    55   ~ 0
 ESP32
-Text GLabel 3700 2850 2    55   Input ~ 0
-TDO
-Text GLabel 2700 2700 0    55   Output ~ 0
-TDI
-Text GLabel 2700 2800 0    55   Input ~ 0
-TCK
-Text GLabel 2700 2600 0    55   Input ~ 0
-TMS
-Text GLabel 2700 1600 0    55   Input ~ 0
-~TRST
 $Comp
 L quadcopter-rescue:R R6
 U 1 1 5C84E7A1
@@ -597,111 +587,43 @@ F 3 "" H 6800 5500 50  0001 C CNN
 $EndComp
 Text GLabel 6750 5700 0    55   Output ~ 0
 MEAS_BATT
-Text GLabel 2700 2000 0    55   Input ~ 0
+Text GLabel 1950 2000 0    55   Input ~ 0
 ~SI4432_IRQ
-NoConn ~ 2700 2900
-NoConn ~ 2700 3000
-NoConn ~ 2700 3100
-NoConn ~ 3700 2950
-NoConn ~ 3700 3050
-NoConn ~ 3700 3150
-NoConn ~ 2050 2450
-Text GLabel 2050 2750 2    55   Output ~ 0
-TCK
-Text GLabel 2050 2850 2    55   Output ~ 0
-TMS
-Text GLabel 2050 3050 2    55   Input ~ 0
-TDI
-Text GLabel 2050 2950 2    55   Output ~ 0
-TDO
-$Comp
-L power:GND #PWR02
-U 1 1 5C84A629
-P 1350 3650
-F 0 "#PWR02" H 1350 3400 50  0001 C CNN
-F 1 "GND" H 1350 3500 50  0000 C CNN
-F 2 "" H 1350 3650 50  0001 C CNN
-F 3 "" H 1350 3650 50  0001 C CNN
-	1    1350 3650
-	1    0    0    -1  
-$EndComp
-NoConn ~ 2050 3250
-NoConn ~ 2050 3350
-$Comp
-L power:GND #PWR03
-U 1 1 5C84B29C
-P 2350 3500
-F 0 "#PWR03" H 2350 3250 50  0001 C CNN
-F 1 "GND" H 2350 3350 50  0000 C CNN
-F 2 "" H 2350 3500 50  0001 C CNN
-F 3 "" H 2350 3500 50  0001 C CNN
-	1    2350 3500
-	1    0    0    -1  
-$EndComp
-Text GLabel 2050 2350 2    55   Output ~ 0
-~TRST
-$Comp
-L quadcopter-rescue:Conn_ARM_JTAG_SWD_20 J5
-U 1 1 5C849D37
-P 1450 2850
-F 0 "J5" H 1250 3700 50  0000 R CNN
-F 1 "Conn_ARM_JTAG_SWD_20" H 1250 3600 50  0000 R BNN
-F 2 "Connector_IDC:IDC-Header_2x10_P2.54mm_Horizontal" H 1900 1800 50  0001 L TNN
-F 3 "" V 1100 1600 50  0001 C CNN
-	1    1450 2850
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3.3V #PWR01
-U 1 1 5C84A9B8
-P 1350 1350
-F 0 "#PWR01" H 1350 1200 50  0001 C CNN
-F 1 "+3.3V" H 1350 1490 50  0000 C CNN
-F 2 "" H 1350 1350 50  0001 C CNN
-F 3 "" H 1350 1350 50  0001 C CNN
-	1    1350 1350
-	1    0    0    -1  
-$EndComp
-$Comp
-L quadcopter-rescue:Jumper JP1
-U 1 1 5C84A221
-P 1450 1750
-F 0 "JP1" H 1450 1900 50  0000 C CNN
-F 1 "Jumper" H 1450 1670 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 1450 1750 50  0001 C CNN
-F 3 "" H 1450 1750 50  0001 C CNN
-	1    1450 1750
-	0    1    1    0   
-$EndComp
-Text GLabel 3700 2050 2    55   Output ~ 0
+NoConn ~ 1950 2900
+NoConn ~ 1950 3000
+NoConn ~ 1950 3100
+NoConn ~ 2950 2950
+NoConn ~ 2950 3050
+NoConn ~ 2950 3150
+Text GLabel 2950 2050 2    55   Output ~ 0
 SCL
-Text GLabel 3700 2150 2    55   BiDi ~ 0
+Text GLabel 2950 2150 2    55   BiDi ~ 0
 SDA
-Text GLabel 2700 2300 0    55   Output ~ 0
+Text GLabel 1950 2300 0    55   Output ~ 0
 SCK
-Text GLabel 2700 2400 0    55   Input ~ 0
+Text GLabel 1950 2400 0    55   Input ~ 0
 SDO
-Text GLabel 2700 2500 0    55   Output ~ 0
+Text GLabel 1950 2500 0    55   Output ~ 0
 SDI
-Text GLabel 2700 2100 0    55   Output ~ 0
+Text GLabel 1950 2100 0    55   Output ~ 0
 ~SI4432_SEL
-Text GLabel 3700 2250 2    55   Input ~ 0
+Text GLabel 2950 2250 2    55   Input ~ 0
 HC-SR04_ECHO
-Text GLabel 3700 2350 2    55   Output ~ 0
+Text GLabel 2950 2350 2    55   Output ~ 0
 GIMBAL_RX
-Text GLabel 3700 2450 2    55   Input ~ 0
+Text GLabel 2950 2450 2    55   Input ~ 0
 GIMBAL_TX
-Text GLabel 3700 2550 2    55   Output ~ 0
+Text GLabel 2950 2550 2    55   Output ~ 0
 HC-SR04_TRIG
-NoConn ~ 3700 1850
-NoConn ~ 3700 1750
-Text GLabel 3700 1550 2    55   Output ~ 0
+NoConn ~ 2950 1850
+NoConn ~ 2950 1750
+Text GLabel 2950 1550 2    55   Output ~ 0
 GPS_RX
-Text GLabel 3700 1650 2    55   Input ~ 0
+Text GLabel 2950 1650 2    55   Input ~ 0
 GPS_TX
-Text GLabel 3700 1950 2    55   Output ~ 0
+Text GLabel 2950 1950 2    55   Output ~ 0
 ESC_CMD2
-Text GLabel 3700 2650 2    55   Output ~ 0
+Text GLabel 2950 2650 2    55   Output ~ 0
 ESC_CMD3
 $Comp
 L power:GND #PWR016
@@ -747,11 +669,11 @@ F 3 "" H 10250 6000 50  0001 C CNN
 	1    10250 6000
 	1    0    0    -1  
 $EndComp
-Text GLabel 3700 2750 2    55   Output ~ 0
+Text GLabel 2950 2750 2    55   Output ~ 0
 ESC_CMD1
-Text GLabel 2700 2200 0    55   Output ~ 0
+Text GLabel 1950 2200 0    55   Output ~ 0
 ESC_CMD4
-Text GLabel 2700 1900 0    55   Input ~ 0
+Text GLabel 1950 1900 0    55   Input ~ 0
 MEAS_BATT
 $Comp
 L quadcopter-rescue:R R2
@@ -788,7 +710,7 @@ F 3 "" H 6000 3400 50  0001 C CNN
 $EndComp
 Text GLabel 5700 3250 0    55   Output ~ 0
 SI4432_GPIO
-Text GLabel 2700 1700 0    55   Input ~ 0
+Text GLabel 1950 1700 0    55   Input ~ 0
 SI4432_GPIO
 $Comp
 L quadcopter-rescue:R R1
@@ -987,15 +909,6 @@ Wire Wire Line
 	6800 6100 6800 6050
 Connection ~ 6800 6100
 Wire Wire Line
-	2050 2650 2350 2650
-Wire Wire Line
-	2350 2650 2350 3500
-Connection ~ 1350 1450
-Wire Wire Line
-	1350 1350 1350 1450
-Wire Wire Line
-	1350 1450 1450 1450
-Wire Wire Line
 	9950 5500 9750 5500
 Wire Wire Line
 	9750 5900 9850 5900
@@ -1036,7 +949,7 @@ Wire Wire Line
 Wire Wire Line
 	9350 1650 9350 1600
 Connection ~ 9350 1600
-NoConn ~ 2700 1800
+NoConn ~ 1950 1800
 Wire Wire Line
 	9750 1950 9750 2000
 Wire Wire Line
@@ -1061,8 +974,6 @@ Wire Wire Line
 	6800 5350 7050 5350
 Wire Wire Line
 	6800 6100 7050 6100
-Wire Wire Line
-	1350 1450 1350 2050
 Wire Wire Line
 	5750 3250 5750 3400
 Wire Wire Line
@@ -1136,4 +1047,9 @@ Wire Notes Line
 	4500 6400 8050 6400
 Wire Notes Line
 	8050 5050 8050 6400
+NoConn ~ 1950 2600
+NoConn ~ 1950 2700
+NoConn ~ 1950 2800
+NoConn ~ 2950 2850
+NoConn ~ 1950 1600
 $EndSCHEMATC

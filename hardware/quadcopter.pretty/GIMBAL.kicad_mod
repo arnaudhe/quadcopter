@@ -1,5 +1,5 @@
 (module GIMBAL (layer F.Cu) (tedit 5C86DCDE)
-  (fp_text reference REF** (at 5.08 3.81) (layer F.SilkS)
+  (fp_text reference J6 (at 5.08 3.81) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (fp_text value GIMBAL (at -5.08 3.81) (layer F.Fab)

@@ -1,4 +1,5 @@
 #include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
 #include <esp_event.h>
@@ -9,6 +10,7 @@
 #include <math.h>
 
 #include <driver/gpio.h>
+#include <periph/uart.h>
 
 #include <wifi_credentials.h>
 #include <app/attitude_controller.h>
@@ -16,6 +18,27 @@
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {
     return ESP_OK;
+}
+
+static void echo_task(void *)
+{
+    Uart * uart1 = new Uart(UART_NUM_1);
+    Uart * uart2 = new Uart(UART_NUM_2);
+
+    uart1->init();
+    uart2->init();
+
+    uart2->write((uint8_t *)"Hello world", 12);
+
+    // Configure a temporary buffer for the incoming data
+    uint8_t *data = (uint8_t *) malloc(1024);
+
+    while (1) {
+        // Read data from the UART
+        int len = uart2->read(data, 1024, 10);
+        // Write data back to the UART
+        uart2->write(data, len);
+    }
 }
 
 extern "C" void app_main(void)
@@ -49,6 +72,8 @@ extern "C" void app_main(void)
     controller->set_roll_target(Controller::Mode::POSITION, 0.0);
     controller->set_pitch_target(Controller::Mode::POSITION, 0.0);
     controller->set_yaw_target(Controller::Mode::SPEED, 0.5);
+
+    xTaskCreate(echo_task, "uart_echo_task", 1024, NULL, 10, NULL);
 
     while (true)
     {

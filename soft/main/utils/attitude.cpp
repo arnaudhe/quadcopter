@@ -18,6 +18,9 @@ Attitude::Attitude(float period)
     _pitch_speed = 0.0f;
     _yaw         = 0.0f;
     _yaw_speed   = 0.0f;
+
+    _i2c->init();
+    _marg->init();
 }
 
 void Attitude::update(void)

@@ -27,6 +27,11 @@ class Matrix
     Matrix row(unsigned int row);
     Matrix columns(unsigned int column);
     Matrix transpose(void);
+    Matrix invert(void);
+    Matrix minor(int i);
+    Matrix cofactor(int row, int column);
+  
+    float determinate(void);
 
     void display(string name);
 
@@ -38,5 +43,7 @@ class Matrix
     Matrix operator-(float);
     Matrix operator*(float);
     Matrix operator/(float);
+
+    static Matrix identity(int n);
 
 };

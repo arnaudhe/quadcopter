@@ -1,6 +1,7 @@
 #include <utils/matrix.h>
 #include <iostream>
 #include <iomanip>
+#include <math.h>
 
 Matrix::Matrix(unsigned int rows, unsigned int columns, double initial)
 {
@@ -182,6 +183,116 @@ Matrix Matrix::transpose()
     return transp;
 }
 
+Matrix Matrix::invert()
+{
+    int i, j;
+    int n = _rows;
+
+    Matrix invert(_rows, _columns);
+
+    for (i = 0; i < n; i++)
+    {
+		for (j = 0; j < n; j++)
+        {
+            invert.set(i, j, (((i + j) % 2) ? -1.0 : 1.0) * cofactor(i, j).determinate());
+        }
+    }
+
+    return invert / determinate();
+}
+
+Matrix Matrix::minor(int i)
+{
+	int j, l, h = 0, k = 0;
+
+    if (_rows != _columns)
+    {
+        return Matrix(0, 0);
+    }
+
+    Matrix minor(_rows - 1, _columns - 1);
+
+	for (l = 1; l < _rows; l++)
+    {
+		for (j = 0; j < _rows; j++)
+        {
+			if (j != i)
+            {
+                minor.set(h, k, _data[l][j]);
+                k++;
+                if (k == (_rows - 1))
+                {
+                    h++;
+                    k = 0;
+                }
+            }
+		}
+    }
+
+    return minor;
+}
+
+Matrix Matrix::cofactor(int row, int column)
+{
+	int m, k, i, j;
+    int n = _rows;
+
+    Matrix cofactor(_rows - 1, _rows - 1);
+
+    m = 0;
+    k = 0;
+
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            if ((i != row) && (j != column))
+            {
+                cofactor.set(m, k, _data[i][j]);
+                if (k < (n - 2))
+                {
+                    k++;
+                }
+                else
+                {
+                    k = 0;
+                    m++;
+                }
+            }
+        }
+    }
+
+    return cofactor;
+}
+
+float Matrix::determinate(void)
+{
+    int   i;
+    float sum = 0.0;
+
+    if (_rows != _columns)
+    {
+        return 0;
+    }
+
+    if (_rows == 1)
+    {
+        return _data[0][0];
+    }
+    else if (_rows == 2)
+    {
+        return (_data[0][0] * _data[1][1] - _data[0][1] * _data[1][0]);
+    }
+    else
+    {
+        for (i = 0; i < _rows; i++)
+        {
+			sum += _data[0][i] * ((i % 2) ? -1.0 : 1.0) * minor(i).determinate();
+		}
+        return sum;
+    }
+}
+
 void Matrix::display(string name)
 {
     int i, j;
@@ -197,4 +308,17 @@ void Matrix::display(string name)
         }
         std::cout << std::endl;
     }
+}
+
+Matrix Matrix::identity(int n)
+{
+    int i;
+    Matrix I(n, n);
+
+    for (i = 0; i < n; i++)
+    {
+        I.set(i, i, 1.0);
+    }
+
+    return I;
 }

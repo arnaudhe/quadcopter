@@ -1,20 +1,9 @@
 #include <utils/height_observer.h>
-#include <math.h>
+#include <utils/height_observer_conf.h>
 
-#define HEIGHT_OBSERVER_GAIN      0.01f
-
-HeightObserver::HeightObserver(float period) :
-    _state(2, 1),
-    _state_matrix(2, 2),
-    _input_matrix(2, 1),
-    _output_matrix(1, 2),
-    _gain_matrix(2, 1)
+HeightObserver::HeightObserver(float period):
+    Kalman(period, 2, 1, 2)
 {
-    _period         = period;
-    _gain           = HEIGHT_OBSERVER_GAIN;
-    _height         = 0.0f;
-    _vertical_speed = 0.0f;
-
     _state_matrix.set(0, 0, 1.0);
     _state_matrix.set(0, 1, period);
     _state_matrix.set(1, 0, 0.0);
@@ -26,16 +15,22 @@ HeightObserver::HeightObserver(float period) :
     _output_matrix.set(0, 0, 1.0);
     _output_matrix.set(0, 1, 0.0);
 
-    _gain_matrix.set(0, 0, HEIGHT_OBSERVER_GAIN);
-    _gain_matrix.set(1, 0, period);
+    _process_noise_matrix.set(0, 0, HEIGHT_OBSERVER_STATE_HEIGHT_COVARIANCE);
+    _process_noise_matrix.set(1, 1, HEIGHT_OBSERVER_STATE_SPEED_COVARIANCE);
 
-    _state.display("state");
-
+    _measure_noise_matrix.set(0, 0, HEIGHT_OBSERVER_SENSOR_BAROMETER_COVARIANCE);
+    _measure_noise_matrix.set(1, 1, HEIGHT_OBSERVER_SENSOR_ULTRASOUND_COVARIANCE);
 }
 
-void HeightObserver::update(float acc_z, float baro)
+void HeightObserver::update(float acc_z, float baro, float ultrasound)
 {
-    _state = (_state_matrix - (_gain_matrix * _output_matrix)) * _state + _input_matrix * acc_z + _gain_matrix * baro;
+    Matrix input(1, 1, acc_z);
+    Matrix output(2, 1);
+
+    output.set(0, 0, baro);
+    output.set(1, 0, ultrasound);
+
+    Kalman::update(input, output);
 }
 
 float HeightObserver::height(void)

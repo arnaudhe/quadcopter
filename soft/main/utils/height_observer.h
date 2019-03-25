@@ -1,27 +1,16 @@
 #pragma once
 
 #include <utils/matrix.h>
+#include <utils/kalman.h>
 
 using namespace std;
 
-class HeightObserver
+class HeightObserver : public Kalman
 {
 
   private: 
 
     /* Attributes */
-
-    float _period;
-    float _gain;     ///< observer gain
-
-    float _height;
-    float _vertical_speed;
-
-    Matrix _state;
-    Matrix _state_matrix;
-    Matrix _input_matrix;
-    Matrix _output_matrix;
-    Matrix _gain_matrix;
 
     /* Methods */
 
@@ -31,13 +20,13 @@ class HeightObserver
 
     HeightObserver(float period);
 
-    /* Accessors*/
+    /* Accessors */
 
     float height(void);
     float vertical_speed(void);
 
     /* Other methods */
 
-    void update(float acc_z, float baro);
+    void update(float acc_z, float baro, float ultrasound);
 
 };

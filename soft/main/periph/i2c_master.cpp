@@ -68,7 +68,7 @@ esp_err_t I2cMaster::_read(uint8_t address, uint8_t * data, uint8_t data_len)
     return ret;
 }
 
-esp_err_t I2cMaster::read_register(uint8_t address, uint8_t reg, uint8_t * value)
+esp_err_t I2cMaster::read(uint8_t address, uint8_t reg, uint8_t * value, uint8_t len)
 {
     esp_err_t ret;
 
@@ -84,6 +84,11 @@ esp_err_t I2cMaster::read_register(uint8_t address, uint8_t reg, uint8_t * value
     return ret;
 }
 
+esp_err_t I2cMaster::read_register(uint8_t address, uint8_t reg, uint8_t * value)
+{
+    return read(address, reg, value, 1);
+}
+
 esp_err_t I2cMaster::write_register(uint8_t address, uint8_t reg, uint8_t value)
 {
     uint8_t buffer[2] = {reg, value};
@@ -91,7 +96,7 @@ esp_err_t I2cMaster::write_register(uint8_t address, uint8_t reg, uint8_t value)
     return _write(address, buffer, 2);
 }
 
-esp_err_t I2cMaster::write_register_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool value)
+esp_err_t I2cMaster::write_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool value)
 {
     uint8_t   b;
     esp_err_t ret;
@@ -109,7 +114,7 @@ esp_err_t I2cMaster::write_register_bit(uint8_t address, uint8_t reg, uint8_t bi
     }
 }
 
-esp_err_t I2cMaster::read_register_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool * value)
+esp_err_t I2cMaster::read_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool * value)
 {
     uint8_t   b;
     esp_err_t ret;
@@ -122,6 +127,25 @@ esp_err_t I2cMaster::read_register_bit(uint8_t address, uint8_t reg, uint8_t bit
     }
     
     return ret;
+}
+
+esp_err_t I2cMaster::read_int(uint8_t address, uint8_t reg, int16_t * value)
+{
+    uint8_t     data[2];
+    esp_err_t   ret;
+
+    ret = read(address, reg, data, 2);
+    if (ret == ESP_OK)
+    {
+        *value = (data[0] << 8) + data[1];
+    }
+
+    return ret;
+}
+
+esp_err_t I2cMaster::read_uint(uint8_t address, uint8_t reg, uint16_t * value)
+{
+    return read_int(address, reg, (int16_t *)value);
 }
 
 

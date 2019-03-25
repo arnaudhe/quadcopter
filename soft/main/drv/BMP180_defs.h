@@ -1,5 +1,7 @@
 #pragma once                      
 
+#include <stdint.h>
+
 /***************************************************************/
 /* 	I2C ADDRESS DEFINITION OF BMP180                           */
 /***************************************************************/
@@ -121,38 +123,17 @@
 
 struct bmp180_calib_param_t 
 {
-	s16 ac1;   		//< calibration ac1 data
-	s16 ac2;   		//< calibration ac2 data
-	s16 ac3;   		//< calibration ac3 data
-	u16 ac4;   		//< calibration ac4 data
-	u16 ac5;   		//< calibration ac5 data
-	u16 ac6;   		//< calibration ac6 data
-	s16 b1;    		//< calibration b1 data
-	s16 b2;    		//< calibration b2 data
-	s16 mb;    		//< calibration mb data
-	s16 mc;    		//< calibration mc data
-	s16 md;    		//< calibration md data
-};
-
-
-struct bmp180_t 
-{
-	struct bmp180_calib_param_t calib_param;	 //< calibration data
-	u8 mode;                                     //< power mode
-	u8 chip_id;                                  //< chip id
-	u8 ml_version;                               //< ml version
-	u8 al_version;                               //< al version
-	u8 dev_addr;                                 //< device address
-	u8 sensortype;                               //<  sensor type
-
-	s32 param_b5;                                //< pram
-	s32 number_of_samples;                       //< sample calculation
-	s16 oversamp_setting;                        //< oversampling setting
-	s16 sw_oversamp;                             //< software oversampling
-
-	BMP180_WR_FUNC_PTR;                          //<  bus write function pointer
-	BMP180_RD_FUNC_PTR;                          //<  bus read function pointer
-	void (*delay_msec)(BMP180_MDELAY_DATA_TYPE); //<  delay function pointer
+	int16_t ac1;   		//< calibration ac1 data
+	int16_t ac2;   		//< calibration ac2 data
+	int16_t ac3;   		//< calibration ac3 data
+	uint16_t ac4;   	//< calibration ac4 data
+	uint16_t ac5;   	//< calibration ac5 data
+	uint16_t ac6;   	//< calibration ac6 data
+	int16_t b1;    		//< calibration b1 data
+	int16_t b2;    		//< calibration b2 data
+	int16_t mb;    		//< calibration mb data
+	int16_t mc;    		//< calibration mc data
+	int16_t md;    		//< calibration md data
 };
 
 /**************************************************************/

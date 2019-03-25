@@ -20,7 +20,7 @@ esp_err_t MPU6050::init(void)
     {
         vTaskDelay(MPU6050_WAKEUP_DELAY_ms / portTICK_PERIOD_MS);
         
-        ret = _i2c->write_register_bit(_address, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false);
+        ret = _i2c->write_bit(_address, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false);
 
         if (ret == ESP_OK)
         {
@@ -86,10 +86,10 @@ esp_err_t MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
 
 esp_err_t MPU6050::set_i2c_master_mode_enabled(bool enabled) 
 {
-    return _i2c->write_register_bit(_address, MPU6050_RA_USER_CTRL, MPU6050_USERCTRL_I2C_MST_EN_BIT, enabled);
+    return _i2c->write_bit(_address, MPU6050_RA_USER_CTRL, MPU6050_USERCTRL_I2C_MST_EN_BIT, enabled);
 }
 
 esp_err_t MPU6050::set_i2c_bypass_enabled(bool enabled) 
 {
-    return _i2c->write_register_bit(_address, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_I2C_BYPASS_EN_BIT, enabled);
+    return _i2c->write_bit(_address, MPU6050_RA_INT_PIN_CFG, MPU6050_INTCFG_I2C_BYPASS_EN_BIT, enabled);
 }

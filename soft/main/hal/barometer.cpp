@@ -8,5 +8,5 @@ Barometer::Barometer(I2cMaster * i2c)
 
 void Barometer::read(float * baro)
 {
-    _bmp->read(baro);
+    _bmp->get_pressure(baro);
 }

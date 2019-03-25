@@ -38,7 +38,7 @@ void Attitude::update(void)
 
     _ahrs->update(gx, gy, gz, ax, ay, az, mx, my, mz);
     _ahrs->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
-    _height->update(az_r, baro);
+    _height->update(az_r, baro, 0.0);
 
     _roll_speed  = (_ahrs->roll()  - _roll)  / _period;
     _pitch_speed = (_ahrs->pitch() - _pitch) / _period;

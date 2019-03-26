@@ -13,7 +13,7 @@
 #include <periph/uart.h>
 
 #include <wifi_credentials.h>
-#include <app/attitude_controller.h>
+#include <app/controllers/attitude_controller.h>
 
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {

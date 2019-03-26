@@ -13,6 +13,6 @@ public:
 
     Barometer(I2cMaster * i2c);
 
-    void read(float * baro);
+    void read(double &baro);
 
 };

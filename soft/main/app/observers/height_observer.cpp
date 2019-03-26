@@ -1,5 +1,5 @@
-#include <utils/height_observer.h>
-#include <utils/height_observer_conf.h>
+#include <app/observers/height_observer.h>
+#include <app/observers/height_observer_conf.h>
 
 HeightObserver::HeightObserver(float period):
     Kalman(period, 2, 1, 2)

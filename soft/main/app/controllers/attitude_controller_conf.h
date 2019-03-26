@@ -1,5 +1,6 @@
-#ifndef ATTITUDE_CONTROLLER_CONFIG_H
-#define ATTITUDE_CONTROLLER_CONFIG_H
+#pragma once
+
+#define I2C_MASTER_NUM      I2C_NUM_1         /*!< I2C port number for master dev */
 
 #define ATTITUDE_PID_ROLL_KP                        (0)
 #define ATTITUDE_PID_ROLL_KI                        (0)
@@ -32,5 +33,3 @@
 
 #define ATTITUDE_MOTOR_REAR_RIGHT_PULSE_CHANNEL     (3)
 #define ATTITUDE_MOTOR_REAR_RIGHT_PULSE_PIN         (0)
-
-#endif

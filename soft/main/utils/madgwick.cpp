@@ -1,17 +1,15 @@
-#include <utils/madgwick_ahrs.h>
+#include <utils/madgwick.h>
 #include <math.h>
 #include <iostream>
 
-#define MADGWICK_AHRS_GAIN                0.1f       // 2 * proportional gain
-
-MadgwickAhrs::MadgwickAhrs(float period):
+Madgwick::Madgwick(float period, float gain):
     _q()
 {
     _period = period;
-    _beta   = MADGWICK_AHRS_GAIN;
+    _beta   = gain;
 }
 
-Vect MadgwickAhrs::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
+Vect Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
 {
     Vect F = Vect(6);
 
@@ -25,7 +23,7 @@ Vect MadgwickAhrs::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
     return F;
 }
 
-Matrix MadgwickAhrs::compute_J(Quaternion B)
+Matrix Madgwick::compute_J(Quaternion B)
 {
     Matrix J = Matrix(6, 4);
 
@@ -62,7 +60,7 @@ Matrix MadgwickAhrs::compute_J(Quaternion B)
     return J;
 }
 
-void MadgwickAhrs::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
+void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
 {
     Quaternion gyr = Quaternion(0.0f, gx, gy, gz);
     Quaternion acc = Quaternion(0.0f, ax, ay, az);
@@ -90,22 +88,22 @@ void MadgwickAhrs::update(float gx, float gy, float gz, float ax, float ay, floa
     }
 }
 
-float MadgwickAhrs::roll(void)
+float Madgwick::roll(void)
 {
     return _q.roll();
 }
 
-float MadgwickAhrs::pitch(void)
+float Madgwick::pitch(void)
 {
     return _q.pitch();
 }
 
-float MadgwickAhrs::yaw(void)
+float Madgwick::yaw(void)
 {
     return _q.yaw();
 }
 
-void MadgwickAhrs::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
+void Madgwick::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
 {
     Vect v = Vect(3);
 
@@ -120,7 +118,7 @@ void MadgwickAhrs::rotate(float x, float y, float z, float * x_r, float * y_r, f
     *z_r = v_r(2);
 }
 
-MadgwickAhrs::~MadgwickAhrs()
+Madgwick::~Madgwick()
 {
     return;
 }

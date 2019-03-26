@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class MadgwickAhrs
+class Madgwick
 {
   
   private: 
@@ -25,8 +25,8 @@ class MadgwickAhrs
 
     /* Constructors */
 
-    MadgwickAhrs(float period);
-    ~MadgwickAhrs();
+    Madgwick(float period, float gain);
+    ~Madgwick();
 
     /* Accessors*/
 

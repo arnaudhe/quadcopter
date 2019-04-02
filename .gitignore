@@ -1,3 +1,16 @@
+# Matlab temp files
 matlab/*.m~
+
+# soft builds
 soft/build
+
+# soft wifi_credentials
 soft/main/wifi_credentials.h
+
+# FreeCAD temp files
+meca/CAD/*.FCStd1
+meca/CAD/*.fcstd1
+
+# Hardware PCB gerbers
+hardware/gerber
+hardware/quadcopter.xml

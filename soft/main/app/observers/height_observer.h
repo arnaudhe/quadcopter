@@ -12,6 +12,8 @@ class HeightObserver : public Kalman
 
     /* Attributes */
 
+    int _zero_velocity_detect_count;
+
     /* Methods */
 
   public:

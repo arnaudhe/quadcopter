@@ -110,6 +110,25 @@ Matrix Matrix::operator*(Matrix B)
     }
 }
 
+// Multiplication member-to-member of Two Matrices
+Matrix Matrix::operator%(Matrix B)
+{
+    Matrix multip(_rows, _columns, 0.0);
+
+    if ((_rows == B.rows()) && (_columns == B.columns()))
+    {
+        unsigned i, j;
+        for (i = 0; i < _rows; i++)
+        {
+            for (j = 0; j < _columns; j++)
+            {
+                multip.set(i, j, _data[i][j] * B(i, j));
+            }
+        }
+    }
+    
+    return multip;
+}
 
 // Scalar Addition
 Matrix Matrix::operator+(float scalar)

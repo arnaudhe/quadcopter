@@ -46,7 +46,7 @@ extern "C" void app_main(void)
 
     while (true)
     {
-        vTaskDelay(6 / portTICK_PERIOD_MS);
+        vTaskDelay(2 / portTICK_PERIOD_MS);
         controller->update();
     }
 }

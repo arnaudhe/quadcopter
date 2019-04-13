@@ -86,7 +86,7 @@ void AttitudeController::update(void)
 
     _euler_observer->update(gx, gy, gz, ax, ay, az, mx, my, mz);
     _euler_observer->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
-    _height_observer->update(-az_r + 1.0f, _barometer, ultrasound);
+    _height_observer->update(az_r - 0.97f, _barometer, ultrasound);
 
     _roll_speed   = (_euler_observer->roll()  - roll)  / _period;
     _pitch_speed  = (_euler_observer->pitch() - pitch) / _period;
@@ -95,7 +95,7 @@ void AttitudeController::update(void)
 
     // printf("%f\n", ultrasound);
     // printf("%f\n", _barometer);
-    printf("%f\n", _height_observer->height());
+    printf("%f;%f;%f;%f\n", az_r - 0.97f, _height_observer->vertical_speed(), _height_observer->height(), ultrasound);
     // printf("%f;%f;%f\n", 180.0 * _euler_observer->roll() / 3.1416, 180.0 * _euler_observer->pitch() / 3.1416, 180.0 * _euler_observer->yaw() / 3.1416);
     // printf("%f;%f;%f\n", ax_r, ay_r, az_r);
 

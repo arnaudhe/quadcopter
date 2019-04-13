@@ -39,6 +39,7 @@ class Matrix
     Matrix operator+(Matrix);
     Matrix operator-(Matrix);
     Matrix operator*(Matrix);
+    Matrix operator%(Matrix);
     Matrix operator+(float);
     Matrix operator-(float);
     Matrix operator*(float);

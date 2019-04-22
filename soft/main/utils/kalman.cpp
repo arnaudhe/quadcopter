@@ -36,7 +36,7 @@ void Kalman::update(Matrix input, Matrix measure)
     Matrix gain = _covariance * _output_matrix.transpose() * innovation_covar.invert();
 
     _state = _state + gain * measure_error;
-    _covariance = (Matrix::identity(_output_matrix.rows()) - gain * _output_matrix) * _covariance;
+    _covariance = (Matrix::identity(_output_matrix.columns()) - gain * _output_matrix) * _covariance;
 }
 
 Matrix Kalman::state(void)

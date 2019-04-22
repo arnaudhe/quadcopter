@@ -14,6 +14,8 @@ HeightObserver::HeightObserver(float period):
 
     _output_matrix.set(0, 0, 1.0);
     _output_matrix.set(0, 1, 0.0);
+    _output_matrix.set(1, 0, 1.0);
+    _output_matrix.set(1, 1, 0.0);
 
     _process_noise_matrix.set(0, 0, HEIGHT_OBSERVER_STATE_HEIGHT_COVARIANCE);
     _process_noise_matrix.set(1, 1, HEIGHT_OBSERVER_STATE_SPEED_COVARIANCE);

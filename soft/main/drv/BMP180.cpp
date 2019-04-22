@@ -2,6 +2,7 @@
 #include <drv/BMP180_defs.h>
 #include <drv/BMP180_conf.h>
 #include <math.h>
+#include <esp_log.h>
 
 BMP180::BMP180(I2cMaster * i2c)
 {
@@ -11,11 +12,29 @@ BMP180::BMP180(I2cMaster * i2c)
 esp_err_t BMP180::init()
 {
     struct bmp180_calib_param_t calib; 
-	double    c3, c4, b1;
-    esp_err_t ret;
+    double    c3, c4, b1;
+    esp_err_t ret = ESP_OK;
+    uint8_t   b;
 
-	/* Retrieve calibration data from device */
-    ret = _i2c->read(BMP180_I2C_ADDR, BMP180_PROM_START__ADDR, (uint8_t *)&calib, BMP180_PROM_DATA__LEN);
+    ret = _i2c->read_register(BMP180_I2C_ADDR, BMP180_CHIP_ID_REG, &b);
+
+    if ((ret != ESP_OK) || (b != 0x55))
+    {
+        ESP_LOGE("BMP180", "Init chip id failed");
+    }
+
+    /* Retrieve calibration data from device */
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC1_MSB, &calib.ac1);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC2_MSB, &calib.ac2);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC3_MSB, &calib.ac3);
+    ret |= _i2c->read_uint(BMP180_I2C_ADDR, BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC4_MSB, &calib.ac4);
+    ret |= _i2c->read_uint(BMP180_I2C_ADDR, BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC5_MSB, &calib.ac5); 
+    ret |= _i2c->read_uint(BMP180_I2C_ADDR, BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_AC6_MSB, &calib.ac6);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_B1_MSB,  &calib.b1);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_B2_MSB,  &calib.b2);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_MB_MSB,  &calib.mb);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_MC_MSB,  &calib.mc);
+    ret |= _i2c->read_int(BMP180_I2C_ADDR,  BMP180_PROM_START__ADDR + BMP180_CALIB_PARAM_MD_MSB,  &calib.md);
 
     if (ret == ESP_OK)
     {
@@ -36,68 +55,101 @@ esp_err_t BMP180::init()
         p0 = (3791.0 - 8.0) / 1600.0;
         p1 = 1.0 - 7357.0 * pow(2,-20);
         p2 = 3038.0 * 100.0 * pow(2,-36);
+
+        ESP_LOGI("BMP180", "Init done");
+    }
+    else
+    {
+        ESP_LOGE("BMP180", "Init failed");
     }
 
     return ret;
 }
 
-esp_err_t BMP180::start_temperature(void)
+void BMP180::start_temperature(void)
 {
-    return _i2c->write_register(BMP180_I2C_ADDR, BMP180_CTRL_MEAS_REG, BMP180_T_MEASURE);
+    esp_err_t ret;
+
+    ret = _i2c->write_register(BMP180_I2C_ADDR, BMP180_CTRL_MEAS_REG, BMP180_T_MEASURE);
+
+    if (ESP_OK != ret)
+    {
+        ESP_LOGE("BMP180", "Failed to start temperature (%s)", esp_err_to_name(ret));
+    }
 }
 
-esp_err_t BMP180::start_pressure(void)
+void BMP180::start_pressure(void)
 {
-    return _i2c->write_register(BMP180_I2C_ADDR, BMP180_CTRL_MEAS_REG, BMP180_P_MEASURE | (BMP180_CONF_OVERSAMPLING << 6));
+    esp_err_t ret;
+
+    ret = _i2c->write_register(BMP180_I2C_ADDR, BMP180_CTRL_MEAS_REG, BMP180_P_MEASURE | (BMP180_CONF_OVERSAMPLING << 6));
+
+    if (ESP_OK != ret)
+    {
+        ESP_LOGE("BMP180", "Failed to start pressure (%s)", esp_err_to_name(ret));
+    }
 }
 
 esp_err_t BMP180::get_temperature(double &T)
 {
-	esp_err_t     ret;
+    esp_err_t     ret = ESP_OK;
+    uint8_t       msb, lsb;
     uint16_t      raw;
-	double        tu, a;
-	
-	ret = _i2c->read_uint(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG, &raw);
+    double        tu, a;
+    
+    ret |= _i2c->read_register(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG, &msb);
+    ret |= _i2c->read_register(BMP180_I2C_ADDR, BMP180_ADC_OUT_LSB_REG, &lsb);
 
-	if (ret == ESP_OK) // good read, calculate temperature
-	{
-		tu = (double)raw;
-		a  = c5 * (tu - c6);
-		T  = a + (mc / (a + md));
-        _temperature = T;
-	}
+    raw = (msb << 8) + lsb;
 
-	return ret;
+    if (ret == ESP_OK) // good read, calculate temperature
+    {
+        tu = (double)raw;
+        a  = c5 * (tu - c6);
+        T = a + (mc / (a + md));
+    }
+    else
+    {
+        ESP_LOGE("BMP180", "Failed to read temperature (%s)", esp_err_to_name(ret));
+    }
+
+    return ret;
 }
 
-esp_err_t BMP180::get_pressure(double &P)
+esp_err_t BMP180::get_pressure(double &P, double temperature)
 {
-	uint8_t       data[BMP180_PRESSURE_DATA_BYTES];
-	esp_err_t     ret;
-	double        pu,s,x,y,z;
+    uint8_t       data[BMP180_PRESSURE_DATA_BYTES];
+    esp_err_t     ret;
+    double        pu,s,x,y,z;
 
-	ret = _i2c->read(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG, data, BMP180_PRESSURE_DATA_BYTES);
+    ret = _i2c->read_register(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG, &data[0]);
+    ret = _i2c->read_register(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG + 1, &data[1]);
+    ret = _i2c->read_register(BMP180_I2C_ADDR, BMP180_ADC_OUT_MSB_REG + 2, &data[2]);
 
-	if (ret) // good read, calculate pressure
-	{
-		pu = (data[0] * 256.0) + data[1] + (data[2]/256.0);
+    if (ret == ESP_OK) // good read, calculate pressure
+    {
+        pu = (data[0] * 256.0) + data[1] + (data[2]/256.0);
 
-		s = _temperature - 25.0;
-		x = (x2 * pow(s,2)) + (x1 * s) + x0;
-		y = (y2 * pow(s,2)) + (y1 * s) + y0;
-		z = (pu - x) / y;
-		P = (p2 * pow(z,2)) + (p1 * z) + p0;
-	}
+        s = temperature - 25.0;
+        x = (x2 * pow(s,2)) + (x1 * s) + x0;
+        y = (y2 * pow(s,2)) + (y1 * s) + y0;
+        z = (pu - x) / y;
+        P = (p2 * pow(z,2)) + (p1 * z) + p0;
+    }
+    else
+    {
+        ESP_LOGE("BMP180", "Failed to read pressure (%s)", esp_err_to_name(ret));
+    }
 
-	return ret;
+    return ret;
 }
 
 double BMP180::sea_level(double P, double A)
 {
-	return (P / pow(1 - (A / 44330.0), 5.255));
+    return (P / pow(1 - (A / 44330.0), 5.255));
 }
 
 double BMP180::altitude(double P, double P0)
 {
-	return (44330.0 * (1 - pow(P / P0, 1 / 5.255)));
+    return (44330.0 * (1.0 - pow(P / P0, 1.0 / 5.255)));
 }

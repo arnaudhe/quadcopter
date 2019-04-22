@@ -13,10 +13,9 @@ class BMP180
 
     I2cMaster  * _i2c;              ///< i2c device
     uint8_t      _address;          ///< i2c address
-    double        _temperature;
-    double        _initial_pressure;
+    double       _initial_pressure;
 
-		double        c5,c6,mc,md,x0,x1,x2,y0,y1,y2,p0,p1,p2;
+    double        c5,c6,mc,md,x0,x1,x2,y0,y1,y2,p0,p1,p2;
 
   public:
 
@@ -33,11 +32,11 @@ class BMP180
     // Start a pressure sampling, with the oversampling
     // coefficient BMP180_CONF_OVERSAMPLING. Depending on it, 
     // wait before calling get_pressure to retrieve value 
-    esp_err_t start_pressure();
+    void start_pressure();
 
     // Start a temperature sampling. Wait 5 ms before calling
     // get_temperature to retrieve value
-    esp_err_t start_temperature();
+    void start_temperature();
 
     // Reads the last sampled 
     esp_err_t get_temperature(double &T);
@@ -45,7 +44,7 @@ class BMP180
     // Reads the last sampled and convert it to mbars
     // to get accurate results, temperature must be 
     // aften measured 
-    esp_err_t get_pressure(double &P);
+    esp_err_t get_pressure(double &P, double temperature);
 
     // Given a pressure P (mb) taken at a specific altitude (meters),
     // return the equivalent pressure (mb) at sea level.

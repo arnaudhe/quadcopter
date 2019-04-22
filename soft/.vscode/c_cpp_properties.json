@@ -3,8 +3,16 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/esp-idf/components/*/include"
+                "${workspaceFolder}/main",
+                "${workspaceFolder}/build/include",
+                "${workspaceFolder}/esp-idf/components/log/include",
+                "${workspaceFolder}/esp-idf/components/driver/include",
+                "${workspaceFolder}/esp-idf/components/esp32/include",
+                "${workspaceFolder}/esp-idf/components/freertos/include",
+                "${workspaceFolder}/esp-idf/components/newlib/include",
+                "${workspaceFolder}/esp-idf/components/soc/esp32/include",
+                "${workspaceFolder}/esp-idf/components/heap/include",
+                "${workspaceFolder}/esp-idf/components/soc/include"
             ],
             "defines": [
                 "CONFIG_FREERTOS_HZ=1000"
@@ -12,7 +20,7 @@
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/local/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64"

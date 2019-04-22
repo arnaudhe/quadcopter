@@ -105,17 +105,15 @@ float Madgwick::yaw(void)
 
 void Madgwick::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
 {
-    Vect v = Vect(3);
+    Quaternion v = Quaternion(4);
 
-    v.set(0, x);
-    v.set(1, y);
-    v.set(2, z);
+    v.set(0.0, x, y, z);
 
-    Vect v_r = Vect(_q.rotation_matrix() * v);
+    Quaternion v_r = _q * v * _q.conjugate();
 
-    *x_r = v_r(0);
-    *y_r = v_r(1);
-    *z_r = v_r(2);
+    *x_r = v_r(1);
+    *y_r = v_r(2);
+    *z_r = v_r(3);
 }
 
 Madgwick::~Madgwick()

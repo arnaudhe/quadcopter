@@ -190,11 +190,18 @@ Matrix Matrix::invert()
 
     Matrix invert(_rows, _columns);
 
-    for (i = 0; i < n; i++)
+    if (_rows == 1)
     {
-		for (j = 0; j < n; j++)
+        invert.set(0, 0, 1.0);
+    }
+    else
+    {
+        for (i = 0; i < n; i++)
         {
-            invert.set(i, j, (((i + j) % 2) ? -1.0 : 1.0) * cofactor(i, j).determinate());
+            for (j = 0; j < n; j++)
+            {
+                invert.set(j, i, (((i + j) % 2) ? -1.0 : 1.0) * cofactor(i, j).determinate());
+            }
         }
     }
 
@@ -203,7 +210,7 @@ Matrix Matrix::invert()
 
 Matrix Matrix::minor(int i)
 {
-	int j, l, h = 0, k = 0;
+    int j, l, h = 0, k = 0;
 
     if (_rows != _columns)
     {
@@ -212,11 +219,11 @@ Matrix Matrix::minor(int i)
 
     Matrix minor(_rows - 1, _columns - 1);
 
-	for (l = 1; l < _rows; l++)
+    for (l = 1; l < _rows; l++)
     {
-		for (j = 0; j < _rows; j++)
+        for (j = 0; j < _rows; j++)
         {
-			if (j != i)
+            if (j != i)
             {
                 minor.set(h, k, _data[l][j]);
                 k++;
@@ -226,7 +233,7 @@ Matrix Matrix::minor(int i)
                     k = 0;
                 }
             }
-		}
+        }
     }
 
     return minor;
@@ -234,7 +241,7 @@ Matrix Matrix::minor(int i)
 
 Matrix Matrix::cofactor(int row, int column)
 {
-	int m, k, i, j;
+    int m, k, i, j;
     int n = _rows;
 
     Matrix cofactor(_rows - 1, _rows - 1);
@@ -287,8 +294,8 @@ float Matrix::determinate(void)
     {
         for (i = 0; i < _rows; i++)
         {
-			sum += _data[0][i] * ((i % 2) ? -1.0 : 1.0) * minor(i).determinate();
-		}
+            sum += _data[0][i] * ((i % 2) ? -1.0 : 1.0) * minor(i).determinate();
+        }
         return sum;
     }
 }

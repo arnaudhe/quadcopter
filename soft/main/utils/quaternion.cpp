@@ -35,17 +35,17 @@ void Quaternion::set(float q0, float q1, float q2, float q3)
 
 float Quaternion::roll(void)
 {
-    return atan2f(2.0f * (_data[1][0] * _data[2][0] - _data[0][0] * _data[3][0]), 2.0f * (_data[0][0] * _data[0][0] + _data[1][0] * _data[1][0]) - 1.0f);   
+    return atan2f(2.0f * (_data[0][0] * _data[1][0] + _data[2][0] * _data[3][0]), 1.0f - 2.0f * (_data[1][0] * _data[1][0] + _data[2][0] * _data[2][0]));   
 }
 
 float Quaternion::pitch(void)
 {
-    return -asinf(2.0f * (_data[1][0] * _data[3][0] + _data[0][0] * _data[2][0]));
+    return asinf(2.0f * (_data[0][0] * _data[2][0] - _data[1][0] * _data[3][0]));
 }
 
 float Quaternion::yaw(void)
 {
-    return atan2f(2.0f * (_data[2][0] * _data[3][0] - _data[0][0] * _data[1][0]), 2.0f * (_data[0][0] * _data[0][0] + _data[3][0] * _data[3][0]) - 1.0f);
+    return atan2f(2.0f * (_data[0][0] * _data[3][0] + _data[1][0] * _data[2][0]), 1.0f - 2.0f * (_data[2][0] * _data[2][0] + _data[3][0] * _data[3][0]));
 }
 
 Quaternion Quaternion::conjugate(void)

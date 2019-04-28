@@ -26,12 +26,12 @@ unsigned int Matrix::columns(void)
     return _columns;
 }
 
-vector<vector<float>> Matrix::data()
+vector<vector<float> > Matrix::data()
 {
     return _data;
 }
 
-void Matrix::set_data(vector<vector<float>> data)
+void Matrix::set_data(vector<vector<float> > data)
 {
     _data = data;
 }

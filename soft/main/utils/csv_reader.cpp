@@ -36,7 +36,7 @@ std::vector<std::vector<float> > CSVReader::getData()
 {
     std::ifstream file(fileName);
 
-    std::vector<std::vector<float>> dataList;
+    std::vector<std::vector<float> > dataList;
 
     std::string line = "";
     // Iterate through each line and split the content using delimeter

@@ -1,13 +1,13 @@
 #include <iostream>
 #include <utils/csv_reader.h>
-#include <utils/madgwick_ahrs.h>
+#include <utils/madgwick.h>
 
 int main()
 {
     // Creating an object of CSVWriter
     CSVReader reader("../data/time-gyr-acc-mag.csv");
 
-    MadgwickAhrs madgwick(0.00390625);
+    Madgwick madgwick(0.01, 0.00390625);
 
     std::cout << madgwick.roll() << " " << madgwick.pitch() << " " << madgwick.yaw() << std::endl;
  

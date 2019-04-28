@@ -11,14 +11,14 @@ class Matrix
 
     unsigned int            _rows;
     unsigned int            _columns;
-    vector<vector<float>>   _data;
+    vector<vector<float> >  _data;
 
   public:
 
     Matrix(unsigned int, unsigned int, double initial = 0.0);
 
-    vector<vector<float>> data();
-    void set_data(vector<vector<float>>);
+    vector<vector<float> > data();
+    void set_data(vector<vector<float> >);
     void set(unsigned int, unsigned int, float);
 
     unsigned int rows(void);

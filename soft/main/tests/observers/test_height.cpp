@@ -1,11 +1,11 @@
 #include <iostream>
 #include <utils/csv_reader.h>
-#include <utils/height_observer.h>
+#include <app/observers/height_observer.h>
 
 int main()
 {
     // Creating an object of CSVWriter
-    CSVReader reader("../data/time-acc-baro.csv");
+    CSVReader reader("../../../data/time-acc-baro.csv");
 
     HeightObserver observer(0.01);
  
@@ -15,7 +15,7 @@ int main()
     // Print the content of row by row on screen
     for(std::vector<float> vec : dataList)
     {
-        observer.update(vec[1], vec[2]);
+        observer.update(vec[1], vec[2], 0.0);
         std::cout << observer.height() << " " << observer.vertical_speed() << std::endl;
     }
 

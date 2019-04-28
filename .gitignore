@@ -7,6 +7,9 @@ soft/build
 # soft wifi_credentials
 soft/main/wifi_credentials.h
 
+# soft tests build 
+soft/main/tests/*/build
+
 # FreeCAD temp files
 meca/CAD/*.FCStd1
 meca/CAD/*.fcstd1
@@ -14,3 +17,7 @@ meca/CAD/*.fcstd1
 # Hardware PCB gerbers
 hardware/gerber
 hardware/quadcopter.xml
+
+#vscode
+soft/.vscode/ipch/
+soft/.vscode/settings.json

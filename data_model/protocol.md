@@ -151,7 +151,7 @@ The two following syntaxes are supported :
 ```
 {
     "command" : "read/write/notify",
-    "response" : "request/response",
+    "direction" : "request/response",
     "sequence_number" : 0-255,
     "ressources/status" : {
         "level1-1" : {
@@ -170,7 +170,7 @@ The two following syntaxes are supported :
 ```
 {
     "command" : "read/write/notify",
-    "response" : "request/response",
+    "direction" : "request/response",
     "sequence_number" : 0-255,
     "ressources/status" : {
         "level1-1.level2-1" : value,
@@ -184,7 +184,7 @@ For read requests
 ```
 {
     "command" : "read",
-    "response" : "request",
+    "direction" : "request",
     "sequence_number" : 0-255,
     "ressources" : [
         "level1-1.level2-1",

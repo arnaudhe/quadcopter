@@ -9,4 +9,4 @@
 
 COMPONENT_ADD_INCLUDEDIRS := .
 
-COMPONENT_SRCDIRS := app app/controllers app/observers drv hal periph utils .
+COMPONENT_SRCDIRS := app app/controllers app/observers data_model drv hal periph utils .

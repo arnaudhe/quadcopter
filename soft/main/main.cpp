@@ -13,6 +13,8 @@
 #include <hal/udp_server.h>
 #include <hal/mdns.h>
 #include <utils/matrix.h>
+#include <data_model/data_ressources_registry.h>
+#include <data_model/json_protocol.h>
 
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {
@@ -21,10 +23,12 @@ esp_err_t event_handler(void *ctx, system_event_t *event)
 
 extern "C" void app_main(void)
 {
-    AttitudeController * controller;
-    Wifi               * wifi;
-    UdpServer          * udp;
-    Mdns               * mdns;
+    AttitudeController      * controller;
+    Wifi                    * wifi;
+    UdpServer               * udp;
+    Mdns                    * mdns;
+    DataRessourcesRegistry  * registry;
+    JsonDataProtocol        * protocol;
 
     nvs_flash_init();
 
@@ -32,6 +36,8 @@ extern "C" void app_main(void)
     wifi       = new Wifi();
     udp        = new UdpServer("quadcopter_control", 5000);
     mdns       = new Mdns("quadcopter", "quadcopter");
+    registry   = new DataRessourcesRegistry("data_model.json");
+    protocol   = new JsonDataProtocol(udp, registry);
 
     controller->set_height_target(Controller::Mode::SPEED, 0.0);
     controller->set_roll_target(Controller::Mode::POSITION, 0.0);
@@ -42,6 +48,7 @@ extern "C" void app_main(void)
 
     wifi->connect();
     mdns->add_service("_quadcopter", "_udp", 5000);
+    udp->start();
 
     while (true)
     {

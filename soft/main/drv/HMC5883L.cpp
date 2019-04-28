@@ -26,7 +26,7 @@ esp_err_t HMC5883L::init(void)
         {
             if ((ident_a == HMC5885L_IDENT_A) && (ident_b == HMC5885L_IDENT_B) && (ident_c == HMC5885L_IDENT_C))
             {
-                ESP_LOGI("HMC", "WHO_I_AM response OK %02x %02x %02x\n", ident_a, ident_b, ident_c);
+                ESP_LOGI("HMC", "WHO_I_AM response OK %02x %02x %02x", ident_a, ident_b, ident_c);
 
                 _i2c->write_register(_address, HMC5883L_REG_CONFIG_A, HMC5883L_SAMPLES_8 | HMC5883L_DATARATE_75HZ);
                 _i2c->write_register(_address, HMC5883L_REG_CONFIG_B, HMC5883L_MAG_SENSIVITY_SEL);
@@ -38,14 +38,14 @@ esp_err_t HMC5883L::init(void)
             }
             else
             {
-                ESP_LOGE("HMC", "Bad WHO_I_AM response %02x %02x %02x\n", ident_a, ident_b, ident_c);
+                ESP_LOGE("HMC", "Bad WHO_I_AM response %02x %02x %02x", ident_a, ident_b, ident_c);
 
                 return ESP_FAIL;
             }
         }
         else
         {
-            ESP_LOGE("HMC", "Init failed\n");
+            ESP_LOGE("HMC", "Init failed");
         }
     }while (count++ < 3);
 

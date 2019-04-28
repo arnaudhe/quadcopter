@@ -1,7 +1,7 @@
 #include <app/observers/height_observer.h>
 #include <app/observers/height_observer_conf.h>
 #include <math.h>
-#include <stdio.h>
+#include <esp_log.h>
 
 #define ZERO_VELOCITY_DETECTOR_STEPS        10
 #define ZERO_VELOCITY_DETECTOR_THRESHOLD    0.1
@@ -52,7 +52,7 @@ void HeightObserver::update(float acc_z, float baro, float ultrasound)
             _zero_velocity_detect_count++;
             if (_zero_velocity_detect_count == ZERO_VELOCITY_DETECTOR_STEPS)
             {
-                printf("Zero speed\n");
+                ESP_LOGI("Height Observer", "Zero speed");
             }
         }
     }
@@ -60,7 +60,7 @@ void HeightObserver::update(float acc_z, float baro, float ultrasound)
     {
         if (_zero_velocity_detect_count == ZERO_VELOCITY_DETECTOR_STEPS)
         {
-            printf("Moving\n");
+            ESP_LOGI("Height Observer", "Moving");
         }
         _zero_velocity_detect_count = 0;
     }

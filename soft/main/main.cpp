@@ -32,12 +32,12 @@ extern "C" void app_main(void)
 
     nvs_flash_init();
 
-    controller = new AttitudeController(0.01f);
     wifi       = new Wifi();
     udp        = new UdpServer("quadcopter_control", 5000);
     mdns       = new Mdns("quadcopter", "quadcopter");
     registry   = new DataRessourcesRegistry("data_model.json");
     protocol   = new JsonDataProtocol(udp, registry);
+    controller = new AttitudeController(0.01f, registry);
 
     controller->set_height_target(Controller::Mode::SPEED, 0.0);
     controller->set_roll_target(Controller::Mode::POSITION, 0.0);

@@ -2,11 +2,12 @@
 #include <app/controllers/attitude_controller_conf.h>
 #include <esp_log.h>
 
-AttitudeController::AttitudeController(float period)
+AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry)
 {
-    _period = period;
-    _barometer_timing = 0.0;
-    _barometer_waiting = false;
+    _period             = period;
+    _barometer_timing   = 0.0;
+    _barometer_waiting  = false;
+    _registry           = registry;
 
     _euler_observer = new EulerObserver(period);
     _height_observer = new HeightObserver(period);
@@ -99,16 +100,92 @@ void AttitudeController::update(void)
     // printf("%f;%f;%f\n", 180.0 * _euler_observer->roll() / 3.1416, 180.0 * _euler_observer->pitch() / 3.1416, 180.0 * _euler_observer->yaw() / 3.1416);
     // printf("%f;%f;%f\n", ax_r, ay_r, az_r);
 
-    /* Compute the controls */
+    if (_registry->internal_get<string>("control.mode") == "attitude")
+    {
+        float height_command, roll_command, pitch_command, yaw_command;
 
-    _height_controller->update (_height_observer->height(), _height_observer->vertical_speed());
-    _roll_controller->update   (_euler_observer->roll(),    _roll_speed);
-    _pitch_controller->update  (_euler_observer->pitch(),   _pitch_speed);
-    _yaw_controller->update    (_euler_observer->yaw(),     _yaw_speed);
+        if (_registry->internal_get<string>("control.attitude.height.mode") == "speed")
+        {
+            _height_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.height.speed_target"));
+            _height_controller->update (_height_observer->height(), _height_observer->vertical_speed());
+            height_command = _height_controller->command();
+        }
+        else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
+        {
+            _height_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.height.position_target"));
+            _height_controller->update (_height_observer->height(), _height_observer->vertical_speed());
+            height_command = _height_controller->command();
+        }
+        else
+        {
+            height_command = 0.0f;
+        }
 
-    /* Apply the controls to the motors */
+        if (_registry->internal_get<string>("control.attitude.roll.mode") == "speed")
+        {
+            _roll_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.roll.speed_target"));
+            _roll_controller->update (_euler_observer->roll(), _roll_speed);
+            roll_command = _roll_controller->command();
+        }
+        else if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
+        {
+            _roll_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.roll.position_target"));
+            _roll_controller->update (_euler_observer->roll(), _roll_speed);
+            roll_command = _roll_controller->command();
+        }
+        else
+        {
+            roll_command = 0.0f;
+        }
 
-    // _mixer->update(_height_controller->command(), _roll_controller->command(), _pitch_controller->command(), _yaw_controller->command());
+        if (_registry->internal_get<string>("control.attitude.pitch.mode") == "speed")
+        {
+            _pitch_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.pitch.speed_target"));
+            _pitch_controller->update (_euler_observer->pitch(), _pitch_speed);
+            pitch_command = _pitch_controller->command();
+        }
+        else if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
+        {
+            _pitch_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.pitch.position_target"));
+            _pitch_controller->update (_euler_observer->pitch(), _pitch_speed);
+            pitch_command = _pitch_controller->command();
+        }
+        else
+        {
+            pitch_command = 0.0f;
+        }
+
+        if (_registry->internal_get<string>("control.attitude.yaw.mode") == "speed")
+        {
+            _yaw_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.yaw.speed_target"));
+            _yaw_controller->update (_euler_observer->yaw(), _yaw_speed);
+            yaw_command = _yaw_controller->command();
+        }
+        else if (_registry->internal_get<string>("control.attitude.yaw.mode") == "position")
+        {
+            _yaw_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.yaw.position_target"));
+            _yaw_controller->update (_euler_observer->yaw(), _yaw_speed);
+            yaw_command = _yaw_controller->command();
+        }
+        else
+        {
+            yaw_command = 0.0f;
+        }
+
+        /* Apply the controls to the motors */
+        _mixer->update(height_command, roll_command, pitch_command, yaw_command);
+    }
+    else if (_registry->internal_get<string>("control.mode") == "motors")
+    {
+        _mixer->set_motors_speeds(_registry->internal_get<float>("control.motors.front_left"),
+                                  _registry->internal_get<float>("control.motors.front_right"),
+                                  _registry->internal_get<float>("control.motors.rear_left"),
+                                  _registry->internal_get<float>("control.motors.rear_right"));
+    }
+    else if (_registry->internal_get<string>("control.mode") == "off")
+    {
+        _mixer->update(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
 
 void AttitudeController::set_height_target(Controller::Mode mode, float target)

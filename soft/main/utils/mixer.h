@@ -18,4 +18,6 @@ public:
 
     void update(float height_command, float roll_command, float pitch_command, float yaw_command);
 
+    void set_motors_speeds(float front_left, float front_right, float rear_left, float rear_right);
+
 };

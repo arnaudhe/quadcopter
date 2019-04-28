@@ -28,7 +28,7 @@ esp_err_t Wifi::event_handler(void *ctx, system_event_t *event)
         case SYSTEM_EVENT_STA_GOT_IP:
             wifi->_state = State::CONNECTED;
             ESP_LOGI("Wifi", "SYSTEM_EVENT_STA_GOT_IP");
-            ESP_LOGI("Wifi", "Got IP: %s\n", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+            ESP_LOGI("Wifi", "Got IP: %s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
             break;
 
         case SYSTEM_EVENT_STA_DISCONNECTED:
@@ -44,7 +44,7 @@ esp_err_t Wifi::event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-Wifi::Wifi(string ssid, string psk)
+Wifi::Wifi()
 {
     _connection_request = false;
     _disconnection_request = false;

@@ -8,7 +8,6 @@
 #include <string.h>
 #include <math.h>
 
-#include <wifi_credentials.h>
 #include <hal/wifi.h>
 #include <app/controllers/attitude_controller.h>
 #include <hal/udp_server.h>
@@ -30,7 +29,7 @@ extern "C" void app_main(void)
     nvs_flash_init();
 
     controller = new AttitudeController(0.01f);
-    wifi       = new Wifi(WIFI_SSID, WIFI_PASSWORD);
+    wifi       = new Wifi();
     udp        = new UdpServer("quadcopter_control", 5000);
     mdns       = new Mdns("quadcopter", "quadcopter");
 

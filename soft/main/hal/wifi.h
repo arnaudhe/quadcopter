@@ -26,7 +26,7 @@ class Wifi
 
   public:
 
-    Wifi(string ssid, string psk);
+    Wifi();
 
     void connect();
 

@@ -12,12 +12,12 @@ HeightObserver::HeightObserver(float period):
     _zero_velocity_detect_count = ZERO_VELOCITY_DETECTOR_STEPS;
 
     _state_matrix.set(0, 0, 1.0);
-    _state_matrix.set(0, 1, 5.0 * period);
+    _state_matrix.set(0, 1, 1.0 * period);
     _state_matrix.set(1, 0, 0.0);
     _state_matrix.set(1, 1, 1.0);
 
-    _input_matrix.set(0, 0, 5.0 * period * period / 2.0);
-    _input_matrix.set(1, 0, 5.0 * period);
+    _input_matrix.set(0, 0, 1.0 * period * period / 2.0);
+    _input_matrix.set(1, 0, 1.0 * period);
 
     _output_matrix.set(0, 0, 1.0);
     _output_matrix.set(0, 1, 0.0);

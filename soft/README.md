@@ -51,6 +51,12 @@ Make sure to have CMake or GNU Make installed and in your path.
 
 ## Build and flash
 
+The SDK supports two build systems:
+* one base on CMake / ninja (newest)
+* one base on make (legacy)
+
+Both can be used to build the quadcopter firmware.
+
 ### CMake
 
 ```
@@ -66,3 +72,37 @@ Make sure to have CMake or GNU Make installed and in your path.
 # make
 # make flash [ESPPORT=<port>]
 ```
+
+## Monitor
+
+### CMake
+
+```
+# idf.py monitor [-p <port>]
+```
+
+Hit `ctrl + $` to exit
+
+### Make (Legacy)
+
+```
+# make monitor [ESPPORT=<port>]
+```
+
+Hit `ctrl + $` to exit
+
+## Visual Studio Code integration
+
+### Extensions
+
+Install ["C/C++" extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-) in Visual Studio Code
+
+### Features
+
+Open the folder `soft` in Visual Studio Code. You may already have:
+* C/C++ indexing and completion
+* Integrated build (with cmake)
+
+### Build (cmake)
+
+Hit `cmd + shift + B` to build the project. The errors and warnings should be highlighted in the "problems" tab.

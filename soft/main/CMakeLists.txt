@@ -21,6 +21,11 @@ set(COMPONENT_SRCS
     hal/wifi.cpp 
     hal/wifi_config.c 
     hal/marg.cpp 
+    os/mutex.cpp
+    os/periodic_task.cpp
+    os/queue.cpp
+    os/semaphore.cpp
+    os/task.cpp
     utils/pid.cpp 
     utils/madgwick.cpp 
     utils/mixer.cpp 

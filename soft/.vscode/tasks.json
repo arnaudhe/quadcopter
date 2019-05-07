@@ -6,10 +6,22 @@
         {
             "label": "make",
             "type": "shell",
-            "command": "make",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "build"
+            ],
+            "options": {
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                }
+            },
             "problemMatcher": {
                 "base": "$gcc",
-                "fileLocation": "absolute"
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/esp-idf"
+                ],
             },
             "group": {
                 "kind": "build",

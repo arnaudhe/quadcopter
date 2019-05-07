@@ -20,7 +20,7 @@ static const i2c_master_conf_t I2C_MASTER_CONF[I2C_NUM_MAX] =
             .sda_io_num = (gpio_num_t)18,
             .scl_io_num = (gpio_num_t)19
         },
-        .frequency = 200000
+        .frequency = 400000
     }
 };
 

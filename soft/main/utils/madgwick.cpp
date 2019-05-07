@@ -2,7 +2,7 @@
 #include <math.h>
 #include <iostream>
 
-Madgwick::Madgwick(float period, float gain):
+Madgwick::Madgwick(double period, double gain):
     _q()
 {
     _period = period;
@@ -13,12 +13,12 @@ Vect Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
 {
     Vect F = Vect(6);
 
-    F.set(0, 2.0f * (      _q(1)*_q(3) - _q(0)*_q(2)) - acc(1));
-    F.set(1, 2.0f * (      _q(0)*_q(1) + _q(2)*_q(3)) - acc(2));
-    F.set(2, 2.0f * (0.5 - _q(1)*_q(1) - _q(2)*_q(2)) - acc(3));
-    F.set(3, 2.0f * B(1) * (0.5 - _q(2)*_q(2) - _q(3)*_q(3)) + 2.0f * B(3) * (      _q(1)*_q(3) - _q(0)*_q(2)) - mag(1));
-    F.set(4, 2.0f * B(1) * (      _q(1)*_q(2) - _q(0)*_q(3)) + 2.0f * B(3) * (      _q(0)*_q(1) + _q(2)*_q(3)) - mag(2));
-    F.set(5, 2.0f * B(1) * (      _q(0)*_q(2) + _q(1)*_q(3)) + 2.0f * B(3) * (0.5 - _q(1)*_q(1) - _q(2)*_q(2)) - mag(3));
+    F.set(0, 2.0 * (      _q(1)*_q(3) - _q(0)*_q(2)) - acc(1));
+    F.set(1, 2.0 * (      _q(0)*_q(1) + _q(2)*_q(3)) - acc(2));
+    F.set(2, 2.0 * (0.5 - _q(1)*_q(1) - _q(2)*_q(2)) - acc(3));
+    F.set(3, 2.0 * B(1) * (0.5 - _q(2)*_q(2) - _q(3)*_q(3)) + 2.0f * B(3) * (      _q(1)*_q(3) - _q(0)*_q(2)) - mag(1));
+    F.set(4, 2.0 * B(1) * (      _q(1)*_q(2) - _q(0)*_q(3)) + 2.0f * B(3) * (      _q(0)*_q(1) + _q(2)*_q(3)) - mag(2));
+    F.set(5, 2.0 * B(1) * (      _q(0)*_q(2) + _q(1)*_q(3)) + 2.0f * B(3) * (0.5 - _q(1)*_q(1) - _q(2)*_q(2)) - mag(3));
 
     return F;
 }
@@ -60,11 +60,11 @@ Matrix Madgwick::compute_J(Quaternion B)
     return J;
 }
 
-void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
+void Madgwick::update(double gx, double gy, double gz, double ax, double ay, double az, double mx, double my, double mz) 
 {
-    Quaternion gyr = Quaternion(0.0f, gx, gy, gz);
-    Quaternion acc = Quaternion(0.0f, ax, ay, az);
-    Quaternion mag = Quaternion(0.0f, mx, my, mz);
+    Quaternion gyr = Quaternion(0.0, gx, gy, gz);
+    Quaternion acc = Quaternion(0.0, ax, ay, az);
+    Quaternion mag = Quaternion(0.0, mx, my, mz);
 
     // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
     if(acc.norm() != 0.0 && mag.norm() != 0.0) 
@@ -74,7 +74,7 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
 
         /* Reference direction of Earth's magnetic field */
         Quaternion H    = _q * (mag * _q.conjugate());
-        Quaternion B    = Quaternion(0.0f, sqrtf(H(1) * H(1) + H(2) * H(2)), 0.0f, H(3));
+        Quaternion B    = Quaternion(0.0, sqrtf(H(1) * H(1) + H(2) * H(2)), 0.0, H(3));
 
         /* Gradient decent algorithm corrective step */
         Vect F          = compute_F(acc, mag, B);
@@ -83,27 +83,27 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
         step.normalize();
 
         /* AHRS Quaternion iteration (integration + correction) */
-        _q = _q + (((_q * gyr) * 0.5f) - (step * _beta)) * _period;
+        _q = _q + (((_q * gyr) * 0.5) - (step * _beta)) * _period;
         _q.normalize();
     }
 }
 
-float Madgwick::roll(void)
+double Madgwick::roll(void)
 {
     return _q.roll();
 }
 
-float Madgwick::pitch(void)
+double Madgwick::pitch(void)
 {
     return _q.pitch();
 }
 
-float Madgwick::yaw(void)
+double Madgwick::yaw(void)
 {
     return _q.yaw();
 }
 
-void Madgwick::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
+void Madgwick::rotate(double x, double y, double z, double * x_r, double * y_r, double * z_r)
 {
     Quaternion v = Quaternion(4);
 

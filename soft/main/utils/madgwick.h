@@ -12,8 +12,8 @@ class Madgwick
 
     /* Attributes */
 
-    float _period;
-    float _beta;               ///< 2 * proportional gain (Kp)
+    double _period;
+    double _beta;               ///< 2 * proportional gain (Kp)
     Quaternion _q;
 
     /* Methods */
@@ -25,19 +25,19 @@ class Madgwick
 
     /* Constructors */
 
-    Madgwick(float period, float gain);
+    Madgwick(double period, double gain);
     ~Madgwick();
 
     /* Accessors*/
 
     /* Other methods */
 
-    void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
+    void update(double gx, double gy, double gz, double ax, double ay, double az, double mx, double my, double mz);
 
-    float roll(void);
-    float pitch(void);
-    float yaw(void);
+    double roll(void);
+    double pitch(void);
+    double yaw(void);
 
-    void rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r);
+    void rotate(double x, double y, double z, double * x_r, double * y_r, double * z_r);
 
 };

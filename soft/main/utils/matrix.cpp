@@ -26,22 +26,22 @@ unsigned int Matrix::columns(void)
     return _columns;
 }
 
-vector<vector<float> > Matrix::data()
+vector<vector<double> > Matrix::data()
 {
     return _data;
 }
 
-void Matrix::set_data(vector<vector<float> > data)
+void Matrix::set_data(vector<vector<double> > data)
 {
     _data = data;
 }
 
-void Matrix::set(unsigned row, unsigned column, float value)
+void Matrix::set(unsigned row, unsigned column, double value)
 {
     _data[row][column] = value;
 }
 
-float Matrix::operator()(const unsigned &row, const unsigned & column)
+double Matrix::operator()(const unsigned &row, const unsigned & column)
 {
     return _data[row][column];
 }
@@ -131,7 +131,7 @@ Matrix Matrix::operator%(Matrix B)
 }
 
 // Scalar Addition
-Matrix Matrix::operator+(float scalar)
+Matrix Matrix::operator+(double scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -146,7 +146,7 @@ Matrix Matrix::operator+(float scalar)
 }
 
 // Scalar Subraction
-Matrix Matrix::operator-(float scalar)
+Matrix Matrix::operator-(double scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -161,7 +161,7 @@ Matrix Matrix::operator-(float scalar)
 }
 
 // Scalar Multiplication
-Matrix Matrix::operator*(float scalar)
+Matrix Matrix::operator*(double scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -176,7 +176,7 @@ Matrix Matrix::operator*(float scalar)
 }
 
 // Scalar Division
-Matrix Matrix::operator/(float scalar)
+Matrix Matrix::operator/(double scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -291,10 +291,10 @@ Matrix Matrix::cofactor(int row, int column)
     return cofactor;
 }
 
-float Matrix::determinate(void)
+double Matrix::determinate(void)
 {
     int   i;
-    float sum = 0.0;
+    double sum = 0.0;
 
     if (_rows != _columns)
     {

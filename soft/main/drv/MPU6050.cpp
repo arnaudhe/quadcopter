@@ -40,7 +40,7 @@ esp_err_t MPU6050::init(void)
     return ret;
 }
 
-esp_err_t MPU6050::read_acc(float * acc_x, float * acc_y, float * acc_z)
+esp_err_t MPU6050::read_acc(double * acc_x, double * acc_y, double * acc_z)
 {
     uint8_t high, low;
     int16_t temp;
@@ -48,22 +48,22 @@ esp_err_t MPU6050::read_acc(float * acc_x, float * acc_y, float * acc_z)
     _i2c->read_register( _address, MPU6050_RA_ACCEL_XOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_ACCEL_XOUT_L, &low);
     temp = (high << 8) + low;
-    *acc_x = (float)((int)temp) / MPU6050_ACC_SENSIVITY;
+    *acc_x = (double)((int)temp) / MPU6050_ACC_SENSIVITY;
 
     _i2c->read_register( _address, MPU6050_RA_ACCEL_YOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_ACCEL_YOUT_L, &low);
     temp = (high << 8) + low;
-    *acc_y = (float)((int)temp) / MPU6050_ACC_SENSIVITY;
+    *acc_y = (double)((int)temp) / MPU6050_ACC_SENSIVITY;
 
     _i2c->read_register( _address, MPU6050_RA_ACCEL_ZOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_ACCEL_ZOUT_L, &low);
     temp = (high << 8) + low;
-    *acc_z = (float)((int)temp) / MPU6050_ACC_SENSIVITY;
+    *acc_z = (double)((int)temp) / MPU6050_ACC_SENSIVITY;
 
     return ESP_OK;
 }
 
-esp_err_t MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
+esp_err_t MPU6050::read_gyro(double * gyro_x, double * gyro_y, double * gyro_z)
 {
     uint8_t high, low;
     int16_t temp;
@@ -71,17 +71,17 @@ esp_err_t MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
     _i2c->read_register( _address, MPU6050_RA_GYRO_XOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_GYRO_XOUT_H, &low);
     temp = (high << 8) + low;
-    *gyro_x = DEG_TO_RAD((float)((int)temp) / MPU6050_GYRO_SENSIVITY);
+    *gyro_x = DEG_TO_RAD((double)((int)temp) / MPU6050_GYRO_SENSIVITY);
 
     _i2c->read_register( _address, MPU6050_RA_GYRO_YOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_GYRO_YOUT_L, &low);
     temp = (high << 8) + low;
-    *gyro_y = DEG_TO_RAD((float)((int)temp) / MPU6050_GYRO_SENSIVITY);
+    *gyro_y = DEG_TO_RAD((double)((int)temp) / MPU6050_GYRO_SENSIVITY);
 
     _i2c->read_register( _address, MPU6050_RA_GYRO_ZOUT_H, &high);
     _i2c->read_register( _address, MPU6050_RA_GYRO_ZOUT_L, &low);
     temp = (high << 8) + low;
-    *gyro_z = DEG_TO_RAD((float)((int)temp) / MPU6050_GYRO_SENSIVITY);
+    *gyro_z = DEG_TO_RAD((double)((int)temp) / MPU6050_GYRO_SENSIVITY);
 
     return ESP_OK;
 }

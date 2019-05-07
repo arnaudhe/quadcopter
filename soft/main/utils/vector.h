@@ -8,18 +8,18 @@ class Vect : public Matrix
 {
   private:
 
-    float inv_sqrt(float);
+    double inv_sqrt(double);
 
   public:
 
     Vect(unsigned int, double initial = 0.0);
     Vect(Matrix mat);
 
-    void set(unsigned int, float);
+    void set(unsigned int, double);
 
-    float operator()(const unsigned &);
+    double operator()(const unsigned &);
 
-    float norm(void);
+    double norm(void);
 
     void normalize();
 };

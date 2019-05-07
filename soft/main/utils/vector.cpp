@@ -12,20 +12,20 @@ Vect::Vect(Matrix mat):
     set_data(mat.data());
 }
 
-void Vect::set(unsigned int index, float value)
+void Vect::set(unsigned int index, double value)
 {
     _data[index][0] = value;
 }
 
-float Vect::operator()(const unsigned &index)
+double Vect::operator()(const unsigned &index)
 {
     return _data[index][0];
 }
 
-float Vect::norm(void)
+double Vect::norm(void)
 {
     unsigned int i;
-    float norm = 0.0f;
+    double norm = 0.0f;
 
     for (i = 0; i < _rows; i++)
     {
@@ -37,7 +37,7 @@ float Vect::norm(void)
 
 void Vect::normalize(void)
 {
-    float norm = this->norm();
+    double norm = this->norm();
     unsigned int i;
 
     for (i = 0; i < _rows; i++)

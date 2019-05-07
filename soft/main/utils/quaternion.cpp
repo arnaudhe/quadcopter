@@ -5,7 +5,7 @@
 Quaternion::Quaternion():
     Vect(4, 0.0)
 {
-    set(1.0f, 0.0f, 0.0f, 0.0f);
+    set(1.0, 0.0, 0.0, 0.0);
 }
 
 Quaternion::Quaternion(Matrix mat):
@@ -13,19 +13,19 @@ Quaternion::Quaternion(Matrix mat):
 {
 }
 
-Quaternion::Quaternion(float angle):
+Quaternion::Quaternion(double angle):
     Vect(4, 0.0)
 {
     set(cos(angle/2.0), -sin(angle/2.0), -sin(angle/2.0), -sin(angle/2.0));
 }
 
-Quaternion::Quaternion(float q0, float q1, float q2, float q3):
+Quaternion::Quaternion(double q0, double q1, double q2, double q3):
     Vect(4, 0.0)
 {
     set(q0, q1, q2, q3);
 }
 
-void Quaternion::set(float q0, float q1, float q2, float q3)
+void Quaternion::set(double q0, double q1, double q2, double q3)
 {
     Vect::set(0, q0);
     Vect::set(1, q1);
@@ -33,19 +33,19 @@ void Quaternion::set(float q0, float q1, float q2, float q3)
     Vect::set(3, q3);
 }
 
-float Quaternion::roll(void)
+double Quaternion::roll(void)
 {
-    return atan2f(2.0f * (_data[0][0] * _data[1][0] + _data[2][0] * _data[3][0]), 1.0f - 2.0f * (_data[1][0] * _data[1][0] + _data[2][0] * _data[2][0]));   
+    return atan2(2.0 * (_data[0][0] * _data[1][0] + _data[2][0] * _data[3][0]), 1.0 - 2.0 * (_data[1][0] * _data[1][0] + _data[2][0] * _data[2][0]));   
 }
 
-float Quaternion::pitch(void)
+double Quaternion::pitch(void)
 {
-    return asinf(2.0f * (_data[0][0] * _data[2][0] - _data[1][0] * _data[3][0]));
+    return asin(2.0 * (_data[0][0] * _data[2][0] - _data[1][0] * _data[3][0]));
 }
 
-float Quaternion::yaw(void)
+double Quaternion::yaw(void)
 {
-    return atan2f(2.0f * (_data[0][0] * _data[3][0] + _data[1][0] * _data[2][0]), 1.0f - 2.0f * (_data[2][0] * _data[2][0] + _data[3][0] * _data[3][0]));
+    return atan2f(2.0 * (_data[0][0] * _data[3][0] + _data[1][0] * _data[2][0]), 1.0 - 2.0 * (_data[2][0] * _data[2][0] + _data[3][0] * _data[3][0]));
 }
 
 Quaternion Quaternion::conjugate(void)
@@ -71,7 +71,7 @@ Quaternion Quaternion::operator*(Quaternion B)
                       _data[0][0] * B(3) + _data[1][0] * B(2) - _data[2][0] * B(1) + _data[3][0] * B(0));
 }
 
-Quaternion Quaternion::operator*(float k)
+Quaternion Quaternion::operator*(double k)
 {
     return Matrix::operator*(k);
 }
@@ -80,15 +80,15 @@ Matrix Quaternion::rotation_matrix(void)
 {
     Matrix R = Matrix(3, 3);
 
-    R.set(0, 0, 2.0f * _data[0][0] * _data[0][0] - 1.0f + 2.0f * _data[1][0] * _data[1][0]);
-    R.set(0, 1, 2.0f * (_data[1][0] * _data[2][0] + _data[0][0] * _data[3][0]));
-    R.set(0, 2, 2.0f * (_data[1][0] * _data[3][0] - _data[0][0] * _data[2][0]));
-    R.set(1, 0, 2.0f * (_data[1][0] * _data[2][0] - _data[0][0] * _data[3][0]));
-    R.set(1, 1, 2.0f * _data[0][0] * _data[0][0] - 1.0f + 2.0f * _data[2][0] * _data[2][0]);
-    R.set(1, 2, 2.0f * (_data[2][0] * _data[3][0] + _data[0][0] * _data[1][0]));
-    R.set(2, 0, 2.0f * (_data[1][0] * _data[3][0] + _data[0][0] * _data[2][0]));
-    R.set(2, 1, 2.0f * (_data[2][0] * _data[3][0] - _data[0][0] * _data[1][0]));
-    R.set(2, 2, 2.0f * _data[0][0] * _data[0][0] - 1.0f + 2.0f * _data[3][0] * _data[3][0]);
+    R.set(0, 0, 2.0 * _data[0][0] * _data[0][0] - 1.0 + 2.0 * _data[1][0] * _data[1][0]);
+    R.set(0, 1, 2.0 * (_data[1][0] * _data[2][0] + _data[0][0] * _data[3][0]));
+    R.set(0, 2, 2.0 * (_data[1][0] * _data[3][0] - _data[0][0] * _data[2][0]));
+    R.set(1, 0, 2.0 * (_data[1][0] * _data[2][0] - _data[0][0] * _data[3][0]));
+    R.set(1, 1, 2.0 * _data[0][0] * _data[0][0] - 1.0 + 2.0 * _data[2][0] * _data[2][0]);
+    R.set(1, 2, 2.0 * (_data[2][0] * _data[3][0] + _data[0][0] * _data[1][0]));
+    R.set(2, 0, 2.0 * (_data[1][0] * _data[3][0] + _data[0][0] * _data[2][0]));
+    R.set(2, 1, 2.0 * (_data[2][0] * _data[3][0] - _data[0][0] * _data[1][0]));
+    R.set(2, 2, 2.0 * _data[0][0] * _data[0][0] - 1.0 + 2.0 * _data[3][0] * _data[3][0]);
 
     return R;
 }

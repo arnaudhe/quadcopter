@@ -11,12 +11,12 @@ esp_err_t imu::init(void)
     return _mpu->init();
 }
 
-esp_err_t imu::read_acc(float * acc_x, float * acc_y, float * acc_z)
+esp_err_t imu::read_acc(double * acc_x, double * acc_y, double * acc_z)
 {
     return _mpu->read_acc(acc_x, acc_y, acc_z);
 }
 
-esp_err_t imu::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
+esp_err_t imu::read_gyro(double * gyro_x, double * gyro_y, double * gyro_z)
 {
     return _mpu->read_gyro(gyro_x, gyro_y, gyro_z);
 }

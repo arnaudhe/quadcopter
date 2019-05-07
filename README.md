@@ -2,6 +2,8 @@
 
 DIY quadcopter based on ESP32-WROOM
 
+![Quadcopter picture](pictures/quadcopter.png?raw=true "Quadcopter")
+
 ## Overview
 
 ### Sensors

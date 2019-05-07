@@ -3,7 +3,7 @@
 #include "soc/rtc_cntl_reg.h"
 #include "soc/rtc.h"
 #include <drv/HCSR04_defs.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin):
     Task("HCSR04", Task::Priority::HIGH, 2048, false),

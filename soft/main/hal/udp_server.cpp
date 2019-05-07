@@ -7,7 +7,7 @@
 
 #include <string.h>
 
-#include <esp_log.h>
+#include <hal/log.h>
 
 UdpServer::UdpServer(string name, int port) :
     Task(name, Task::Priority::LOW, 8192, false)
@@ -23,19 +23,19 @@ UdpServer::UdpServer(string name, int port) :
     _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (_socket < 0) 
     {
-        ESP_LOGE(_name.c_str(), "Unable to create socket: errno %d", errno);
+        LOG_ERROR("Unable to create socket: errno %d", errno);
         return;
     }
 
-    ESP_LOGI(_name.c_str(), "Socket created");
+    LOG_INFO("Socket created");
 
     int err = ::bind(_socket, (struct sockaddr *)&destAddr, sizeof(destAddr));
     if (err < 0)
     {
-        ESP_LOGE(_name.c_str(), "Socket unable to bind: errno %d", errno);
+        LOG_ERROR("Socket unable to bind: errno %d", errno);
     }
 
-    ESP_LOGI(_name.c_str(), "Server ready");
+    LOG_INFO("Server ready");
 
     start();
 }
@@ -126,13 +126,13 @@ void UdpServer::run()
 
     while (1)
     {
-        ESP_LOGD(server->_name.c_str(), "Waiting for data");
+        LOG_INFO("Waiting for data");
 
         if (recvfrom(request, ip_src, port_src))
         {
-            ESP_LOGI(_name.c_str(), "Received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
+            LOG_INFO("Received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
             _callback(request, response);
-            ESP_LOGI(_name.c_str(), "Send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
+            LOG_INFO("Send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
             sendto(response, ip_src, port_src);
         }
     }

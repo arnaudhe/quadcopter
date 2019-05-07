@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 class UdpServerError : public runtime_error
 {
@@ -26,7 +26,7 @@ UdpServer::UdpServer(string name, int port)
     _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if(_socket == -1)
     {
-        ESP_LOGE(_name.c_str(), "Could not create UDP socket");
+        LOG_ERROR("Could not create UDP socket");
         return;
     }
 
@@ -34,10 +34,10 @@ UdpServer::UdpServer(string name, int port)
     if(err != 0)
     {
         close(_socket);
-        ESP_LOGE(_name.c_str(), "Could not bind UDP socket");
+        LOG_ERROR("Could not bind UDP socket");
     }
 
-    ESP_LOGI(_name.c_str(), "Server ready");
+    LOG_INFO("Server ready");
 }
 
 UdpServer::~UdpServer()
@@ -128,9 +128,9 @@ void UdpServer::start(void)
     {
         if (recvfrom(request, ip_src, port_src))
         {
-            ESP_LOGI(_name.c_str(), "received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
+            LOG_INFO("received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
             _callback(request, response);
-            ESP_LOGI(_name.c_str(), "send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
+            LOG_INFO("send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
             sendto(response, ip_src, port_src);
         }
     }

@@ -5,7 +5,7 @@
 #include <esp_system.h>
 #include <esp_event.h>
 #include <esp_event_loop.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 #include <hal/wifi_config.h>
 
@@ -16,7 +16,7 @@ esp_err_t Wifi::event_handler(void *ctx, system_event_t *event)
     switch (event->event_id) 
     {
         case SYSTEM_EVENT_STA_START:
-            ESP_LOGI("Wifi", "SYSTEM_EVENT_STA_START");
+            LOG_INFO("SYSTEM_EVENT_STA_START");
             wifi->_state = State::STARTED;
             if (wifi->_connection_request)
             {
@@ -27,13 +27,13 @@ esp_err_t Wifi::event_handler(void *ctx, system_event_t *event)
 
         case SYSTEM_EVENT_STA_GOT_IP:
             wifi->_state = State::CONNECTED;
-            ESP_LOGI("Wifi", "SYSTEM_EVENT_STA_GOT_IP");
-            ESP_LOGI("Wifi", "Got IP: %s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+            LOG_INFO("SYSTEM_EVENT_STA_GOT_IP");
+            LOG_INFO("Got IP: %s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
             break;
 
         case SYSTEM_EVENT_STA_DISCONNECTED:
             wifi->_state = State::STARTED;
-            ESP_LOGI("Wifi", "SYSTEM_EVENT_STA_DISCONNECTED (%d)", event->event_info.disconnected.reason);
+            LOG_INFO("SYSTEM_EVENT_STA_DISCONNECTED (%d)", event->event_info.disconnected.reason);
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
 

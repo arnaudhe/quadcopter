@@ -1,6 +1,6 @@
 #include <app/controllers/attitude_controller.h>
 #include <app/controllers/attitude_controller_conf.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 AttitudeController::AttitudeController(double period, DataRessourcesRegistry * registry):
     PeriodicTask("attitude_ctlr", (int)(period * 1000), false)
@@ -41,7 +41,7 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
                        new Motor(ATTITUDE_MOTOR_REAR_LEFT_PULSE_CHANNEL,   ATTITUDE_MOTOR_REAR_LEFT_PULSE_PIN),
                        new Motor(ATTITUDE_MOTOR_REAR_RIGHT_PULSE_CHANNEL,  ATTITUDE_MOTOR_REAR_RIGHT_PULSE_PIN));
 
-    ESP_LOGI("attitude_controller", "Init done");
+    LOG_INFO("Init done");
 }
 
 void AttitudeController::run(void)

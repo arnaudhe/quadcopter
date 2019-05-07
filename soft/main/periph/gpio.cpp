@@ -1,5 +1,4 @@
 #include <periph/gpio.h>
-#include <esp_log.h>
 
 Gpio::Gpio(gpio_num_t pin, Gpio::Direction direction, bool pull_up, bool pull_down)
 {

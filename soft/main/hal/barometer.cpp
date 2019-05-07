@@ -1,5 +1,5 @@
 #include <hal/barometer.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 Barometer::Barometer(I2cMaster * i2c) : 
     Task("barometer", Task::Priority::VERY_LOW, 2048, false),
@@ -36,8 +36,8 @@ void Barometer::init(void)
 
     _initial_pressure = _initial_pressure / 20.0;
 
-    ESP_LOGI("Barometer", "initial pressure %f", _initial_pressure);
-    ESP_LOGI("Barometer", "initial temperature %f", _temperature);
+    LOG_INFO("initial pressure %f", _initial_pressure);
+    LOG_INFO("initial temperature %f", _temperature);
 
     start();
 }

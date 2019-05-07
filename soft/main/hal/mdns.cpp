@@ -1,6 +1,6 @@
 #include <mdns.h>
 #include <hal/mdns.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 Mdns::Mdns(string hostname, string instance_name)
 {
@@ -8,7 +8,7 @@ Mdns::Mdns(string hostname, string instance_name)
     esp_err_t err = mdns_init();
     if (err) 
     {
-        ESP_LOGE("MDNS", "MDNS Init failed: %d\n", err);
+        LOG_ERROR("MDNS Init failed: %d\n", err);
         return;
     }
 

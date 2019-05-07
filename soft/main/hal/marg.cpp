@@ -1,5 +1,5 @@
 #include <hal/marg.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 Marg::Marg(I2cMaster * i2c)
 {
@@ -18,7 +18,7 @@ esp_err_t Marg::init(void)
         return _hmc->init();
     }
 
-    ESP_LOGE("marg", "init failed");
+    LOG_ERROR("init failed");
 
     return ESP_FAIL;
 }

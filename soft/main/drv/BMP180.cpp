@@ -2,7 +2,7 @@
 #include <drv/BMP180_defs.h>
 #include <drv/BMP180_conf.h>
 #include <math.h>
-#include <esp_log.h>
+#include <hal/log.h>
 
 BMP180::BMP180(I2cMaster * i2c)
 {
@@ -20,7 +20,7 @@ esp_err_t BMP180::init()
 
     if ((ret != ESP_OK) || (b != 0x55))
     {
-        ESP_LOGE("BMP180", "Init chip id failed");
+        LOG_ERROR("Init chip id failed");
     }
 
     /* Retrieve calibration data from device */
@@ -56,11 +56,11 @@ esp_err_t BMP180::init()
         p1 = 1.0 - 7357.0 * pow(2,-20);
         p2 = 3038.0 * 100.0 * pow(2,-36);
 
-        ESP_LOGI("BMP180", "Init done");
+        LOG_INFO("Init done");
     }
     else
     {
-        ESP_LOGE("BMP180", "Init failed");
+        LOG_ERROR("Init failed");
     }
 
     return ret;
@@ -74,7 +74,7 @@ void BMP180::start_temperature(void)
 
     if (ESP_OK != ret)
     {
-        ESP_LOGE("BMP180", "Failed to start temperature (%s)", esp_err_to_name(ret));
+        LOG_ERROR("Failed to start temperature (%s)", esp_err_to_name(ret));
     }
 }
 
@@ -86,7 +86,7 @@ void BMP180::start_pressure(void)
 
     if (ESP_OK != ret)
     {
-        ESP_LOGE("BMP180", "Failed to start pressure (%s)", esp_err_to_name(ret));
+        LOG_ERROR("Failed to start pressure (%s)", esp_err_to_name(ret));
     }
 }
 
@@ -110,7 +110,7 @@ esp_err_t BMP180::get_temperature(double &T)
     }
     else
     {
-        ESP_LOGE("BMP180", "Failed to read temperature (%s)", esp_err_to_name(ret));
+        LOG_ERROR("Failed to read temperature (%s)", esp_err_to_name(ret));
     }
 
     return ret;
@@ -138,7 +138,7 @@ esp_err_t BMP180::get_pressure(double &P, double temperature)
     }
     else
     {
-        ESP_LOGE("BMP180", "Failed to read pressure (%s)", esp_err_to_name(ret));
+        LOG_ERROR("Failed to read pressure (%s)", esp_err_to_name(ret));
     }
 
     return ret;

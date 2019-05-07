@@ -5,7 +5,7 @@
 #include <streambuf>
 #include <data_model/data_model_json.h>
 
-#include <esp_log.h>
+#include <hal/log.h>
 
 DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) : 
     _mutex(),
@@ -28,7 +28,7 @@ void DataRessourcesRegistry::load_data_model(json node, string current_key)
         {
             if (it.value().contains("type"))
             {
-                ESP_LOGI("Registry", "Load value %s", new_key.c_str());
+                LOG_INFO("Load value %s", new_key.c_str());
                 if (it.value().at("type").get<string>() == "integer")
                 {
                     _map[new_key] = new DataRessource(0);
@@ -64,7 +64,7 @@ void DataRessourcesRegistry::load_data_model(json node, string current_key)
                 }
                 else
                 {
-                    ESP_LOGE("Registry", "Invalid type of ressource %s", new_key.c_str());
+                    LOG_ERROR("Invalid type of ressource %s", new_key.c_str());
                     break;
                 }
                 bool permission_read   = false;

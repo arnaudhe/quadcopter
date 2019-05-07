@@ -5,7 +5,11 @@
 #include <drv/HCSR04_defs.h>
 #include <esp_log.h>
 
-HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin)
+HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin):
+    Task("HCSR04", Task::Priority::HIGH, 2048, false),
+    _sem_rising(),
+    _sem_falling(),
+    _mutex()
 {
     _echo_gpio  = new Gpio((gpio_num_t)echo_pin, Gpio::Direction::INPUT, false, false);
     _trig_pulse = new Pulse(HCSR04_TRIG_PULSE_WIDTH_us, trig_pin, trig_channel);
@@ -16,23 +20,51 @@ HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin)
     _trig_pulse->init();
     _trig_pulse->set(HCSR04_TRIG_PULSE_WIDTH_us);
     _echo_gpio->enable_interrupt(Gpio::InterruptSource::BOTH_EDGE, std::bind(&HcSr04::echo_handler, this));
+
+    start();
 }
 
 void HcSr04::echo_handler()
 {
+    bool must_yield;
+
     if (_echo_gpio->read())
     {
-        _echo_timer->reset();
-        _echo_timer->start();
+        _sem_rising.notify_from_isr(must_yield);
     }
     else
     {
+        _sem_falling.notify_from_isr(must_yield);
+    }
+
+    if (must_yield)
+    {
+        Semaphore::yield_from_isr();
+    }
+}
+
+void HcSr04::run()
+{
+    while(1)
+    {
+        _sem_rising.wait();
+        _echo_timer->reset();
+        _echo_timer->start();
+        _sem_falling.wait();
         _echo_timer->stop();
+        _mutex.lock();
         _height = _echo_timer->get_time() / HCSR04_SCALE_FACTOR;
+        _mutex.unlock();
     }
 }
 
 float HcSr04::height()
 {
-    return _height;
+    float copy;
+
+    _mutex.lock();
+    copy = _height;
+    _mutex.unlock();
+
+    return copy;
 }

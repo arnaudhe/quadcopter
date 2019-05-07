@@ -10,12 +10,14 @@
 #include <periph/i2c_master.h>
 #include <periph/timer.h>
 
+#include <os/periodic_task.h>
+
 #include <app/observers/euler_observer.h>
 #include <app/observers/height_observer.h>
 
 #include <data_model/data_ressources_registry.h>
 
-class AttitudeController
+class AttitudeController : public PeriodicTask
 {
 
 private:
@@ -34,9 +36,6 @@ private:
     Controller              * _yaw_controller;
     Mixer                   * _mixer;
     float                     _period;
-    double                    _barometer;
-    float                     _barometer_timing;
-    bool                      _barometer_waiting;
 
     float            _roll_speed;
     float            _pitch_speed;
@@ -44,10 +43,9 @@ private:
     float            _height_speed;
 
 public:
+    void run(void);
 
-    AttitudeController(float period, DataRessourcesRegistry * registry);
 
-    void update(void);
 
     void set_height_target(Controller::Mode mode, float target);
     void set_roll_target(Controller::Mode mode, float target);

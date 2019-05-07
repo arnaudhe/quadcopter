@@ -15,7 +15,6 @@ class Timer
     timer_group_t           _group;
     timer_idx_t             _idx;
     std::function<void()>   _callback;
-    xQueueHandle            _queue;
 
     static void isr_handler(void * arg);
 

@@ -7,6 +7,7 @@
 #include <data_model/data_ressource.h>
 #include <hal/udp_server.h>
 #include <utils/json.hpp>
+#include <os/mutex.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -63,7 +64,7 @@ class DataRessourcesRegistry
   private:
 
     map<string, DataRessource*> _map;
-
+    Mutex                       _mutex;
     function<void(string, DataRessource *)> _callback;
 
   public:
@@ -98,7 +99,11 @@ inline DataRessourceRegistryStatus DataRessourcesRegistry::set(string key, T val
         return DataRessourceRegistryStatus(DataRessourceRegistryStatus::BAD_RESSOURCE);
     }
 
-    return DataRessourceRegistryStatus(_map[key]->set<T>(value).get());
+    _mutex.lock();
+    DataRessourceRegistryStatus ret = DataRessourceRegistryStatus(_map[key]->set<T>(value).get());
+    _mutex.unlock();
+
+    return ret;
 }
 
 template <typename T>
@@ -109,17 +114,27 @@ inline DataRessourceRegistryStatus DataRessourcesRegistry::get(string key, T &va
         return DataRessourceRegistryStatus(DataRessourceRegistryStatus::BAD_RESSOURCE);
     }
 
-    return DataRessourceRegistryStatus(_map[key]->set<T>(value).get());
+    _mutex.lock();
+    DataRessourceRegistryStatus ret = DataRessourceRegistryStatus(_map[key]->get<T>(value).get());
+    _mutex.unlock();
+
+    return ret;
 }
 
 template <typename T>
 inline void DataRessourcesRegistry::internal_set(string key, T value)
 {
+    _mutex.lock();
     _map[key]->internal_set<T>(value);
+    _mutex.unlock();
 }
 
 template <typename T>
 inline T DataRessourcesRegistry::internal_get(string key)
 {
-    return _map[key]->internal_get<T>();
+    T ret;
+    _mutex.lock();
+    ret = _map[key]->internal_get<T>();
+    _mutex.unlock();
+    return ret;
 }

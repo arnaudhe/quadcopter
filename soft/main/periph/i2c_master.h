@@ -1,6 +1,7 @@
 #pragma once
 
 #include <driver/i2c.h>
+#include <os/mutex.h>
 
 using namespace std;
 
@@ -11,8 +12,10 @@ class I2cMaster
 
     /* Attributes */
 
+    Mutex      _mutex;
     i2c_port_t _port;       ///< i2c port
     bool       _init;
+
 
     /* Methods */
 

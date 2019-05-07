@@ -23,7 +23,6 @@ Timer::Timer(timer_group_t group, timer_idx_t idx, float period)
 
     _group = group;
     _idx   = idx;
-    _queue = xQueueCreate(10, sizeof(timer_event_t));
 
     timer_init(group, idx, &config);
     timer_disable_intr(group, idx);
@@ -58,25 +57,11 @@ void IRAM_ATTR Timer::isr_handler(void * arg)
     Timer * timer = (Timer *)arg;
     // timer->_callback();
 
-    /* Retrieve the interrupt status and the counter value
-       from the timer that reported the interrupt */
-    uint32_t intr_status = TIMERG1.int_st_timers.val;
-
-    /* Prepare basic event data
-       that will be then sent back to the main program task */
-    timer_event_t evt;
-    evt.timer_group = 0;
-    evt.timer_idx = timer->_idx;
-    evt.timer_counter_value = 0;
-
     TIMERG1.int_clr_timers.t0 = 1;
     
     /* After the alarm has been triggered
       we need enable it again, so it is triggered the next time */
     TIMERG1.hw_timer[timer->_idx].config.alarm_en = TIMER_ALARM_EN;
-
-    /* Now just send the event data back to the main program task */
-    xQueueSendFromISR(timer->_queue, &evt, NULL);
 }
 
 void Timer::enable_interrupt(std::function<void()> callback)

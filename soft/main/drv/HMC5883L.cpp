@@ -3,6 +3,8 @@
 #include <drv/HMC5883L_defs.h>
 #include <esp_log.h>
 
+#include <os/task.h>
+
 #include <stdio.h>
 
 HMC5883L::HMC5883L(I2cMaster * i2c)
@@ -18,7 +20,7 @@ esp_err_t HMC5883L::init(void)
 
     do
     {
-        vTaskDelay(HMC5883L_WAKEUP_DELAY_ms / portTICK_PERIOD_MS);
+        Task::delay_ms(HMC5883L_WAKEUP_DELAY_ms);
 
         if    ((_i2c->read_register(_address, HMC5883L_REG_IDENT_A, &ident_a) == ESP_OK)
             && (_i2c->read_register(_address, HMC5883L_REG_IDENT_B, &ident_b) == ESP_OK)
@@ -32,7 +34,7 @@ esp_err_t HMC5883L::init(void)
                 _i2c->write_register(_address, HMC5883L_REG_CONFIG_B, HMC5883L_MAG_SENSIVITY_SEL);
                 _i2c->write_register(_address, HMC5883L_REG_MODE, HMC5883L_CONTINOUS);
 
-                vTaskDelay(HMC5883L_CONFIG_DELAY_ms / portTICK_PERIOD_MS);
+                Task::delay_ms(HMC5883L_CONFIG_DELAY_ms);
 
                 return ESP_OK;
             }

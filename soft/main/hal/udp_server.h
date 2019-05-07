@@ -3,9 +3,12 @@
 #include <string>
 #include <functional>
 
+#include <os/task.h>
+#include <os/semaphore.h>
+
 using namespace std;
 
-class UdpServer
+class UdpServer : public Task
 {
   private:
 
@@ -14,7 +17,7 @@ class UdpServer
     function<void(string, string&)>     _callback;
     int                                 _socket;
 
-    static void udp_server_task(void *);
+    void run();
 
     bool recv(string &msg);
 
@@ -28,7 +31,5 @@ class UdpServer
     ~UdpServer();
 
     void register_callback(function<void(string, string&)>);
-
-    void start(void);
 
 };

@@ -1,8 +1,5 @@
 #include <hal/udp_server.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
 #include <lwip/err.h>
 #include <lwip/sockets.h>
 #include <lwip/sys.h>
@@ -12,7 +9,8 @@
 
 #include <esp_log.h>
 
-UdpServer::UdpServer(string name, int port)
+UdpServer::UdpServer(string name, int port) :
+    Task(name, Task::Priority::LOW, 8192, false)
 {
     _name = name;
     _port = port;
@@ -31,23 +29,20 @@ UdpServer::UdpServer(string name, int port)
 
     ESP_LOGI(_name.c_str(), "Socket created");
 
-    int err = bind(_socket, (struct sockaddr *)&destAddr, sizeof(destAddr));
-    if (err < 0) 
+    int err = ::bind(_socket, (struct sockaddr *)&destAddr, sizeof(destAddr));
+    if (err < 0)
     {
         ESP_LOGE(_name.c_str(), "Socket unable to bind: errno %d", errno);
     }
 
     ESP_LOGI(_name.c_str(), "Server ready");
+
+    start();
 }
 
 UdpServer::~UdpServer()
 {
     close(_socket);
-}
-
-void UdpServer::start(void)
-{
-    xTaskCreate(UdpServer::udp_server_task, "udp_server", 8192, this, 5, NULL);
 }
 
 void UdpServer::register_callback(function<void(string, string&)> callback)
@@ -122,25 +117,23 @@ bool UdpServer::sendto(string msg, string address, int port)
     }
 }
 
-void UdpServer::udp_server_task(void *pvParameters)
+void UdpServer::run()
 {
-    UdpServer * server = (UdpServer *)pvParameters;
     string      request;
     string      response;
     string      ip_src;
     int         port_src;
 
-    while (1) 
+    while (1)
     {
         ESP_LOGD(server->_name.c_str(), "Waiting for data");
 
-        if (server->recvfrom(request, ip_src, port_src))
+        if (recvfrom(request, ip_src, port_src))
         {
-            ESP_LOGI(server->_name.c_str(), "Received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
-            server->_callback(request, response);
-            ESP_LOGI(server->_name.c_str(), "Send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
-            server->sendto(response, ip_src, port_src);
+            ESP_LOGI(_name.c_str(), "Received from %s:%d : %s", ip_src.c_str(), port_src, request.c_str());
+            _callback(request, response);
+            ESP_LOGI(_name.c_str(), "Send to %s:%d : %s", ip_src.c_str(), port_src, response.c_str());
+            sendto(response, ip_src, port_src);
         }
     }
-    vTaskDelete(NULL);
 }

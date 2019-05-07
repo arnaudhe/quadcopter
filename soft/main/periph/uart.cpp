@@ -1,5 +1,4 @@
 #include <periph/uart.h>
-#include <freertos/FreeRTOS.h>
 #include <periph/uart_conf.h>
 
 #define BUF_SIZE    1024

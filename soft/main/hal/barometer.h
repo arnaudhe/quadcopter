@@ -2,23 +2,28 @@
 
 #include <periph/i2c_master.h>
 #include <drv/BMP180.h>
+#include <os/task.h>
+#include <os/mutex.h>
 
-class Barometer
+class Barometer : public Task
 {
-private:
+  private:
 
-    double   _temperature;
-    double   _initial_pressure;
-    BMP180 * _bmp;
+    I2cMaster * _i2c;
+    double      _temperature;
+    double      _initial_pressure;
+    double      _height;
+    BMP180    * _bmp;
+    Mutex       _mutex;
 
-public:
+    void run();
+
+  public:
 
     Barometer(I2cMaster * i2c);
 
     void init(void);
 
-    void read_temperature(double &temperature);
-
-    void read(double &baro);
+    float height();
 
 };

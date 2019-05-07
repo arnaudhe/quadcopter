@@ -2,6 +2,8 @@
 #include <drv/MPU6050_defs.h>
 #include <drv/MPU6050_conf.h>
 
+#include <os/task.h>
+
 #define DEG_TO_RAD(a) ((a * 3.1416) / (180.0))
 
 MPU6050::MPU6050(I2cMaster * i2c)
@@ -18,8 +20,8 @@ esp_err_t MPU6050::init(void)
     
     do
     {
-        vTaskDelay(MPU6050_WAKEUP_DELAY_ms / portTICK_PERIOD_MS);
-        
+        Task::delay_ms(MPU6050_WAKEUP_DELAY_ms);
+
         ret = _i2c->write_bit(_address, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, false);
 
         if (ret == ESP_OK)

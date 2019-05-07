@@ -1,9 +1,10 @@
 #include <hal/barometer.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
 #include <esp_log.h>
 
-Barometer::Barometer(I2cMaster * i2c)
+Barometer::Barometer(I2cMaster * i2c) : 
+    Task("barometer", Task::Priority::VERY_LOW, 2048, false),
+    _i2c(i2c),
+    _mutex()
 {
     _bmp = new BMP180(i2c);
 }
@@ -14,7 +15,7 @@ void Barometer::init(void)
 
     _bmp->init();
 
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    Task::delay_ms(250);
 
     _initial_pressure = 0.0;
 
@@ -23,11 +24,11 @@ void Barometer::init(void)
         double tmp;
 
         _bmp->start_temperature();
-        vTaskDelay(5 / portTICK_PERIOD_MS);
+        Task::delay_ms(5);
         _bmp->get_temperature(_temperature);
 
         _bmp->start_pressure();
-        vTaskDelay(26 / portTICK_PERIOD_MS);
+        Task::delay_ms(26);
         _bmp->get_pressure(tmp, _temperature);
 
         _initial_pressure += tmp;
@@ -37,19 +38,35 @@ void Barometer::init(void)
 
     ESP_LOGI("Barometer", "initial pressure %f", _initial_pressure);
     ESP_LOGI("Barometer", "initial temperature %f", _temperature);
+
+    start();
 }
 
-void Barometer::read_temperature(double &temperature)
-{
-    _bmp->get_temperature(_temperature);
-    temperature = _temperature;
-    _bmp->start_pressure();
-}
-
-void Barometer::read(double &baro)
+void Barometer::run()
 {
     double pressure;
-    _bmp->get_pressure(pressure, _temperature);
-    baro = _bmp->altitude(pressure, _initial_pressure);
-    _bmp->start_temperature();
+
+    while(1)
+    {
+        _bmp->start_temperature();
+        Task::delay_ms(5);
+        _bmp->get_temperature(_temperature);
+
+        _bmp->start_pressure();
+        Task::delay_ms(26);
+        _bmp->get_pressure(pressure, _temperature);
+
+        _mutex.lock();
+        _height = _bmp->altitude(pressure, _initial_pressure);
+        _mutex.unlock();
+    }
+}
+
+float Barometer::height()
+{
+    float tmp;
+    _mutex.lock();
+    tmp = (float)_height;
+    _mutex.unlock();
+    return tmp;
 }

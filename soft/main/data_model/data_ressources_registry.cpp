@@ -8,6 +8,7 @@
 #include <esp_log.h>
 
 DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) : 
+    _mutex(),
     _callback(NULL)
 {
     // ifstream t(data_model_file);

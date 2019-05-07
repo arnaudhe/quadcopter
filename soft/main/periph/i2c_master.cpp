@@ -2,11 +2,11 @@
 #include <periph/i2c_master_defs.h>
 #include <periph/i2c_master_conf.h>
 
-I2cMaster::I2cMaster(i2c_port_t port)
+I2cMaster::I2cMaster(i2c_port_t port):
+    _mutex()
 {
     _port = port;
     _init = false;
-
 }
 
 esp_err_t I2cMaster::init()
@@ -47,7 +47,9 @@ esp_err_t I2cMaster::_write(uint8_t address, uint8_t * data, uint8_t data_len)
     i2c_master_write_byte(cmd, (address << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write(cmd, data, data_len, ACK_CHECK_EN);
     i2c_master_stop(cmd);
+    _mutex.lock();
     ret = i2c_master_cmd_begin(_port, cmd, 1000 / portTICK_RATE_MS);
+    _mutex.unlock();
     i2c_cmd_link_delete(cmd);
     
     return ret;
@@ -62,7 +64,9 @@ esp_err_t I2cMaster::_read(uint8_t address, uint8_t * data, uint8_t data_len)
     i2c_master_write_byte(cmd, (address << 1) | READ_BIT, ACK_CHECK_EN);
     i2c_master_read(cmd, data, data_len, I2C_MASTER_NACK);
     i2c_master_stop(cmd);
+    _mutex.lock();
     ret = i2c_master_cmd_begin(_port, cmd, 1000 / portTICK_RATE_MS);
+    _mutex.unlock();
     i2c_cmd_link_delete(cmd);
     
     return ret;

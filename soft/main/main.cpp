@@ -1,12 +1,6 @@
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <esp_system.h>
-#include <esp_event.h>
-#include <esp_event_loop.h>
 #include <nvs_flash.h>
 
 #include <string.h>
-#include <math.h>
 
 #include <hal/wifi.h>
 #include <app/controllers/attitude_controller.h>
@@ -15,11 +9,7 @@
 #include <utils/matrix.h>
 #include <data_model/data_ressources_registry.h>
 #include <data_model/json_protocol.h>
-
-esp_err_t event_handler(void *ctx, system_event_t *event)
-{
-    return ESP_OK;
-}
+#include <os/task.h>
 
 extern "C" void app_main(void)
 {
@@ -37,22 +27,21 @@ extern "C" void app_main(void)
     mdns       = new Mdns("quadcopter", "quadcopter");
     registry   = new DataRessourcesRegistry("data_model.json");
     protocol   = new JsonDataProtocol(udp, registry);
-    controller = new AttitudeController(0.01f, registry);
+    controller = new AttitudeController(0.02, registry);
 
     controller->set_height_target(Controller::Mode::SPEED, 0.0);
     controller->set_roll_target(Controller::Mode::POSITION, 0.0);
     controller->set_pitch_target(Controller::Mode::POSITION, 0.0);
     controller->set_yaw_target(Controller::Mode::SPEED, 0.5);
 
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    Task::delay_ms(500);
 
     wifi->connect();
     mdns->add_service("_quadcopter", "_udp", 5000);
-    udp->start();
+    controller->start();
 
     while (true)
     {
-        vTaskDelay(2 / portTICK_PERIOD_MS);
-        controller->update();
+        Task::delay_ms(1000);
     }
 }

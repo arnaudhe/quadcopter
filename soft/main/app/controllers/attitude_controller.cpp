@@ -2,11 +2,10 @@
 #include <app/controllers/attitude_controller_conf.h>
 #include <esp_log.h>
 
-AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry)
+AttitudeController::AttitudeController(double period, DataRessourcesRegistry * registry):
+    PeriodicTask("attitude_ctlr", (int)(period * 1000), false)
 {
     _period             = period;
-    _barometer_timing   = 0.0;
-    _barometer_waiting  = false;
     _registry           = registry;
 
     _euler_observer = new EulerObserver(period);
@@ -20,8 +19,6 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _i2c->init();
     _marg->init();
     _baro->init();
-
-    _baro->read(_barometer);
 
     _height_controller = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP),
@@ -47,15 +44,15 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     ESP_LOGI("attitude_controller", "Init done");
 }
 
-void AttitudeController::update(void)
+void AttitudeController::run(void)
 {
     float  gx, gy, gz;           /* gyro in drone frame (sensor data) */
     float  ax, ay, az;           /* accelero in drone frame (sensor data) */
     float  ax_r, ay_r, az_r;     /* accelero in earth frame */
     float  mx, my, mz;           /* magneto in drone frame (sensor data) */
-    double temp;                 /* barometer temperature sensor data */
     double ultrasound = 0.0;
     float  roll, pitch, yaw;     /* previous values */
+    double  barometer = 0.0;
 
     /* Read the sensors */
 
@@ -63,20 +60,7 @@ void AttitudeController::update(void)
     _marg->read_gyro(&gx, &gy, &gz);
     _marg->read_mag(&mx, &my, &mz);
 
-    if (_barometer_timing >= (0.031))
-    {
-        _baro->read(_barometer);
-        _barometer_timing = 0.0;
-        _barometer_waiting = false;
-    }
-    else if ((_barometer_timing >= 0.005) && (_barometer_waiting == false))
-    {
-        _barometer_waiting = true;
-        _baro->read_temperature(temp);
-        // printf("temperature %f\n", temp);
-    }
-    _barometer_timing += _period;
-
+    barometer  = _baro->height();
     ultrasound = _ultrasound->height();
 
     /* Estimate the attitude */
@@ -87,7 +71,8 @@ void AttitudeController::update(void)
 
     _euler_observer->update(gx, gy, gz, ax, ay, az, mx, my, mz);
     _euler_observer->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
-    _height_observer->update(az_r - 0.97f, _barometer, ultrasound);
+
+    _height_observer->update(az_r - 0.97, barometer, ultrasound);
 
     _roll_speed   = (_euler_observer->roll()  - roll)  / _period;
     _pitch_speed  = (_euler_observer->pitch() - pitch) / _period;

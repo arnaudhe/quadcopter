@@ -52,11 +52,13 @@
             "id" : 4,
             "roll" : {
                 "id" : 1,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radians"
+                "position": {
+                    "id": 1,
+                    "type": "float",
+                    "permissions": [
+                        "read"
+                    ],
+                    "unit": "radians"
                 },
                 "speed" : {
                     "id" : 2,
@@ -77,6 +79,39 @@
                     "type" : "enum",
                     "values" : {"off" : 1, "position" : 2},
                     "permissions" : ["read", "write"]
+                },
+                "kp": {
+                    "id": 5,
+                    "type": "float",
+                    "min" : 0.0,
+                    "max" : 1.0,
+                    "permissions": [
+                        "read",
+                        "write"
+                    ],
+                    "unit": ""
+                },
+                "ki": {
+                    "id": 6,
+                    "type": "float",
+                    "min" : 0.0,
+                    "max" : 1.0,
+                    "permissions": [
+                        "read",
+                        "write"
+                    ],
+                    "unit": ""
+                },
+                "kd": {
+                    "id": 7,
+                    "type": "float",
+                    "min" : 0.0,
+                    "max" : 1.0,
+                    "permissions": [
+                        "read",
+                        "write"
+                    ],
+                    "unit": ""
                 }
             },
             "pitch" : {
@@ -284,6 +319,17 @@
                     "permissions" : ["read", "write"]
                 }
             }
+        },
+        "thurst_offset": {
+            "id": 6,
+            "type": "float",
+            "min": 0.0,
+            "max": 1.0,
+            "permissions": [
+                "read",
+                "write"
+            ],
+            "unit": "%"
         }
     },
     "battery" : {

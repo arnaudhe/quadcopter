@@ -23,6 +23,42 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
     _height_controller = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP),
                                         new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP));
+    _registry->internal_set<string>("control.mode", "off");
+    _registry->internal_set<float>("control.motors.front_left", 0.0);
+    _registry->internal_set<float>("control.motors.front_right", 0.0);
+    _registry->internal_set<float>("control.motors.rear_left", 0.0);
+    _registry->internal_set<float>("control.motors.rear_right", 0.0);
+    _registry->internal_set<float>("control.attitude.roll.position_target", 0.0);
+    _registry->internal_set<string>("control.attitude.roll.mode", "off");
+    _registry->internal_set<string>("control.attitude.pitch.mode", "off");
+    _registry->internal_set<string>("control.attitude.yaw.mode", "off");
+    _registry->internal_set<string>("control.attitude.height.mode", "off");
+    _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.speed_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.x.speed", 0.0f);
+    _registry->internal_set<float>("control.position.x.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.y.speed", 0.0f);
+    _registry->internal_set<float>("control.position.y.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.z.speed", 0.0f);
+    _registry->internal_set<float>("control.position.z.speed_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.position", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.position_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.position", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.position_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.position", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.position_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.position", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.position_target", 0.0f);
+    _registry->internal_set<float>("control.position.x.position", 0.0f);
+    _registry->internal_set<float>("control.position.x.position_target", 0.0f);
+    _registry->internal_set<float>("control.position.y.position", 0.0f);
+    _registry->internal_set<float>("control.position.y.position_target", 0.0f);
+    _registry->internal_set<float>("control.position.z.position", 0.0f);
+    _registry->internal_set<float>("control.position.z.position_target", 0.0f);
 
     _roll_controller   = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_ROLL_SPEED_KP, ATTITUDE_PID_ROLL_SPEED_KI, ATTITUDE_PID_ROLL_SPEED_KD),

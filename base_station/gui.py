@@ -157,11 +157,27 @@ class MainWindow(QMainWindow):
             if isinstance(content, dict):
                 if 'type' in content:
                     if content['type'] == 'integer':
+                        if 'min' in content:
+                            minimum = content['min']
+                        else:
+                            minimum = 0
+                        if 'max' in content:
+                            maximum = content['max']
+                        else:
+                            maximum = 1
                         widget = IntegerRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
-                                                        content['unit'], content['min'], content['max'])
+                                                        content['unit'], minimum, maximum)
                     elif content['type'] == 'float':
+                        if 'min' in content:
+                            minimum = content['min']
+                        else:
+                            minimum = 0.0
+                        if 'max' in content:
+                            maximum = content['max']
+                        else:
+                            maximum = 1.0
                         widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
-                                                    content['unit'], 0.0, 1.0)
+                                                    content['unit'], minimum, maximum)
                     elif content['type'] == 'bool':
                         widget = BoolRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])
                     elif content['type'] == 'enum':

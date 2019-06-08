@@ -15,7 +15,7 @@ void Controller::update_target(Mode mode, float value)
     _mode = mode;
     _target = value;
 
-    switch (_mode)
+    switch (mode)
     {
         case Mode::SPEED:
             _pid_speed->set_consign(value);

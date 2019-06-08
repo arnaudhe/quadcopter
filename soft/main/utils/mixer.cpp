@@ -6,6 +6,8 @@ Mixer::Mixer(Motor * front_left, Motor * front_right, Motor * rear_left, Motor *
     _front_right = front_right;
     _rear_left   = rear_left;
     _rear_right  = rear_right;
+
+    set_motors_speeds(0.0, 0.0, 0.0, 0.0);
 }
 
 void Mixer::update(float height_command, float roll_command, float pitch_command, float yaw_command)

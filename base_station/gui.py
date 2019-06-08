@@ -60,6 +60,8 @@ class DataRessourceWidget(QWidget):
         self.layout.addWidget(self.button)
         self.setLayout(self.layout)
         self.read_pending = False
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_button_clicked(self):
         status, value = self.read_callback(self.key)
@@ -143,11 +145,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self, data_model):
         super().__init__()
+        self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sequence = 0
         self.data_model = data_model
         self.widgets = {}
         self.setup_ui()
-        self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sequence = 0
 
     def load_model(self, data_model, container_layout, current_key = ''):
         for key, content in data_model.items():
@@ -184,7 +186,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.scrollArea)
 
         self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 970, 3200))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 970, 3500))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         layout = QVBoxLayout(self.scrollAreaWidgetContents)     
@@ -208,19 +210,26 @@ class MainWindow(QMainWindow):
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("127.0.0.1", 5000))
         response = json.loads(self.udp_client.recv(1024).decode("utf-8"))
         if (response['command'] == "write" and response['sequence'] == self.sequence and response['direction'] == 'response'):
-            if response['status'][key] != 'success':
-                print(f'Error when writing ressource {key} {value}')
+            if response['status'][key] == 'success':
+                print('success')
+                return
+        print(f'Error when writing ressource {key} {value}')
 
     def on_read_request(self, key):
         print(f'read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("127.0.0.1", 5000))
-        response = json.loads(self.udp_client.recv(1024).decode("utf-8"))
-        if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
-            if response['status'][key] == 'success':
-                return True, response['ressources'][key]
-        print(f'Error when writing ressource {key}')
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
+        self.udp_client.settimeout(1.0)
+        try:
+            response = json.loads(self.udp_client.recv(1024).decode("utf-8"))
+            if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
+                if response['status'][key] == 'success':
+                    print(response['ressources'][key])
+                    return True, response['ressources'][key]
+        except:
+            pass
+        print(f'Error when reading ressource {key}')
         return False, None
 
 if __name__ == '__main__':

@@ -56,3 +56,24 @@ float Controller::command(void)
 {
     return _command;
 }
+
+void Controller::set_pid_coeffs(Mode mode, float kp, float ki, float kd)
+{
+    switch (mode)
+    {
+        case Mode::SPEED:
+            _pid_speed->set_kp(kp);
+            _pid_speed->set_ki(ki);
+            _pid_speed->set_kd(kd);
+            break;
+
+        case Mode::POSITION:
+            _pid_position->set_kp(kp);
+            _pid_position->set_ki(ki);
+            _pid_position->set_kd(kd);
+            break;
+
+        default:
+            break;
+    }
+}

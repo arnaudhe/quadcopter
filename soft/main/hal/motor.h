@@ -15,4 +15,6 @@ public:
 
     void set_speed(float speed);
 
+    void set_zero(void);
+
 };

@@ -2,7 +2,7 @@
 
 #define PULSE_TIMER                LEDC_TIMER_0
 #define PULSE_BIT_SIZE             15
-#define PULSE_FREQUENCY_Hz         49
+#define PULSE_FREQUENCY_Hz         50
 #define PULSE_PERIOD_us            20000
 
 #define PULSE_DUTY(a)              ((((1 << PULSE_BIT_SIZE) - 1) * a) / PULSE_PERIOD_us)
@@ -31,6 +31,7 @@ esp_err_t Pulse::init()
         _ledc_conf.intr_type  = LEDC_INTR_DISABLE;
         _ledc_conf.speed_mode = LEDC_HIGH_SPEED_MODE;
         _ledc_conf.timer_sel  = PULSE_TIMER;
+        _ledc_conf.hpoint     = 0;
         ledc_channel_config(&_ledc_conf);
 
         _init = true;

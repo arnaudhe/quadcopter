@@ -25,8 +25,8 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
                                         new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP));
 
     _roll_controller   = new Controller(period, 
-                                        new Pid(period, ATTITUDE_PID_ROLL_KP, ATTITUDE_PID_ROLL_KP, ATTITUDE_PID_ROLL_KP),
-                                        new Pid(period, ATTITUDE_PID_ROLL_KP, ATTITUDE_PID_ROLL_KP, ATTITUDE_PID_ROLL_KP));
+                                        new Pid(period, ATTITUDE_PID_ROLL_SPEED_KP, ATTITUDE_PID_ROLL_SPEED_KI, ATTITUDE_PID_ROLL_SPEED_KD),
+                                        new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD));
 
     _pitch_controller  = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP),
@@ -106,16 +106,10 @@ void AttitudeController::run(void)
             height_command = 0.0f;
         }
 
-        if (_registry->internal_get<string>("control.attitude.roll.mode") == "speed")
+        if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
         {
-            _roll_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.roll.speed_target"));
-            _roll_controller->update (_euler_observer->roll(), _roll_speed);
-            roll_command = _roll_controller->command();
-        }
-        else if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
-        {
-            _roll_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.roll.position_target"));
-            _roll_controller->update (_euler_observer->roll(), _roll_speed);
+            _roll_controller->update_target(Controller::POSITION, _registry->internal_get<float>("control.attitude.roll.position_target"));
+            _roll_controller->update(_euler_observer->roll(), gx);
             roll_command = _roll_controller->command();
         }
         else

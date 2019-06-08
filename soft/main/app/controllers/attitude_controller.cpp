@@ -108,7 +108,7 @@ void AttitudeController::run(void)
     _euler_observer->update(gx, gy, gz, ax, ay, az, mx, my, mz);
     _euler_observer->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
 
-    _height_observer->update(az_r - 0.97, barometer, ultrasound);
+    _height_observer->update((az_r - 0.948) * 10.0, barometer, ultrasound);
 
     _roll_speed   = (_euler_observer->roll()  - roll)  / _period;
     _pitch_speed  = (_euler_observer->pitch() - pitch) / _period;

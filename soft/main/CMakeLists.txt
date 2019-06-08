@@ -17,6 +17,7 @@ set(COMPONENT_SRCS
     hal/mdns.cpp 
     hal/barometer.cpp 
     hal/imu.cpp 
+    hal/led.cpp
     hal/motor.cpp 
     hal/wifi.cpp 
     hal/wifi_config.c 

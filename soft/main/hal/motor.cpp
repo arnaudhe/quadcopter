@@ -13,6 +13,27 @@ Motor::Motor(int channel, int pin)
 void Motor::set_speed(float speed)
 {
     uint16_t width = (uint16_t)(speed * (float)(PULSE_MAX_VALUE_us - PULSE_MIN_VALUE_us)) + PULSE_MIN_VALUE_us;
+    
+    if (width < PULSE_MIN_VALUE_us)
+    {
+        width = PULSE_MIN_VALUE_us;
+    }
+
+    if (width > PULSE_MAX_VALUE_us)
+    {
+        width = PULSE_MAX_VALUE_us;
+    }
+
+    if ((width > 1472) && (width < 1485))
+    {
+        width = 1472;
+    }
+
+    if ((width >= 1485) && (width < 1503))
+    {
+        width = 1503;
+    }
+
     _pulse->set(width);
 }
 

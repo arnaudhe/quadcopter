@@ -6,6 +6,8 @@
 #define ZERO_VELOCITY_DETECTOR_STEPS        10
 #define ZERO_VELOCITY_DETECTOR_THRESHOLD    0.1
 
+#define ULTRASOUND_MAX_RANGE_m              3.0f
+
 HeightObserver::HeightObserver(float period):
     Kalman(period, 2, 1, 3)
 {
@@ -65,6 +67,15 @@ void HeightObserver::update(float acc_z, float baro, float ultrasound)
         _zero_velocity_detect_count = 0;
     }
 
+    if (_state(0, 0) < ULTRASOUND_MAX_RANGE_m)
+    {
+        _measure_noise_matrix.set(1, 1, HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION * HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION);
+    }
+    else
+    {
+        _measure_noise_matrix.set(1, 1, 10.0 * 10.0);
+    }
+    
     if (_zero_velocity_detect_count == ZERO_VELOCITY_DETECTOR_STEPS)
     {
         measure.set(0, 0, baro);

@@ -11,7 +11,7 @@ HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin):
     _sem_falling(),
     _mutex()
 {
-    _echo_gpio  = new Gpio((gpio_num_t)echo_pin, Gpio::Direction::INPUT, false, false);
+    _echo_gpio  = new Gpio(echo_pin, Gpio::Direction::INPUT, false, false);
     _trig_pulse = new Pulse(HCSR04_TRIG_PULSE_WIDTH_us, trig_pin, trig_channel);
     _echo_timer = new Timer(TIMER_GROUP_1, TIMER_0, 0.02);
 
@@ -30,10 +30,12 @@ void HcSr04::echo_handler()
 
     if (_echo_gpio->read())
     {
-        _sem_rising.notify_from_isr(must_yield);
+        _echo_timer->reset();
+        _echo_timer->start();
     }
     else
     {
+        _echo_timer->stop();
         _sem_falling.notify_from_isr(must_yield);
     }
 
@@ -47,11 +49,7 @@ void HcSr04::run()
 {
     while(1)
     {
-        _sem_rising.wait();
-        _echo_timer->reset();
-        _echo_timer->start();
         _sem_falling.wait();
-        _echo_timer->stop();
         _mutex.lock();
         _height = _echo_timer->get_time() / HCSR04_SCALE_FACTOR;
         _mutex.unlock();

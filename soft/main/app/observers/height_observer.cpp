@@ -32,8 +32,8 @@ HeightObserver::HeightObserver(float period):
     _process_noise_matrix.set(1, 1, powf(period, 4) * HEIGHT_OBSERVER_ACCELEROMETER_DEVIATION * HEIGHT_OBSERVER_ACCELEROMETER_DEVIATION);
 
     _measure_noise_matrix.set(0, 0, HEIGHT_OBSERVER_SENSOR_BAROMETER_DEVIATION * HEIGHT_OBSERVER_SENSOR_BAROMETER_DEVIATION);
-    _measure_noise_matrix.set(1, 1, HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION * HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION);     // Speed measure covariance
-    _measure_noise_matrix.set(2, 2, 0.0001);     // Speed measure covariance
+    _measure_noise_matrix.set(1, 1, HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION * HEIGHT_OBSERVER_SENSOR_ULTRASOUND_DEVIATION);
+    _measure_noise_matrix.set(2, 2, 0.001);     // Speed measure covariance
 
     _covariance.set(0, 0, 0.01);
     _covariance.set(1, 1, 0.01);

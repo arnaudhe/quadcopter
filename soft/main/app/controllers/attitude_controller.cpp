@@ -33,8 +33,8 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
                                         new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD));
 
     _yaw_controller    = new Controller(period, 
-                                        new Pid(period, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP),
-                                        new Pid(period, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP));
+                                        new Pid(period, ATTITUDE_PID_YAW_SPEED_KP, ATTITUDE_PID_YAW_SPEED_KI, ATTITUDE_PID_YAW_SPEED_KD),
+                                        new Pid(period, ATTITUDE_PID_YAW_POSITION_KP, ATTITUDE_PID_YAW_POSITION_KI, ATTITUDE_PID_YAW_POSITION_KD));
 
     _mixer = new Mixer(new Motor(ATTITUDE_MOTOR_FRONT_LEFT_PULSE_CHANNEL,  ATTITUDE_MOTOR_FRONT_LEFT_PULSE_PIN),
                        new Motor(ATTITUDE_MOTOR_FRONT_RIGHT_PULSE_CHANNEL, ATTITUDE_MOTOR_FRONT_RIGHT_PULSE_PIN),
@@ -131,13 +131,13 @@ void AttitudeController::run(void)
         if (_registry->internal_get<string>("control.attitude.yaw.mode") == "speed")
         {
             _yaw_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.yaw.speed_target"));
-            _yaw_controller->update (_euler_observer->yaw(), _yaw_speed);
+            _yaw_controller->update(_euler_observer->yaw(), gz);
             yaw_command = _yaw_controller->command();
         }
         else if (_registry->internal_get<string>("control.attitude.yaw.mode") == "position")
         {
             _yaw_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.yaw.position_target"));
-            _yaw_controller->update (_euler_observer->yaw(), _yaw_speed);
+            _yaw_controller->update(_euler_observer->yaw(), gz);
             yaw_command = _yaw_controller->command();
         }
         else

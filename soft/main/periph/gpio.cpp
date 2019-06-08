@@ -1,8 +1,8 @@
 #include <periph/gpio.h>
 
-Gpio::Gpio(gpio_num_t pin, Gpio::Direction direction, bool pull_up, bool pull_down)
+Gpio::Gpio(int pin, Gpio::Direction direction, bool pull_up, bool pull_down)
 {
-    _pin = pin;
+    _pin = (gpio_num_t)pin;
     _direction = direction;
 
     gpio_config_t config;

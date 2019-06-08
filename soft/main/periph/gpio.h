@@ -24,7 +24,7 @@ class Gpio
         BOTH_EDGE
     };
 
-    Gpio(gpio_num_t pin, Gpio::Direction direction, bool pull_up, bool pull_down);
+    Gpio(int pin, Gpio::Direction direction, bool pull_up, bool pull_down);
 
     bool read();
 

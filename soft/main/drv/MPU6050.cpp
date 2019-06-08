@@ -26,6 +26,9 @@ esp_err_t MPU6050::init(void)
 
         if (ret == ESP_OK)
         {
+            _i2c->write_register(_address, MPU6050_RA_CONFIG, (MPU6050_LOW_PASS_FILTER_SEL << MPU6050_CFG_DLPF_CFG_BIT) | (MPU6050_EXT_SYNC_DISABLED << MPU6050_CFG_EXT_SYNC_SET_BIT)) ;
+            _i2c->read_register(_address, MPU6050_RA_CONFIG, &current );
+
             _i2c->write_register(_address, MPU6050_RA_GYRO_CONFIG, (MPU6050_GYRO_SENSIVITY_SEL << MPU6050_GCONFIG_FS_SEL_BIT));
             _i2c->read_register(_address, MPU6050_RA_GYRO_CONFIG, &current );
 

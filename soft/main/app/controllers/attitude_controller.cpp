@@ -28,9 +28,9 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
                                         new Pid(period, ATTITUDE_PID_ROLL_SPEED_KP, ATTITUDE_PID_ROLL_SPEED_KI, ATTITUDE_PID_ROLL_SPEED_KD),
                                         new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD));
 
-    _pitch_controller  = new Controller(period, 
-                                        new Pid(period, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP),
-                                        new Pid(period, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP, ATTITUDE_PID_PITCH_KP));
+    _pitch_controller  = new Controller(period,
+                                        new Pid(period, ATTITUDE_PID_PITCH_SPEED_KP, ATTITUDE_PID_PITCH_SPEED_KI, ATTITUDE_PID_PITCH_SPEED_KD),
+                                        new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD));
 
     _yaw_controller    = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP, ATTITUDE_PID_YAW_KP),
@@ -117,16 +117,10 @@ void AttitudeController::run(void)
             roll_command = 0.0f;
         }
 
-        if (_registry->internal_get<string>("control.attitude.pitch.mode") == "speed")
-        {
-            _pitch_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.pitch.speed_target"));
-            _pitch_controller->update (_euler_observer->pitch(), _pitch_speed);
-            pitch_command = _pitch_controller->command();
-        }
-        else if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
+        if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
         {
             _pitch_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.pitch.position_target"));
-            _pitch_controller->update (_euler_observer->pitch(), _pitch_speed);
+            _pitch_controller->update(_euler_observer->pitch(), gy);
             pitch_command = _pitch_controller->command();
         }
         else

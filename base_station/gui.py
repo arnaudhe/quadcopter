@@ -223,30 +223,49 @@ class MainWindow(QMainWindow):
         print(f'write {key} {value}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'write', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : {key : value}}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("127.0.0.1", 5000))
-        response = json.loads(self.udp_client.recv(1024).decode("utf-8"))
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
+        try:
+            data = self.udp_client.recv(1024).decode("utf-8")
+        except socket.timeout:
+            print(f'Response timeout when writing ressource {key}')
+            return
+        try:
+            response = json.loads(data)
+        except:
+            print(f'Invalid response')
+            return
         if (response['command'] == "write" and response['sequence'] == self.sequence and response['direction'] == 'response'):
             if response['status'][key] == 'success':
-                print('success')
-                return
-        print(f'Error when writing ressource {key} {value}')
+                print('Success')
+            else:
+                print('Write status {}'.format(response['status'][key]))
+        else:
+            print('Not matching response. Drop it.')
 
     def on_read_request(self, key):
         print(f'read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
-        self.udp_client.settimeout(1.0)
+        self.udp_client.settimeout(2.0)
         try:
-            response = json.loads(self.udp_client.recv(1024).decode("utf-8"))
-            if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
-                if response['status'][key] == 'success':
-                    print(response['ressources'][key])
-                    return True, response['ressources'][key]
+            data = self.udp_client.recv(1024).decode("utf-8")
+        except socket.timeout:
+            print(f'Response timeout when reading ressource {key}')
+            return False, None
+        try:
+            response = json.loads(data)
         except:
-            pass
-        print(f'Error when reading ressource {key}')
-        return False, None
+            print(f'Invalid response')
+            return
+        if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
+            if response['status'][key] == 'success':
+                print(response['ressources'][key])
+                return True, response['ressources'][key]
+            else:
+                print('Read status {}'.format(response['status'][key]))
+        else:
+            print('Not matching response. Drop it.')
 
 if __name__ == '__main__':
 

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <esp_err.h>
-#include <esp_event_loop.h>
+#include <esp_event.h>
 
 using namespace std;
 
@@ -22,11 +22,11 @@ class Wifi
     bool  _connection_request;
     bool  _disconnection_request;
 
-    static esp_err_t event_handler(void *ctx, system_event_t *event);
+    static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
-  public:
+public :
 
-    Wifi();
+        Wifi();
 
     void connect();
 

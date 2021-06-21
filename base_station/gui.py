@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(self.scrollAreaWidgetContents)     
         self.setCentralWidget(self.centralWidget)
 
-        self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; background-color: rgb(230, 230, 230); border: 1px solid rgb(100, 100, 100); }")
+        self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; border: 1px solid rgb(100, 100, 100); }")
 
         self.setWindowTitle('GUI')
 

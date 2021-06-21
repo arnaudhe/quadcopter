@@ -18,9 +18,6 @@
 #define ATTITUDE_PID_YAW_SPEED_KD                   (0)
 #define ATTITUDE_PID_YAW_CONSIGN                    (0)
 
-#define ATTITUDE_PID_HEIGHT_KP                      (0)
-#define ATTITUDE_PID_HEIGHT_KI                      (0)
-#define ATTITUDE_PID_HEIGHT_KD                      (0)
 #define ATTITUDE_PID_PITCH_POSITION_KP              (3.0f)
 #define ATTITUDE_PID_PITCH_POSITION_KI              (0.3f)
 #define ATTITUDE_PID_PITCH_POSITION_KD              (0.0f)
@@ -28,6 +25,13 @@
 #define ATTITUDE_PID_PITCH_SPEED_KI                 (0.0f)
 #define ATTITUDE_PID_PITCH_SPEED_KD                 (0.0f)
 #define ATTITUDE_PID_PITCH_CONSIGN                  (0.0f)
+
+#define ATTITUDE_PID_HEIGHT_POSITION_KP             (0)
+#define ATTITUDE_PID_HEIGHT_POSITION_KI             (0)
+#define ATTITUDE_PID_HEIGHT_POSITION_KD             (0)
+#define ATTITUDE_PID_HEIGHT_SPEED_KP                (0)
+#define ATTITUDE_PID_HEIGHT_SPEED_KI                (0)
+#define ATTITUDE_PID_HEIGHT_SPEED_KD                (0)
 #define ATTITUDE_PID_HEIGHT_CONSIGN                 (0)
 
 #define ATTITUDE_MOTOR_REAR_LEFT_PULSE_CHANNEL      (0)

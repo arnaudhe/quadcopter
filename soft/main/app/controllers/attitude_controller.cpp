@@ -1,6 +1,7 @@
 #include <app/controllers/attitude_controller.h>
 #include <app/controllers/attitude_controller_conf.h>
 #include <hal/log.h>
+#include <os/task.h>
 
 AttitudeController::AttitudeController(double period, DataRessourcesRegistry * registry):
     PeriodicTask("attitude_ctlr", (int)(period * 1000), false)
@@ -8,7 +9,7 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
     _period             = period;
     _registry           = registry;
 
-    _euler_observer = new EulerObserver(period);
+    _euler_observer  = new EulerObserver(period);
     _height_observer = new HeightObserver(period);
 
     _i2c        = new I2cMaster(I2C_MASTER_NUM);
@@ -20,9 +21,6 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
     _marg->init();
     _baro->init();
 
-    _height_controller = new Controller(period, 
-                                        new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP),
-                                        new Pid(period, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP, ATTITUDE_PID_HEIGHT_KP));
     _registry->internal_set<string>("control.mode", "off");
     _registry->internal_set<float>("control.motors.front_left", 0.0);
     _registry->internal_set<float>("control.motors.front_right", 0.0);
@@ -33,6 +31,10 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
     _registry->internal_set<string>("control.attitude.pitch.mode", "off");
     _registry->internal_set<string>("control.attitude.yaw.mode", "off");
     _registry->internal_set<string>("control.attitude.height.mode", "off");
+    _registry->internal_set<float>("control.attitude.roll.kp", ATTITUDE_PID_YAW_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.roll.ki", ATTITUDE_PID_YAW_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.roll.kd", ATTITUDE_PID_YAW_SPEED_KP);
+    _registry->internal_set<float>("control.thurst_offset", 0.26f);
     _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
     _registry->internal_set<float>("control.attitude.yaw.speed", 0.0f);
@@ -59,6 +61,10 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
     _registry->internal_set<float>("control.position.y.position_target", 0.0f);
     _registry->internal_set<float>("control.position.z.position", 0.0f);
     _registry->internal_set<float>("control.position.z.position_target", 0.0f);
+
+    _height_controller = new Controller(period,
+                                        new Pid(period, ATTITUDE_PID_HEIGHT_SPEED_KP, ATTITUDE_PID_HEIGHT_SPEED_KI, ATTITUDE_PID_HEIGHT_SPEED_KD),
+                                        new Pid(period, ATTITUDE_PID_HEIGHT_POSITION_KP, ATTITUDE_PID_HEIGHT_POSITION_KI, ATTITUDE_PID_HEIGHT_POSITION_KD));
 
     _roll_controller   = new Controller(period, 
                                         new Pid(period, ATTITUDE_PID_ROLL_SPEED_KP, ATTITUDE_PID_ROLL_SPEED_KI, ATTITUDE_PID_ROLL_SPEED_KD),
@@ -128,13 +134,13 @@ void AttitudeController::run(void)
         if (_registry->internal_get<string>("control.attitude.height.mode") == "speed")
         {
             _height_controller->update_target(Controller::Mode::SPEED, _registry->internal_get<float>("control.attitude.height.speed_target"));
-            _height_controller->update (_height_observer->height(), _height_observer->vertical_speed());
+            _height_controller->update(_height_observer->height(), _height_observer->vertical_speed());
             height_command = _height_controller->command();
         }
         else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
         {
             _height_controller->update_target(Controller::Mode::POSITION, _registry->internal_get<float>("control.attitude.height.position_target"));
-            _height_controller->update (_height_observer->height(), _height_observer->vertical_speed());
+            _height_controller->update(_height_observer->height(), _height_observer->vertical_speed());
             height_command = _height_controller->command();
         }
         else
@@ -182,7 +188,7 @@ void AttitudeController::run(void)
         }
 
         /* Apply the controls to the motors */
-        _mixer->update(height_command, roll_command, pitch_command, yaw_command);
+        _mixer->update(_registry->internal_get<float>("control.thurst_offset"), roll_command, pitch_command, yaw_command);
     }
     else if (_registry->internal_get<string>("control.mode") == "motors")
     {

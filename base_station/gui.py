@@ -25,10 +25,10 @@ class FloatSlider(QSlider):
         return float(super(FloatSlider, self).value()) / self._multi
 
     def setMinimum(self, value):
-        return super(FloatSlider, self).setMinimum(value * self._multi)
+        return super(FloatSlider, self).setMinimum(int(value * self._multi))
 
     def setMaximum(self, value):
-        return super(FloatSlider, self).setMaximum(value * self._multi)
+        return super(FloatSlider, self).setMaximum(int(value * self._multi))
 
     def setSingleStep(self, value):
         return super(FloatSlider, self).setSingleStep(value * self._multi)
@@ -37,7 +37,10 @@ class FloatSlider(QSlider):
         return float(super(FloatSlider, self).singleStep()) / self._multi
 
     def setValue(self, value):
-        super(FloatSlider, self).setValue(int(value * self._multi))
+        try:
+            super(FloatSlider, self).setValue(int(value * self._multi))
+        except:
+            pass
 
 
 class DataRessourceWidget(QWidget):

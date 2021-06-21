@@ -1,43 +1,30 @@
 #include <hal/motor.h>
 #include <hal/log.h>
 
-#define PULSE_MIN_VALUE_us         1000
-#define PULSE_MAX_VALUE_us         2000
+#define PULSE_MIN_VALUE_us         48
+#define PULSE_MAX_VALUE_us         2047
 
 Motor::Motor(int channel, int pin)
 {
-    _pulse = new Pulse(PULSE_MIN_VALUE_us, pin, channel);
-    _pulse->init();
+    _dshot = new DShotRMT();
+    _dshot->install((gpio_num_t)pin, (rmt_channel_t)channel);
+
+    LOG_INFO("RMT installed");
+}
+
+void Motor::arm(void)
+{
+    _dshot->init();
 }
 
 void Motor::set_speed(float speed)
 {
     uint16_t width = (uint16_t)(speed * (float)(PULSE_MAX_VALUE_us - PULSE_MIN_VALUE_us)) + PULSE_MIN_VALUE_us;
-    
-    if (width < PULSE_MIN_VALUE_us)
-    {
-        width = PULSE_MIN_VALUE_us;
-    }
 
-    if (width > PULSE_MAX_VALUE_us)
-    {
-        width = PULSE_MAX_VALUE_us;
-    }
-
-    if ((width > 1472) && (width < 1485))
-    {
-        width = 1472;
-    }
-
-    if ((width >= 1485) && (width < 1503))
-    {
-        width = 1503;
-    }
-
-    _pulse->set(width);
+    _dshot->sendThrottle(width);
 }
 
 void Motor::set_zero(void)
 {
-    _pulse->set(PULSE_MIN_VALUE_us);
+    _dshot->sendThrottle(PULSE_MIN_VALUE_us);
 }

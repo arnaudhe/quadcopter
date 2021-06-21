@@ -3,6 +3,7 @@ set(COMPONENT_SRCS
     drv/MPU6050.cpp 
     drv/HMC5883L.cpp 
     drv/HCSR04.cpp 
+    drv/DShotRMT.cpp 
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
     app/observers/euler_observer.cpp 

@@ -1,17 +1,19 @@
 #pragma once
 
-#include <periph/pulse.h>
+#include <drv/DShotRMT.h>
 
 class Motor
 {
 
 private:
 
-    Pulse * _pulse;
+    DShotRMT * _dshot;
 
 public:
 
     Motor(int channel, int pin);
+
+    void arm(void);
 
     void set_speed(float speed);
 

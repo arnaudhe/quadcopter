@@ -269,15 +269,6 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
 
-    def on_service_state_change(zeroconf, service_type, name, state_change):
-        if state_change is ServiceStateChange.Added:
-            zeroconf.get_service_info(service_type, name)
-
-    zeroconf = Zeroconf()
-    ServiceBrowser(zeroconf, "_quadcopter._udp.local.", handlers=[on_service_state_change])
-
-    time.sleep(1)
-
     with open('../data_model/data_model.json') as json_file:
             data_model = json.load(json_file)
 

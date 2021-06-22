@@ -59,7 +59,7 @@ enum dshot_cmd_t
 #define DSHOT_THROTTLE_MIN 48
 #define DSHOT_THROTTLE_MAX 2047
 
-#define DSHOT_ARM_DELAY (5000 / portTICK_PERIOD_MS)
+#define DSHOT_ARM_DELAY (2000 / portTICK_PERIOD_MS)
 
 DShotRMT::DShotRMT()
 {
@@ -187,7 +187,7 @@ uint8_t DShotRMT::checksum(uint16_t data)
 
 esp_err_t DShotRMT::writeData(uint16_t data, bool wait)
 {
-	DSHOT_ERROR_CHECK(rmt_wait_tx_done(_rmtChannel, 5));
+	DSHOT_ERROR_CHECK(rmt_wait_tx_done(_rmtChannel, 10));
 
 	setData(data);
 
@@ -225,7 +225,7 @@ esp_err_t DShotRMT::repeatPacketTicks(dshot_packet_t packet, TickType_t ticks)
 	TickType_t repeatStop = xTaskGetTickCount() + ticks;
 	while (xTaskGetTickCount() < repeatStop)
 	{
-		DSHOT_ERROR_CHECK(writePacket(packet, false));
+		DSHOT_ERROR_CHECK(writePacket(packet, true));
 		vTaskDelay(1);
 	}
 	return ESP_OK;

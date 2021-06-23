@@ -90,6 +90,10 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
 
     _mixer = new Mixer(front_left, front_right, rear_left, rear_right);
 
+    printf("%f;%f;%f;%f\n", 180.0 * _euler_observer->roll() / 3.1416,
+           180.0 * _euler_observer->pitch() / 3.1416,
+           180.0 * _euler_observer->yaw() / 3.1416, _height_observer->height());
+
     LOG_INFO("Init done");
 }
 

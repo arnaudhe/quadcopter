@@ -88,7 +88,7 @@ esp_err_t DShotRMT::install(gpio_num_t gpio, rmt_channel_t rmtChannel)
 	config.rmt_mode = RMT_MODE_TX;
 	config.gpio_num = gpio;
 	config.mem_block_num = 1;
-	config.clk_div = 2;
+	config.clk_div = 4;
 
 	config.tx_config.loop_en = false;
 	config.tx_config.carrier_en = false;

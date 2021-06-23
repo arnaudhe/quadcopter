@@ -1,7 +1,7 @@
 #include "hal/wifi_config.h"
 
-#define EXAMPLE_ESP_WIFI_SSID      "AirPort-Opera"
-#define EXAMPLE_ESP_WIFI_PASS      "icicestlopera"
+#define EXAMPLE_ESP_WIFI_SSID      "charnos"
+#define EXAMPLE_ESP_WIFI_PASS      "icicest26ruestleon"
 
 static wifi_config_t config = {
     .sta = {

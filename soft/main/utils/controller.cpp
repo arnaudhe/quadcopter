@@ -41,8 +41,6 @@ void Controller::update(float position, float speed)
 
         case Mode::POSITION:
             _command = _pid_position->update(position);
-            _pid_speed->set_consign(_command);
-            _command = _pid_speed->update(speed);
             break;
 
         case Mode::DISABLED:

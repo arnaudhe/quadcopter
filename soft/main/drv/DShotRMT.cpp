@@ -59,7 +59,7 @@ enum dshot_cmd_t
 #define DSHOT_THROTTLE_MIN 48
 #define DSHOT_THROTTLE_MAX 2047
 
-#define DSHOT_ARM_DELAY (5000 / portTICK_PERIOD_MS)
+#define DSHOT_ARM_DELAY (1000 / portTICK_PERIOD_MS)
 
 DShotRMT::DShotRMT()
 {

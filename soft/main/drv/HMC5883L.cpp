@@ -57,23 +57,24 @@ esp_err_t HMC5883L::init(void)
 
 esp_err_t HMC5883L::read_mag(float * mag_x, float * mag_y, float * mag_z)
 {
-    uint8_t high, low;
+    uint8_t buffer[6];
     int16_t temp;
 
-    _i2c->read_register(_address, HMC5883L_REG_OUT_X_M, &high);
-    _i2c->read_register(_address, HMC5883L_REG_OUT_X_L, &low);
-    temp = (high << 8) + low;
-    *mag_x = ((float)((int)temp) + 200.0) / 9.73;
+    if (_i2c->read_registers(_address, HMC5883L_REG_OUT_X_M, buffer, 6) == ESP_OK)
+    {
+        temp = (buffer[0] << 8) + buffer[1];
+        *mag_x = ((float)((int)temp) + 200.0) / 9.73;
 
-    _i2c->read_register(_address, HMC5883L_REG_OUT_Y_M, &high);
-    _i2c->read_register(_address, HMC5883L_REG_OUT_Y_L, &low);
-    temp = (high << 8) + low;
-    *mag_y = ((float)((int)temp) + 67.0) / 8.94;
+        temp = (buffer[2] << 8) + buffer[3];
+        *mag_z = ((float)((int)temp) + 235.0) / 10.21;
 
-    _i2c->read_register(_address, HMC5883L_REG_OUT_Z_M, &high);
-    _i2c->read_register(_address, HMC5883L_REG_OUT_Z_L, &low);
-    temp = (high << 8) + low;
-    *mag_z = ((float)((int)temp) + 235.0) / 10.21;
+        temp = (buffer[4] << 8) + buffer[5];
+        *mag_y = ((float)((int)temp) + 67.0) / 8.94;
 
-    return ESP_OK;
+        return ESP_OK;
+    }
+    else
+    {
+        return ESP_FAIL;
+    }
 }

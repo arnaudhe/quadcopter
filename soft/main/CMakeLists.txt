@@ -37,6 +37,7 @@ set(COMPONENT_SRCS
     utils/matrix.cpp 
     utils/quaternion.cpp 
     utils/controller.cpp 
+    utils/filter.cpp 
     periph/i2c_master.cpp 
     periph/pulse.cpp 
     periph/timer.cpp 

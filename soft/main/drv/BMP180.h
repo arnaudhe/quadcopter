@@ -17,6 +17,9 @@ class BMP180
 
     double        c5,c6,mc,md,x0,x1,x2,y0,y1,y2,p0,p1,p2;
 
+    esp_err_t _read_int(uint8_t reg, int16_t * value);
+    esp_err_t _read_uint(uint8_t reg, uint16_t * value);
+
   public:
 
     /* Constructors */

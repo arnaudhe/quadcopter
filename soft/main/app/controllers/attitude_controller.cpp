@@ -105,8 +105,7 @@ void AttitudeController::run(void)
 
     /* Read the sensors */
 
-    _marg->read_acc(&ax, &ay, &az);
-    _marg->read_gyro(&gx, &gy, &gz);
+    _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
     _marg->read_mag(&mx, &my, &mz);
 
     barometer  = _baro->height();

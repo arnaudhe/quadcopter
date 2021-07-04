@@ -4,12 +4,66 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "make",
+            "label": "build",
             "type": "shell",
             "command": "python",
             "args": [
                 "${workspaceFolder}/esp-idf/tools/idf.py",
                 "build"
+            ],
+            "options": {
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                }
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/esp-idf"
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "flash",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "-p",
+                "/dev/tty.SLAB_USBtoUART",
+                "flash"
+            ],
+            "options": {
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                }
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/esp-idf"
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "monitor",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "-p",
+                "/dev/tty.SLAB_USBtoUART",
+                "monitor"
             ],
             "options": {
                 "env": {

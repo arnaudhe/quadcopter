@@ -13,22 +13,22 @@ class Quaternion : public Vect
   public:
 
     Quaternion();
-    Quaternion(double angle);
+    Quaternion(float angle);
     Quaternion(Matrix mat);
-    Quaternion(double q0, double q1, double q2, double q3);
+    Quaternion(float q0, float q1, float q2, float q3);
 
-    void set(double q0, double q1, double q2, double q3);
+    void set(float q0, float q1, float q2, float q3);
 
     Quaternion operator+(Quaternion);
     Quaternion operator-(Quaternion);
     Quaternion operator*(Quaternion);
-    Quaternion operator*(double);
+    Quaternion operator*(float);
 
     Quaternion conjugate(void);
 
-    double roll(void);
-    double pitch(void);
-    double yaw(void);
+    float roll(void);
+    float pitch(void);
+    float yaw(void);
 
     Matrix rotation_matrix(void);
 };

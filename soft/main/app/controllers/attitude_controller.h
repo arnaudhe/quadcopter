@@ -35,18 +35,18 @@ private:
     Controller              * _pitch_controller;
     Controller              * _yaw_controller;
     Mixer                   * _mixer;
-    double                    _period;
+    float                    _period;
 
-    double            _roll_speed;
-    double            _pitch_speed;
-    double            _yaw_speed;
-    double            _height_speed;
+    float _roll_speed;
+    float _pitch_speed;
+    float _yaw_speed;
+    float _height_speed;
 
     void run(void);
 
 public:
 
-    AttitudeController(double period, DataRessourcesRegistry * registry);
+    AttitudeController(float period, DataRessourcesRegistry * registry);
 
     void set_height_target(Controller::Mode mode, float target);
     void set_roll_target(Controller::Mode mode, float target);

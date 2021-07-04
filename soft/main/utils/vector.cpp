@@ -1,7 +1,7 @@
 #include <utils/vector.h>
 #include <math.h>
 
-Vect::Vect(unsigned int dim, double initial):
+Vect::Vect(unsigned int dim, float initial):
     Matrix(dim, 1, initial)
 {
 }
@@ -12,20 +12,20 @@ Vect::Vect(Matrix mat):
     set_data(mat.data());
 }
 
-void Vect::set(unsigned int index, double value)
+void Vect::set(unsigned int index, float value)
 {
     _data[index][0] = value;
 }
 
-double Vect::operator()(const unsigned &index)
+float Vect::operator()(const unsigned &index)
 {
     return _data[index][0];
 }
 
-double Vect::norm(void)
+float Vect::norm(void)
 {
     unsigned int i;
-    double norm = 0.0f;
+    float norm = 0.0f;
 
     for (i = 0; i < _rows; i++)
     {
@@ -37,7 +37,7 @@ double Vect::norm(void)
 
 void Vect::normalize(void)
 {
-    double norm = this->norm();
+    float norm = this->norm();
     unsigned int i;
 
     for (i = 0; i < _rows; i++)

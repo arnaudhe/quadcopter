@@ -3,7 +3,7 @@
 #include <hal/log.h>
 #include <os/task.h>
 
-AttitudeController::AttitudeController(double period, DataRessourcesRegistry * registry):
+AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry):
     PeriodicTask("attitude_ctlr", (int)(period * 1000), false)
 {
     _period             = period;
@@ -95,13 +95,13 @@ AttitudeController::AttitudeController(double period, DataRessourcesRegistry * r
 
 void AttitudeController::run(void)
 {
-    double  gx, gy, gz;           /* gyro in drone frame (sensor data) */
-    double  ax, ay, az;           /* accelero in drone frame (sensor data) */
-    double  ax_r, ay_r, az_r;     /* accelero in earth  frame */
-    double  mx, my, mz;           /* magneto in drone frame (sensor data) */
-    double  ultrasound = 0.0;
-    double  barometer = 0.0;
-    double  roll = 0.0, pitch = 0.0, yaw = 0.0;     /* previous values */
+    float  gx, gy, gz;           /* gyro in drone frame (sensor data) */
+    float  ax, ay, az;           /* accelero in drone frame (sensor data) */
+    float  ax_r, ay_r, az_r;     /* accelero in earth  frame */
+    float  mx, my, mz;           /* magneto in drone frame (sensor data) */
+    float  ultrasound = 0.0;
+    float  barometer = 0.0;
+    float  roll = 0.0, pitch = 0.0, yaw = 0.0;     /* previous values */
 
     /* Read the sensors */
 
@@ -136,7 +136,7 @@ void AttitudeController::run(void)
 
     if (_registry->internal_get<string>("control.mode") == "attitude")
     {
-        double height_command, roll_command, pitch_command, yaw_command;
+        float height_command, roll_command, pitch_command, yaw_command;
 
         if (_registry->internal_get<string>("control.attitude.height.mode") == "speed")
         {

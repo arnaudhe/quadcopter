@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <math.h>
 
-Matrix::Matrix(unsigned int rows, unsigned int columns, double initial)
+Matrix::Matrix(unsigned int rows, unsigned int columns, float initial)
 {
     _rows = rows;
     _columns = columns;
@@ -26,22 +26,22 @@ unsigned int Matrix::columns(void)
     return _columns;
 }
 
-vector<vector<double> > Matrix::data()
+vector<vector<float> > Matrix::data()
 {
     return _data;
 }
 
-void Matrix::set_data(vector<vector<double> > data)
+void Matrix::set_data(vector<vector<float> > data)
 {
     _data = data;
 }
 
-void Matrix::set(unsigned row, unsigned column, double value)
+void Matrix::set(unsigned row, unsigned column, float value)
 {
     _data[row][column] = value;
 }
 
-double Matrix::operator()(const unsigned &row, const unsigned & column)
+float Matrix::operator()(const unsigned &row, const unsigned & column)
 {
     return _data[row][column];
 }
@@ -87,7 +87,7 @@ Matrix Matrix::operator*(Matrix B)
     if(_columns == B.rows())
     {
         unsigned i,j,k;
-        double temp = 0.0;
+        float temp = 0.0;
         for (i = 0; i < _rows; i++)
         {
             for (j = 0; j < B.columns(); j++)
@@ -131,7 +131,7 @@ Matrix Matrix::operator%(Matrix B)
 }
 
 // Scalar Addition
-Matrix Matrix::operator+(double scalar)
+Matrix Matrix::operator+(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -146,7 +146,7 @@ Matrix Matrix::operator+(double scalar)
 }
 
 // Scalar Subraction
-Matrix Matrix::operator-(double scalar)
+Matrix Matrix::operator-(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -161,7 +161,7 @@ Matrix Matrix::operator-(double scalar)
 }
 
 // Scalar Multiplication
-Matrix Matrix::operator*(double scalar)
+Matrix Matrix::operator*(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -176,7 +176,7 @@ Matrix Matrix::operator*(double scalar)
 }
 
 // Scalar Division
-Matrix Matrix::operator/(double scalar)
+Matrix Matrix::operator/(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -291,10 +291,10 @@ Matrix Matrix::cofactor(int row, int column)
     return cofactor;
 }
 
-double Matrix::determinate(void)
+float Matrix::determinate(void)
 {
     int   i;
-    double sum = 0.0;
+    float sum = 0.0;
 
     if (_rows != _columns)
     {

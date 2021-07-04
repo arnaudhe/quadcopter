@@ -29,10 +29,9 @@ class Marg
 
     esp_err_t init(void);
 
-    esp_err_t read_acc(double * acc_x, double * acc_y, double * acc_z);
+    esp_err_t read_acc(float * acc_x, float * acc_y, float * acc_z);
 
-    esp_err_t read_gyro(double * gyro_x, double * gyro_y, double * gyro_z);
+    esp_err_t read_gyro(float * gyro_x, float * gyro_y, float * gyro_z);
 
-    esp_err_t read_mag(double * mag_x, double * mag_y, double * mag_z);
-
+    esp_err_t read_mag(float * mag_x, float * mag_y, float * mag_z);
 };

@@ -26,6 +26,6 @@ class HMC5883L
 
     esp_err_t init(void);
 
-    esp_err_t read_mag(double * mag_x, double * mag_y, double * mag_z);
+    esp_err_t read_mag(float * mag_x, float * mag_y, float * mag_z);
 
 };

@@ -6,14 +6,10 @@
 #define BIQUAD_Q 1.0f / sqrtf(2.0f)     /* quality factor - 2nd order butterworth*/
 
 PTFilter::PTFilter(float period, float f_cut):
+    Filter(),
     _period(period)
 {
-  this->_compute_gain(f_cut);
-}
-
-void PTFilter::update_fcut(float f_cut)
-{
-    this->_compute_gain(f_cut);
+  this->update_fcut(f_cut);
 }
 
 /* PT1 Low Pass filter */
@@ -22,10 +18,9 @@ PT1Filter::PT1Filter(float period, float f_cut):
     PTFilter(period, f_cut)
 {
     this->_state = 0.0f;
-    this->_compute_gain(f_cut);
 }
 
-void PT1Filter::_compute_gain(float f_cut)
+void PT1Filter::update_fcut(float f_cut)
 {
     float rc = 1 / (2 * M_PIf * f_cut);
     this->_gain = this->_period / (rc + this->_period);
@@ -44,10 +39,9 @@ PT2Filter::PT2Filter(float period, float f_cut)
 {
     this->_state[0] = 0.0f;
     this->_state[1] = 0.0f;
-    this->_compute_gain(f_cut);
 }
 
-void PT2Filter::_compute_gain(float f_cut)
+void PT2Filter::update_fcut(float f_cut)
 {
     const float order = 2.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);
@@ -71,10 +65,9 @@ PT3Filter::PT3Filter(float period, float f_cut):
     this->_state[0] = 0.0f;
     this->_state[1] = 0.0f;
     this->_state[2] = 0.0f;
-    this->_compute_gain(f_cut);
 }
 
-void PT3Filter::_compute_gain(float f_cut)
+void PT3Filter::update_fcut(float f_cut)
 {
     const float order = 3.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);

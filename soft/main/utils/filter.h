@@ -7,6 +7,9 @@ class Filter
 
 public:
 
+    Filter() {}
+    virtual ~Filter() {}
+
     virtual float apply(float input) { return input; }
 
 };
@@ -19,15 +22,12 @@ protected:
     float _gain;
     float _period;
 
-    virtual void _compute_gain(float f_cut);
-
 public:
 
     PTFilter(float period, float f_cut);
     virtual ~PTFilter() {}
 
-    void update_fcut(float f_cut);
-
+    virtual void update_fcut(float f_cut) {}
 };
 
 class PT1Filter : PTFilter
@@ -37,11 +37,11 @@ private:
 
     float _state;
 
-    void _compute_gain(float f_cut);
-
 public:
 
     PT1Filter(float period, float f_cut);
+
+    void update_fcut(float f_cut);
 
     float apply(float input);
 };
@@ -53,11 +53,11 @@ private:
 
     float _state[2];
 
-    void _compute_gain(float f_cut);
-
 public:
 
     PT2Filter(float period, float f_cut);
+
+    void update_fcut(float f_cut);
 
     float apply(float input);
 };
@@ -69,11 +69,11 @@ private:
 
     float _state[3];
 
-    void _compute_gain(float f_cut);
-
 public:
 
     PT3Filter(float period, float f_cut);
+
+    void update_fcut(float f_cut);
 
     float apply(float input);
 };

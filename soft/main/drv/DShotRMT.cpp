@@ -82,7 +82,7 @@ esp_err_t DShotRMT::install(gpio_num_t gpio, rmt_channel_t rmtChannel)
 {
 	_rmtChannel = rmtChannel;
 
-	rmt_config_t config;
+	rmt_config_t config = RMT_DEFAULT_CONFIG_TX(gpio, rmtChannel);
 
 	config.channel = rmtChannel;
 	config.rmt_mode = RMT_MODE_TX;
@@ -97,7 +97,7 @@ esp_err_t DShotRMT::install(gpio_num_t gpio, rmt_channel_t rmtChannel)
 
 	DSHOT_ERROR_CHECK(rmt_config(&config));
 
-	return rmt_driver_install(rmtChannel, 0, 0);
+	return rmt_driver_install(rmtChannel, 0, ESP_INTR_FLAG_IRAM);
 }
 
 esp_err_t DShotRMT::uninstall()

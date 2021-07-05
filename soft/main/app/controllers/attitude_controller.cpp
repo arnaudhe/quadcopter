@@ -4,7 +4,7 @@
 #include <os/task.h>
 
 AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry):
-    PeriodicTask("attitude_ctlr", (int)(period * 1000), false)
+    PeriodicTask("attitude_ctlr", configMAX_PRIORITIES - 2, (int)(period * 1000), false)
 {
     _period             = period;
     _registry           = registry;

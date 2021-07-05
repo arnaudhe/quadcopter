@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <utils/filter.h>
+
 using namespace std;
 
 class Pid
@@ -18,6 +20,8 @@ class Pid
     float _previous;  ///< previous input, for derivate
     float _integrate; ///< accumalator, for integrate
     float _period;    ///< time period
+
+    Filter *_dterm_filter;
 
   public:
 

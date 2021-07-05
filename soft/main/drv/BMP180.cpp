@@ -9,12 +9,12 @@ BMP180::BMP180(I2cMaster * i2c)
     _i2c = i2c;
 }
 
-esp_err_t BMP180::_read_int(uint8_t reg, int16_t * value)
+esp_err_t IRAM_ATTR BMP180::_read_int(uint8_t reg, int16_t * value)
 {
     return _read_uint(reg, (uint16_t *)value);
 }
 
-esp_err_t BMP180::_read_uint(uint8_t reg, uint16_t * value)
+esp_err_t IRAM_ATTR BMP180::_read_uint(uint8_t reg, uint16_t * value)
 {
     uint8_t   buffer[2];
     esp_err_t ret;
@@ -111,7 +111,7 @@ void BMP180::start_pressure(void)
     }
 }
 
-esp_err_t BMP180::get_temperature(double &T)
+esp_err_t IRAM_ATTR BMP180::get_temperature(double &T)
 {
     esp_err_t     ret = ESP_OK;
     uint8_t       buffer[2];
@@ -136,7 +136,7 @@ esp_err_t BMP180::get_temperature(double &T)
     return ret;
 }
 
-esp_err_t BMP180::get_pressure(double &P, double temperature)
+esp_err_t IRAM_ATTR BMP180::get_pressure(double &P, double temperature)
 {
     uint8_t       data[BMP180_PRESSURE_DATA_BYTES];
     esp_err_t     ret;
@@ -162,12 +162,12 @@ esp_err_t BMP180::get_pressure(double &P, double temperature)
     return ret;
 }
 
-double BMP180::sea_level(double P, double A)
+double IRAM_ATTR BMP180::sea_level(double P, double A)
 {
     return (P / pow(1 - (A / 44330.0), 5.255));
 }
 
-double BMP180::altitude(double P, double P0)
+double IRAM_ATTR BMP180::altitude(double P, double P0)
 {
     return (44330.0 * (1.0 - pow(P / P0, 1.0 / 5.255)));
 }

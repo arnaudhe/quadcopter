@@ -1,6 +1,7 @@
 #include <utils/madgwick.h>
 #include <math.h>
 #include <iostream>
+#include <esp_attr.h>
 
 Madgwick::Madgwick(float period, float gain):
     _q()
@@ -9,7 +10,7 @@ Madgwick::Madgwick(float period, float gain):
     _beta   = gain;
 }
 
-Vect Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
+Vect IRAM_ATTR Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
 {
     Vect F = Vect(6);
 
@@ -23,7 +24,7 @@ Vect Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
     return F;
 }
 
-Matrix Madgwick::compute_J(Quaternion B)
+Matrix IRAM_ATTR Madgwick::compute_J(Quaternion B)
 {
     Matrix J = Matrix(6, 4);
 
@@ -60,7 +61,7 @@ Matrix Madgwick::compute_J(Quaternion B)
     return J;
 }
 
-void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
+void IRAM_ATTR Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
 {
     Quaternion gyr = Quaternion(0.0f, gx, gy, gz);
     Quaternion acc = Quaternion(0.0f, ax, ay, az);
@@ -88,12 +89,12 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
     }
 }
 
-float Madgwick::roll(void)
+float IRAM_ATTR Madgwick::roll(void)
 {
     return _q.roll();
 }
 
-float Madgwick::pitch(void)
+float IRAM_ATTR Madgwick::pitch(void)
 {
     return _q.pitch();
 }
@@ -103,7 +104,7 @@ float Madgwick::yaw(void)
     return _q.yaw();
 }
 
-void Madgwick::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
+void IRAM_ATTR Madgwick::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)
 {
     Quaternion v = Quaternion(4);
 

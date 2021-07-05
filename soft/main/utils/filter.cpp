@@ -1,5 +1,6 @@
 #include <math.h>
 #include <utils/filter.h>
+#include <esp_attr.h>
 
 #define M_PIf 3.14159265359
 
@@ -16,14 +17,14 @@ void PT1Filter::init_state(void)
     this->_state = 0.0f;
 }
 
-void PT1Filter::update_cutoff_freq(float cutoff_freq)
+void IRAM_ATTR PT1Filter::update_cutoff_freq(float cutoff_freq)
 {
     this->_cutoff_freq = cutoff_freq;
     float rc = 1 / (2 * M_PIf * cutoff_freq);
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT1Filter::apply(float input)
+float IRAM_ATTR PT1Filter::apply(float input)
 {
     this->_state = this->_state + this->_gain * (input - this->_state);
     return this->_state;
@@ -37,7 +38,7 @@ void PT2Filter::init_state(void)
     this->_state[1] = 0.0f;
 }
 
-void PT2Filter::update_cutoff_freq(float cutoff_freq)
+void IRAM_ATTR PT2Filter::update_cutoff_freq(float cutoff_freq)
 {
     const float order = 2.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);
@@ -45,7 +46,7 @@ void PT2Filter::update_cutoff_freq(float cutoff_freq)
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT2Filter::apply(float input)
+float IRAM_ATTR PT2Filter::apply(float input)
 {
     this->_state[1] = this->_state[1] + this->_gain * (input - this->_state[1]);
     this->_state[0] = this->_state[0] + this->_gain * (this->_state[1] - this->_state[0]);
@@ -62,7 +63,7 @@ void PT3Filter::init_state(void)
     this->_state[2] = 0.0f;
 }
 
-void PT3Filter::update_cutoff_freq(float cutoff_freq)
+void IRAM_ATTR PT3Filter::update_cutoff_freq(float cutoff_freq)
 {
     const float order = 3.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);
@@ -70,7 +71,7 @@ void PT3Filter::update_cutoff_freq(float cutoff_freq)
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT3Filter::apply(float input)
+float IRAM_ATTR PT3Filter::apply(float input)
 {
     this->_state[2] = this->_state[2] + this->_gain * (input - this->_state[2]);
     this->_state[1] = this->_state[1] + this->_gain * (this->_state[2] - this->_state[1]);
@@ -81,7 +82,7 @@ float PT3Filter::apply(float input)
 
 // Slew filter with limit
 
-float SlewFilter::apply(float input)
+float IRAM_ATTR SlewFilter::apply(float input)
 {
     if (this->_state >= this->_threshold)
     {
@@ -124,7 +125,7 @@ void BiQuadraticFilter::init(void)
     this->_y1 = this->_y2 = 0;
 }
 
-float BiQuadraticFilter::apply_direct_form_1(float input)
+float IRAM_ATTR BiQuadraticFilter::apply_direct_form_1(float input)
 {
     /* compute result */
     const float result = this->_b0 * input + this->_b1 * this->_x1 + this->_b2 * this->_x2 - this->_a1 * this->_y1 - this->_a2 * this->_y2;
@@ -140,7 +141,7 @@ float BiQuadraticFilter::apply_direct_form_1(float input)
     return result;
 }
 
-float BiQuadraticFilter::apply_direct_form_2(float input)
+float IRAM_ATTR BiQuadraticFilter::apply_direct_form_2(float input)
 {
     const float result = this->_b0 * input + this->_x1;
     this->_x1 = this->_b1 * input - this->_a1 * result + this->_x2;
@@ -148,7 +149,7 @@ float BiQuadraticFilter::apply_direct_form_2(float input)
     return result;
 }
 
-float BiQuadraticFilter::apply(float input)
+float IRAM_ATTR BiQuadraticFilter::apply(float input)
 {
     return this->apply_direct_form_1(input);
 }
@@ -163,7 +164,7 @@ float BiQuadraticLowPassFilter::_compute_Q(float cutoff_freq)
     return 1.0f / sqrtf(2.0f);    /* quality factor - 2nd order butterworth */
 }
 
-void BiQuadraticLowPassFilter::_update_terms(void)
+void IRAM_ATTR BiQuadraticLowPassFilter::_update_terms(void)
 {
     const float omega = 2.0f * M_PIf * _center_freq * _period;
     const float sn = sinf(omega);
@@ -195,7 +196,7 @@ float BiQuadraticNotchFilter::_compute_Q(float center_freq, float cutoff_freq)
     return center_freq * cutoff_freq / (center_freq * center_freq - cutoff_freq * cutoff_freq);
 }
 
-void BiQuadraticNotchFilter::_update_terms(void)
+void IRAM_ATTR BiQuadraticNotchFilter::_update_terms(void)
 {
     const float omega = 2.0f * M_PIf * _center_freq * _period;
     const float sn = sinf(omega);
@@ -227,7 +228,7 @@ BiQuadraticBandPassFilter::BiQuadraticBandPassFilter(float period, float center_
 {
 }
 
-void BiQuadraticBandPassFilter::_update_terms(void)
+void IRAM_ATTR BiQuadraticBandPassFilter::_update_terms(void)
 {
     const float omega = 2.0f * M_PIf * _center_freq * _period;
     const float sn = sinf(omega);

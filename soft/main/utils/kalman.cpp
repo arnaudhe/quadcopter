@@ -1,4 +1,5 @@
 #include <utils/kalman.h>
+#include <esp_attr.h>
 
 Kalman::Kalman(float period, int state_dim, int input_dim, int output_dim):
     _period(period),
@@ -24,7 +25,7 @@ Kalman::Kalman(float period, Matrix A, Matrix B, Matrix C, Matrix Q, Matrix R, M
 {
 }
 
-void Kalman::update(Matrix input, Matrix measure)
+void IRAM_ATTR Kalman::update(Matrix input, Matrix measure)
 {
     /* Prediction */
     _state = _state_matrix * _state + _input_matrix * input;

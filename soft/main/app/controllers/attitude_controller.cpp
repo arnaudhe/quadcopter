@@ -2,6 +2,7 @@
 #include <app/controllers/attitude_controller_conf.h>
 #include <hal/log.h>
 #include <os/task.h>
+#include <esp_attr.h>
 
 AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry):
     PeriodicTask("attitude_ctlr", configMAX_PRIORITIES - 2, (int)(period * 1000), false)
@@ -93,7 +94,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     LOG_INFO("Init done");
 }
 
-void AttitudeController::run(void)
+void IRAM_ATTR AttitudeController::run(void)
 {
     float  gx, gy, gz;           /* gyro in drone frame (sensor data) */
     float  ax, ay, az;           /* accelero in drone frame (sensor data) */

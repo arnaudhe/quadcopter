@@ -39,7 +39,7 @@ void Barometer::init(void)
     LOG_INFO("initial pressure %f", _initial_pressure);
     LOG_INFO("initial temperature %f", _temperature);
 
-    start();
+    // start();
 }
 
 void Barometer::run()

@@ -32,9 +32,9 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<string>("control.attitude.pitch.mode", "off");
     _registry->internal_set<string>("control.attitude.yaw.mode", "off");
     _registry->internal_set<string>("control.attitude.height.mode", "off");
-    _registry->internal_set<float>("control.attitude.roll.kp", ATTITUDE_PID_YAW_POSITION_KP);
-    _registry->internal_set<float>("control.attitude.roll.ki", ATTITUDE_PID_YAW_POSITION_KI);
-    _registry->internal_set<float>("control.attitude.roll.kd", ATTITUDE_PID_YAW_SPEED_KP);
+    _registry->internal_set<float>("control.attitude.roll.kp", ATTITUDE_PID_ROLL_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.roll.ki", ATTITUDE_PID_ROLL_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.roll.kd", ATTITUDE_PID_ROLL_POSITION_KD);
     _registry->internal_set<float>("control.thurst_offset", 0.26f);
     _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
@@ -91,10 +91,6 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
 
     _mixer = new Mixer(front_left, front_right, rear_left, rear_right);
 
-    printf("%f;%f;%f;%f\n", 180.0 * _euler_observer->roll() / 3.1416,
-           180.0 * _euler_observer->pitch() / 3.1416,
-           180.0 * _euler_observer->yaw() / 3.1416, _height_observer->height());
-
     LOG_INFO("Init done");
 }
 
@@ -113,8 +109,8 @@ void IRAM_ATTR AttitudeController::run(void)
     _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
     _marg->read_mag(&mx, &my, &mz);
 
-    barometer  = _baro->height();
-    ultrasound = _ultrasound->height();
+    // barometer  = _baro->height();
+    // ultrasound = _ultrasound->height();
 
     /* Estimate the attitude */
 
@@ -122,17 +118,29 @@ void IRAM_ATTR AttitudeController::run(void)
     pitch = _euler_observer->pitch();
     yaw   = _euler_observer->yaw();
 
-    _euler_observer->update(gx, gy, gz, ax, ay, az, mx, my, mz);
-    _euler_observer->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
+    _euler_observer->update(0.12 * gx, 0.12 * gy, 0.12 * gz, ax, ay, az, mx, my, mz);
+    // _euler_observer->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
 
-    _height_observer->update((az_r - 0.948) * 10.0, barometer, ultrasound);
+    // printf("%f;%f;%f;%f\n", _roll_speed, gx, _pitch_speed, gy);
+    printf("%f;%f;%f;0.0\n", 180.0 * _euler_observer->roll() / 3.1416,
+                             180.0 * _euler_observer->pitch() / 3.1416,
+                             180.0 * _euler_observer->yaw() / 3.1416);
+
+    // _height_observer->update((az_r - 0.948) * 10.0, barometer, ultrasound);
 
     _roll_speed   = (_euler_observer->roll()  - roll)  / _period;
     _pitch_speed  = (_euler_observer->pitch() - pitch) / _period;
     _yaw_speed    = (_euler_observer->yaw()   - yaw)   / _period;
     _height_speed = _height_observer->vertical_speed();
 
-    printf("%f;%f;%f;%f\n", 180.0 * _euler_observer->roll() / 3.1416, 180.0 * _euler_observer->pitch() / 3.1416, 180.0 * _euler_observer->yaw() / 3.1416, _height_observer->height());
+    // _registry->internal_set<float>("control.attitude.roll.position",   _euler_observer->roll());
+    // _registry->internal_set<float>("control.attitude.roll.speed",      _roll_speed);
+    // _registry->internal_set<float>("control.attitude.pitch.position",  _euler_observer->pitch());
+    // _registry->internal_set<float>("control.attitude.pitch.speed",     _pitch_speed);
+    // _registry->internal_set<float>("control.attitude.yaw.position",    _euler_observer->yaw());
+    // _registry->internal_set<float>("control.attitude.yaw.speed",       _yaw_speed);
+    // _registry->internal_set<float>("control.attitude.height.position", _height_observer->height());
+    // _registry->internal_set<float>("control.attitude.height.speed",    _height_observer->vertical_speed());
 
     if (_registry->internal_get<string>("control.mode") == "attitude")
     {
@@ -157,6 +165,10 @@ void IRAM_ATTR AttitudeController::run(void)
 
         if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
         {
+            _roll_controller->set_pid_coeffs(Controller::POSITION,
+                                            _registry->internal_get<float>("control.attitude.roll.kp"),
+                                            _registry->internal_get<float>("control.attitude.roll.ki"),
+                                            _registry->internal_get<float>("control.attitude.roll.kd"));
             _roll_controller->update_target(Controller::POSITION, _registry->internal_get<float>("control.attitude.roll.position_target"));
             _roll_controller->update(_euler_observer->roll(), gx);
             roll_command = _roll_controller->command();

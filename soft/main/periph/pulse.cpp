@@ -19,7 +19,7 @@ esp_err_t Pulse::init()
 {
     if (!_init)
     {
-        _timer_conf.duty_resolution = LEDC_TIMER_15_BIT;
+        _timer_conf.duty_resolution = LEDC_TIMER_8_BIT;
         _timer_conf.freq_hz         = PULSE_FREQUENCY_Hz;
         _timer_conf.speed_mode      = LEDC_HIGH_SPEED_MODE;
         _timer_conf.timer_num       = PULSE_TIMER;

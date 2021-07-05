@@ -3,11 +3,16 @@
 #include <iostream>
 #include <esp_attr.h>
 
+#define ACC_FILTER_FREQUENCY    40.0
+
 Madgwick::Madgwick(float period, float gain):
     _q()
 {
-    _period = period;
-    _beta   = gain;
+    _period       = period;
+    _beta         = gain;
+    _acc_x_filter = new PT2Filter(period, ACC_FILTER_FREQUENCY);
+    _acc_y_filter = new PT2Filter(period, ACC_FILTER_FREQUENCY);
+    _acc_z_filter = new PT2Filter(period, ACC_FILTER_FREQUENCY);
 }
 
 Vect IRAM_ATTR Madgwick::compute_F(Quaternion acc, Quaternion mag, Quaternion B)
@@ -63,6 +68,10 @@ Matrix IRAM_ATTR Madgwick::compute_J(Quaternion B)
 
 void IRAM_ATTR Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz) 
 {
+    ax = _acc_x_filter->apply(ax);
+    ay = _acc_y_filter->apply(ay);
+    az = _acc_z_filter->apply(az);
+
     Quaternion gyr = Quaternion(0.0f, gx, gy, gz);
     Quaternion acc = Quaternion(0.0f, ax, ay, az);
     Quaternion mag = Quaternion(0.0f, mx, my, mz);

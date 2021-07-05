@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utils/filter.h>
 #include <utils/matrix.h>
 #include <utils/quaternion.h>
 
@@ -15,6 +16,7 @@ class Madgwick
     float _period;
     float _beta;               ///< 2 * proportional gain (Kp)
     Quaternion _q;
+    PT2Filter *_acc_x_filter, *_acc_y_filter, *_acc_z_filter;
 
     /* Methods */
 

@@ -21,7 +21,7 @@ class Pid
     float _integrate; ///< accumalator, for integrate
     float _period;    ///< time period
 
-    PT1Filter *_dterm_filter;
+    PT2Filter *_dterm_filter;
 
   public:
 

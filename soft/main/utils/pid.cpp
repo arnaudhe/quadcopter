@@ -1,6 +1,8 @@
 #include <utils/pid.h>
 #include <esp_attr.h>
 
+#define PID_LOWPASS_CUTOFF_FREQUENCY    20.0
+
 Pid::Pid(float period, float kp, float ki, float kd) 
 {
     _consign      = 0;
@@ -10,7 +12,7 @@ Pid::Pid(float period, float kp, float ki, float kd)
     _kp           = kp;
     _ki           = ki;
     _kd           = kd;
-    _dterm_filter = new PT1Filter(period, 80.0);
+    _dterm_filter = new PT2Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
 }
 
 float IRAM_ATTR Pid::update(float input)
@@ -23,6 +25,11 @@ float IRAM_ATTR Pid::update(float input)
     float output    = _kp * error +
                       _ki * integrate +
                       _kd * filter_derivate;
+
+    // printf("%f;%f;%f;%f\n", _kp * error,
+    //                         _ki * integrate,
+    //                         _kd * derivate,
+    //                         _kd * filter_derivate);
 
     _integrate = integrate;
     _previous = error;

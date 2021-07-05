@@ -1,6 +1,7 @@
 #include <math.h>
 #include <utils/filter.h>
 #include <esp_attr.h>
+#include <hal/log.h>
 
 #define M_PIf 3.14159265359
 
@@ -10,7 +11,7 @@ PTFilter::PTFilter(float period, float f_cut):
     Filter(),
     _period(period)
 {
-  this->update_fcut(f_cut);
+    this->update_fcut(f_cut);
 }
 
 /* PT1 Low Pass filter */
@@ -19,6 +20,8 @@ PT1Filter::PT1Filter(float period, float f_cut):
     PTFilter(period, f_cut)
 {
     this->_state = 0.0f;
+    this->_period = period;
+    this->update_fcut(f_cut);
 }
 
 void IRAM_ATTR PT1Filter::update_fcut(float f_cut)
@@ -40,6 +43,8 @@ PT2Filter::PT2Filter(float period, float f_cut)
 {
     this->_state[0] = 0.0f;
     this->_state[1] = 0.0f;
+    this->_period = period;
+    this->update_fcut(f_cut);
 }
 
 void IRAM_ATTR PT2Filter::update_fcut(float f_cut)

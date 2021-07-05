@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
         print(f'write {key} {value}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'write', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : {key : value}}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("172.20.10.8", 5000))
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
@@ -249,7 +249,7 @@ class MainWindow(QMainWindow):
         print(f'read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("172.20.10.8", 5000))
         self.udp_client.settimeout(2.0)
         try:
             data = self.udp_client.recv(1024).decode("utf-8")

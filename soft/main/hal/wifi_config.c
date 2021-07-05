@@ -1,7 +1,7 @@
 #include "hal/wifi_config.h"
 
-#define EXAMPLE_ESP_WIFI_SSID      "charnos"
-#define EXAMPLE_ESP_WIFI_PASS      "icicest26ruestleon"
+#define EXAMPLE_ESP_WIFI_SSID      "iPhone Arnaud"
+#define EXAMPLE_ESP_WIFI_PASS      "pyreneesbitches"
 
 static wifi_config_t config = {
     .sta = {

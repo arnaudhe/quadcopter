@@ -1,6 +1,7 @@
 #include <periph/i2c_master.h>
 #include <periph/i2c_master_defs.h>
 #include <periph/i2c_master_conf.h>
+#include <esp_attr.h>
 
 I2cMaster::I2cMaster(i2c_port_t port):
     _mutex()
@@ -38,7 +39,7 @@ esp_err_t I2cMaster::deinit()
     return ESP_OK;
 }
 
-esp_err_t I2cMaster::read_registers(uint8_t address, uint8_t reg, uint8_t * value, uint8_t len)
+esp_err_t IRAM_ATTR I2cMaster::read_registers(uint8_t address, uint8_t reg, uint8_t * value, uint8_t len)
 {
     esp_err_t        ret;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -58,7 +59,7 @@ esp_err_t I2cMaster::read_registers(uint8_t address, uint8_t reg, uint8_t * valu
     return ret;
 }
 
-esp_err_t I2cMaster::write_registers(uint8_t address, uint8_t reg, uint8_t * value, uint8_t len)
+esp_err_t IRAM_ATTR I2cMaster::write_registers(uint8_t address, uint8_t reg, uint8_t * value, uint8_t len)
 {
     esp_err_t        ret;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -76,17 +77,17 @@ esp_err_t I2cMaster::write_registers(uint8_t address, uint8_t reg, uint8_t * val
     return ret;
 }
 
-esp_err_t I2cMaster::read_register(uint8_t address, uint8_t reg, uint8_t * value)
+esp_err_t IRAM_ATTR I2cMaster::read_register(uint8_t address, uint8_t reg, uint8_t * value)
 {
     return read_registers(address, reg, value, 1);
 }
 
-esp_err_t I2cMaster::write_register(uint8_t address, uint8_t reg, uint8_t value)
+esp_err_t IRAM_ATTR I2cMaster::write_register(uint8_t address, uint8_t reg, uint8_t value)
 {
     return write_registers(address, reg, &value, 1);
 }
 
-esp_err_t I2cMaster::write_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool value)
+esp_err_t IRAM_ATTR I2cMaster::write_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool value)
 {
     uint8_t   b;
     esp_err_t ret;
@@ -104,7 +105,7 @@ esp_err_t I2cMaster::write_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bo
     }
 }
 
-esp_err_t I2cMaster::read_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool * value)
+esp_err_t IRAM_ATTR I2cMaster::read_bit(uint8_t address, uint8_t reg, uint8_t bit_num, bool * value)
 {
     uint8_t   b;
     esp_err_t ret;

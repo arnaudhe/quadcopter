@@ -2,6 +2,7 @@
 #include <drv/MPU6050_defs.h>
 #include <drv/MPU6050_conf.h>
 #include <hal/log.h>
+#include <esp_attr.h>
 
 #include <os/task.h>
 
@@ -46,7 +47,7 @@ esp_err_t MPU6050::init(void)
     return ret;
 }
 
-esp_err_t MPU6050::_read_sensor(uint8_t reg, float * x, float * y, float * z, float scale)
+esp_err_t IRAM_ATTR MPU6050::_read_sensor(uint8_t reg, float * x, float * y, float * z, float scale)
 {
     uint8_t buffer[6];
     int16_t temp;
@@ -71,17 +72,17 @@ esp_err_t MPU6050::_read_sensor(uint8_t reg, float * x, float * y, float * z, fl
     }
 }
 
-esp_err_t MPU6050::read_acc(float * acc_x, float * acc_y, float * acc_z)
+esp_err_t IRAM_ATTR MPU6050::read_acc(float * acc_x, float * acc_y, float * acc_z)
 {
     return this->_read_sensor(MPU6050_RA_ACCEL_XOUT_H, acc_x, acc_y, acc_z, MPU6050_ACC_SENSIVITY);
 }
 
-esp_err_t MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
+esp_err_t IRAM_ATTR MPU6050::read_gyro(float * gyro_x, float * gyro_y, float * gyro_z)
 {
     return this->_read_sensor(MPU6050_RA_GYRO_XOUT_H, gyro_x, gyro_y, gyro_z, RAD_TO_DEG * MPU6050_GYRO_SENSIVITY);
 }
 
-esp_err_t MPU6050::read_acc_gyro(float *acc_x, float *acc_y, float *acc_z,
+esp_err_t IRAM_ATTR MPU6050::read_acc_gyro(float *acc_x, float *acc_y, float *acc_z,
                                  float *gyro_x, float *gyro_y, float *gyro_z)
 {
     uint8_t buffer[14];

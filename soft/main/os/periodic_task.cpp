@@ -1,4 +1,5 @@
 #include <os/periodic_task.h>
+#include <esp_attr.h>
 
 map<TimerHandle_t, PeriodicTask *> PeriodicTask::timers_map;
 
@@ -11,12 +12,12 @@ PeriodicTask::PeriodicTask(string name, int priority, int period, bool auto_star
     PeriodicTask::timers_map[_timer] = this;
 }
 
-void PeriodicTask::timer_function(TimerHandle_t timer)
+void IRAM_ATTR PeriodicTask::timer_function(TimerHandle_t timer)
 {
     PeriodicTask::timers_map[timer]->_semaphore->notify();
 }
 
-void PeriodicTask::task_function(void * param)
+void IRAM_ATTR PeriodicTask::task_function(void * param)
 {
     PeriodicTask *task = (PeriodicTask *)param;
 
@@ -27,7 +28,7 @@ void PeriodicTask::task_function(void * param)
     }
 }
 
-void PeriodicTask::start()
+void IRAM_ATTR PeriodicTask::start()
 {
     TaskHandle_t task;
 

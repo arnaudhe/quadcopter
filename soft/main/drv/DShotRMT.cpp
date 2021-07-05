@@ -124,7 +124,7 @@ esp_err_t DShotRMT::init(bool wait)
 	return ESP_OK;
 }
 
-esp_err_t DShotRMT::sendThrottle(uint16_t throttle)
+esp_err_t IRAM_ATTR DShotRMT::sendThrottle(uint16_t throttle)
 {
 	if (throttle < DSHOT_THROTTLE_MIN || throttle > DSHOT_THROTTLE_MAX)
 		return ESP_ERR_INVALID_ARG;
@@ -132,7 +132,7 @@ esp_err_t DShotRMT::sendThrottle(uint16_t throttle)
 	return writePacket({throttle, 0}, false);
 }
 
-esp_err_t DShotRMT::setReversed(bool reversed)
+esp_err_t IRAM_ATTR DShotRMT::setReversed(bool reversed)
 {
 	DSHOT_ERROR_CHECK(rmt_wait_tx_done(_rmtChannel, 1));
 	DSHOT_ERROR_CHECK(repeatPacketTicks({DSHOT_THROTTLE_MIN, 0}, 200 / portTICK_PERIOD_MS));
@@ -142,14 +142,14 @@ esp_err_t DShotRMT::setReversed(bool reversed)
 	return ESP_OK;
 }
 
-esp_err_t DShotRMT::beep()
+esp_err_t IRAM_ATTR DShotRMT::beep()
 {
 	DSHOT_ERROR_CHECK(writePacket({DIGITAL_CMD_BEEP1, 1}, true));
 	vTaskDelay(260 / portTICK_PERIOD_MS);
 	return ESP_OK;
 }
 
-void DShotRMT::setData(uint16_t data)
+void IRAM_ATTR DShotRMT::setData(uint16_t data)
 {
 	for (int i = 0; i < 16; i++, data <<= 1)
 	{
@@ -172,7 +172,7 @@ void DShotRMT::setData(uint16_t data)
 	}
 }
 
-uint8_t DShotRMT::checksum(uint16_t data)
+uint8_t IRAM_ATTR DShotRMT::checksum(uint16_t data)
 {
 	uint16_t csum = 0;
 
@@ -185,7 +185,7 @@ uint8_t DShotRMT::checksum(uint16_t data)
 	return csum & 0xf;
 }
 
-esp_err_t DShotRMT::writeData(uint16_t data, bool wait)
+esp_err_t IRAM_ATTR DShotRMT::writeData(uint16_t data, bool wait)
 {
 	DSHOT_ERROR_CHECK(rmt_wait_tx_done(_rmtChannel, 5));
 
@@ -196,7 +196,7 @@ esp_err_t DShotRMT::writeData(uint16_t data, bool wait)
 						   wait);
 }
 
-esp_err_t DShotRMT::writePacket(dshot_packet_t packet, bool wait)
+esp_err_t IRAM_ATTR DShotRMT::writePacket(dshot_packet_t packet, bool wait)
 {
 	uint16_t data = packet.payload;
 
@@ -208,7 +208,7 @@ esp_err_t DShotRMT::writePacket(dshot_packet_t packet, bool wait)
 	return writeData(data, wait);
 }
 
-esp_err_t DShotRMT::repeatPacket(dshot_packet_t packet, int n)
+esp_err_t IRAM_ATTR DShotRMT::repeatPacket(dshot_packet_t packet, int n)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -218,7 +218,7 @@ esp_err_t DShotRMT::repeatPacket(dshot_packet_t packet, int n)
 	return ESP_OK;
 }
  
-esp_err_t DShotRMT::repeatPacketTicks(dshot_packet_t packet, TickType_t ticks)
+esp_err_t IRAM_ATTR DShotRMT::repeatPacketTicks(dshot_packet_t packet, TickType_t ticks)
 {
 	DSHOT_ERROR_CHECK(rmt_wait_tx_done(_rmtChannel, ticks));
 

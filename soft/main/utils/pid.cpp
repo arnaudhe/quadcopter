@@ -1,4 +1,5 @@
 #include <utils/pid.h>
+#include <esp_attr.h>
 
 Pid::Pid(float period, float kp, float ki, float kd) 
 {
@@ -11,7 +12,7 @@ Pid::Pid(float period, float kp, float ki, float kd)
     _kd        = kd;
 }
 
-float Pid::update(float input)
+float IRAM_ATTR Pid::update(float input)
 {
     float error     = _consign - input;
     float derivate  = (error - _previous) / (_period);
@@ -27,42 +28,42 @@ float Pid::update(float input)
     return output;
 }
 
-void Pid::set_kp(float kp)
+void IRAM_ATTR Pid::set_kp(float kp)
 {
     _kp = kp;
 }
 
-void Pid::set_ki(float ki)
+void IRAM_ATTR Pid::set_ki(float ki)
 {
     _ki = ki;
 }
 
-void Pid::set_kd(float kd)
+void IRAM_ATTR Pid::set_kd(float kd)
 {
     _kd = kd;
 } 
 
-void Pid::set_consign(float consign)
+void IRAM_ATTR Pid::set_consign(float consign)
 {
     _consign = consign;
 } 
 
-float Pid::kp() const
+float IRAM_ATTR Pid::kp() const
 {
     return _kp;
 }
 
-float Pid::ki() const
+float IRAM_ATTR Pid::ki() const
 {
     return _ki;
 }
 
-float Pid::kd() const
+float IRAM_ATTR Pid::kd() const
 {
     return _kd;
 }
 
-float Pid::consign() const
+float IRAM_ATTR Pid::consign() const
 {
     return _consign;
 }

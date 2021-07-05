@@ -1,4 +1,5 @@
 #include <utils/controller.h>
+#include <esp_attr.h>
 
 Controller::Controller(float period, Pid * pid_speed, Pid * pid_position)
 {
@@ -10,7 +11,7 @@ Controller::Controller(float period, Pid * pid_speed, Pid * pid_position)
     _pid_position = pid_position;
 }
 
-void Controller::update_target(Mode mode, float value)
+void IRAM_ATTR Controller::update_target(Mode mode, float value)
 {
     _mode = mode;
     _target = value;
@@ -31,7 +32,7 @@ void Controller::update_target(Mode mode, float value)
     }
 }
 
-void Controller::update(float position, float speed)
+void IRAM_ATTR Controller::update(float position, float speed)
 {
     switch (_mode)
     {
@@ -50,12 +51,12 @@ void Controller::update(float position, float speed)
     }
 }
 
-float Controller::command(void)
+float IRAM_ATTR Controller::command(void)
 {
     return _command;
 }
 
-void Controller::set_pid_coeffs(Mode mode, float kp, float ki, float kd)
+void IRAM_ATTR Controller::set_pid_coeffs(Mode mode, float kp, float ki, float kd)
 {
     switch (mode)
     {

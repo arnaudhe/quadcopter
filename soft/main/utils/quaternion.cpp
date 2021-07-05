@@ -1,8 +1,9 @@
 #include <math.h>
 #include <iostream>
 #include <utils/quaternion.h>
+#include <esp_attr.h>
 
-Quaternion::Quaternion():
+IRAM_ATTR Quaternion::Quaternion():
     Vect(4, 0.0f)
 {
     set(1.0f, 0.0f, 0.0f, 0.0f);
@@ -13,19 +14,19 @@ Quaternion::Quaternion(Matrix mat):
 {
 }
 
-Quaternion::Quaternion(float angle):
+IRAM_ATTR Quaternion::Quaternion(float angle):
     Vect(4, 0.0f)
 {
     set(cos(angle/2.0f), -sin(angle/2.0f), -sin(angle/2.0f), -sin(angle/2.0f));
 }
 
-Quaternion::Quaternion(float q0, float q1, float q2, float q3):
+IRAM_ATTR Quaternion::Quaternion(float q0, float q1, float q2, float q3):
     Vect(4, 0.0f)
 {
     set(q0, q1, q2, q3);
 }
 
-void Quaternion::set(float q0, float q1, float q2, float q3)
+void IRAM_ATTR Quaternion::set(float q0, float q1, float q2, float q3)
 {
     Vect::set(0, q0);
     Vect::set(1, q1);
@@ -33,37 +34,37 @@ void Quaternion::set(float q0, float q1, float q2, float q3)
     Vect::set(3, q3);
 }
 
-float Quaternion::roll(void)
+float IRAM_ATTR Quaternion::roll(void)
 {
     return atan2(2.0f * (_data[0][0] * _data[1][0] + _data[2][0] * _data[3][0]), 1.0f - 2.0f * (_data[1][0] * _data[1][0] + _data[2][0] * _data[2][0]));   
 }
 
-float Quaternion::pitch(void)
+float IRAM_ATTR Quaternion::pitch(void)
 {
     return asin(2.0f * (_data[0][0] * _data[2][0] - _data[1][0] * _data[3][0]));
 }
 
-float Quaternion::yaw(void)
+float IRAM_ATTR Quaternion::yaw(void)
 {
     return atan2f(2.0f * (_data[0][0] * _data[3][0] + _data[1][0] * _data[2][0]), 1.0f - 2.0f * (_data[2][0] * _data[2][0] + _data[3][0] * _data[3][0]));
 }
 
-Quaternion Quaternion::conjugate(void)
+Quaternion IRAM_ATTR Quaternion::conjugate(void)
 {
     return Quaternion(_data[0][0], -_data[1][0], -_data[2][0], -_data[3][0]);
 }
 
-Quaternion Quaternion::operator+(Quaternion B)
+Quaternion IRAM_ATTR Quaternion::operator+(Quaternion B)
 {
     return Matrix::operator+(B);
 }
 
-Quaternion Quaternion::operator-(Quaternion B)
+Quaternion IRAM_ATTR Quaternion::operator-(Quaternion B)
 {
     return Matrix::operator-(B);
 }
 
-Quaternion Quaternion::operator*(Quaternion B)
+Quaternion IRAM_ATTR Quaternion::operator*(Quaternion B)
 {
     return Quaternion(_data[0][0] * B(0) - _data[1][0] * B(1) - _data[2][0] * B(2) - _data[3][0] * B(3),
                       _data[0][0] * B(1) + _data[1][0] * B(0) + _data[2][0] * B(3) - _data[3][0] * B(2),
@@ -71,12 +72,12 @@ Quaternion Quaternion::operator*(Quaternion B)
                       _data[0][0] * B(3) + _data[1][0] * B(2) - _data[2][0] * B(1) + _data[3][0] * B(0));
 }
 
-Quaternion Quaternion::operator*(float k)
+Quaternion IRAM_ATTR Quaternion::operator*(float k)
 {
     return Matrix::operator*(k);
 }
 
-Matrix Quaternion::rotation_matrix(void)
+Matrix IRAM_ATTR Quaternion::rotation_matrix(void)
 {
     Matrix R = Matrix(3, 3);
 

@@ -2,8 +2,9 @@
 #include <iostream>
 #include <iomanip>
 #include <math.h>
+#include <esp_attr.h>
 
-Matrix::Matrix(unsigned int rows, unsigned int columns, float initial)
+IRAM_ATTR Matrix::Matrix(unsigned int rows, unsigned int columns, float initial)
 {
     _rows = rows;
     _columns = columns;
@@ -16,38 +17,38 @@ Matrix::Matrix(unsigned int rows, unsigned int columns, float initial)
     }
 }
 
-unsigned int Matrix::rows(void)
+unsigned int IRAM_ATTR Matrix::rows(void)
 {
     return _rows;
 }
 
-unsigned int Matrix::columns(void)
+unsigned int IRAM_ATTR Matrix::columns(void)
 {
     return _columns;
 }
 
-vector<vector<float> > Matrix::data()
+vector<vector<float> > IRAM_ATTR Matrix::data()
 {
     return _data;
 }
 
-void Matrix::set_data(vector<vector<float> > data)
+void IRAM_ATTR Matrix::set_data(vector<vector<float> > data)
 {
     _data = data;
 }
 
-void Matrix::set(unsigned row, unsigned column, float value)
+void IRAM_ATTR Matrix::set(unsigned row, unsigned column, float value)
 {
     _data[row][column] = value;
 }
 
-float Matrix::operator()(const unsigned &row, const unsigned & column)
+float IRAM_ATTR Matrix::operator()(const unsigned &row, const unsigned & column)
 {
     return _data[row][column];
 }
 
 // Addition of Two Matrices
-Matrix Matrix::operator+(Matrix B)
+Matrix IRAM_ATTR Matrix::operator+(Matrix B)
 {
     Matrix sum(_rows, _columns, 0.0);
     unsigned i,j;
@@ -63,7 +64,7 @@ Matrix Matrix::operator+(Matrix B)
 }
 
 // Subtraction of Two Matrices
-Matrix Matrix::operator-(Matrix B)
+Matrix IRAM_ATTR Matrix::operator-(Matrix B)
 {
     Matrix diff(_rows, _columns, 0.0);
     unsigned i,j;
@@ -80,7 +81,7 @@ Matrix Matrix::operator-(Matrix B)
 }
 
 // Multiplication of Two Matrices
-Matrix Matrix::operator*(Matrix B)
+Matrix IRAM_ATTR Matrix::operator*(Matrix B)
 {
     Matrix multip(_rows, B.columns(), 0.0);
 
@@ -111,7 +112,7 @@ Matrix Matrix::operator*(Matrix B)
 }
 
 // Multiplication member-to-member of Two Matrices
-Matrix Matrix::operator%(Matrix B)
+Matrix IRAM_ATTR Matrix::operator%(Matrix B)
 {
     Matrix multip(_rows, _columns, 0.0);
 
@@ -131,7 +132,7 @@ Matrix Matrix::operator%(Matrix B)
 }
 
 // Scalar Addition
-Matrix Matrix::operator+(float scalar)
+Matrix IRAM_ATTR Matrix::operator+(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -146,7 +147,7 @@ Matrix Matrix::operator+(float scalar)
 }
 
 // Scalar Subraction
-Matrix Matrix::operator-(float scalar)
+Matrix IRAM_ATTR Matrix::operator-(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -161,7 +162,7 @@ Matrix Matrix::operator-(float scalar)
 }
 
 // Scalar Multiplication
-Matrix Matrix::operator*(float scalar)
+Matrix IRAM_ATTR Matrix::operator*(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -176,7 +177,7 @@ Matrix Matrix::operator*(float scalar)
 }
 
 // Scalar Division
-Matrix Matrix::operator/(float scalar)
+Matrix IRAM_ATTR Matrix::operator/(float scalar)
 {
     Matrix result(_rows, _columns, 0.0);
     unsigned i,j;
@@ -190,7 +191,7 @@ Matrix Matrix::operator/(float scalar)
     return result;
 }
 
-Matrix Matrix::transpose()
+Matrix IRAM_ATTR Matrix::transpose()
 {
     Matrix transp(_columns, _rows,0.0);
     for (unsigned i = 0; i < _columns; i++)
@@ -202,7 +203,7 @@ Matrix Matrix::transpose()
     return transp;
 }
 
-Matrix Matrix::invert()
+Matrix IRAM_ATTR Matrix::invert()
 {
     int i, j;
     int n = _rows;
@@ -227,7 +228,7 @@ Matrix Matrix::invert()
     return invert / determinate();
 }
 
-Matrix Matrix::minor(int i)
+Matrix IRAM_ATTR Matrix::minor(int i)
 {
     int j, l, h = 0, k = 0;
 
@@ -258,7 +259,7 @@ Matrix Matrix::minor(int i)
     return minor;
 }
 
-Matrix Matrix::cofactor(int row, int column)
+Matrix IRAM_ATTR Matrix::cofactor(int row, int column)
 {
     int m, k, i, j;
     int n = _rows;
@@ -291,7 +292,7 @@ Matrix Matrix::cofactor(int row, int column)
     return cofactor;
 }
 
-float Matrix::determinate(void)
+float IRAM_ATTR Matrix::determinate(void)
 {
     int   i;
     float sum = 0.0;
@@ -336,7 +337,7 @@ void Matrix::display(string name)
     }
 }
 
-Matrix Matrix::identity(int n)
+Matrix IRAM_ATTR Matrix::identity(int n)
 {
     int i;
     Matrix I(n, n);

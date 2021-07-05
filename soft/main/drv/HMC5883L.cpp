@@ -55,7 +55,7 @@ esp_err_t HMC5883L::init(void)
     return ESP_FAIL;
 }
 
-esp_err_t HMC5883L::read_mag(float * mag_x, float * mag_y, float * mag_z)
+esp_err_t IRAM_ATTR HMC5883L::read_mag(float * mag_x, float * mag_y, float * mag_z)
 {
     uint8_t buffer[6];
     int16_t temp;

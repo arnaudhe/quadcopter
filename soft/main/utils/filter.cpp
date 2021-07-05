@@ -1,5 +1,6 @@
 #include <math.h>
 #include <utils/filter.h>
+#include <esp_attr.h>
 
 #define M_PIf 3.14159265359
 
@@ -20,13 +21,13 @@ PT1Filter::PT1Filter(float period, float f_cut):
     this->_state = 0.0f;
 }
 
-void PT1Filter::update_fcut(float f_cut)
+void IRAM_ATTR PT1Filter::update_fcut(float f_cut)
 {
     float rc = 1 / (2 * M_PIf * f_cut);
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT1Filter::apply(float input)
+float IRAM_ATTR PT1Filter::apply(float input)
 {
     this->_state = this->_state + this->_gain * (input - this->_state);
     return this->_state;
@@ -41,7 +42,7 @@ PT2Filter::PT2Filter(float period, float f_cut)
     this->_state[1] = 0.0f;
 }
 
-void PT2Filter::update_fcut(float f_cut)
+void IRAM_ATTR PT2Filter::update_fcut(float f_cut)
 {
     const float order = 2.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);
@@ -49,7 +50,7 @@ void PT2Filter::update_fcut(float f_cut)
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT2Filter::apply(float input)
+float IRAM_ATTR PT2Filter::apply(float input)
 {
     this->_state[1] = this->_state[1] + this->_gain * (input - this->_state[1]);
     this->_state[0] = this->_state[0] + this->_gain * (this->_state[1] - this->_state[0]);
@@ -67,7 +68,7 @@ PT3Filter::PT3Filter(float period, float f_cut):
     this->_state[2] = 0.0f;
 }
 
-void PT3Filter::update_fcut(float f_cut)
+void IRAM_ATTR PT3Filter::update_fcut(float f_cut)
 {
     const float order = 3.0f;
     const float order_cutoff_correction = 1 / sqrtf(powf(2, 1.0f / order) - 1);
@@ -75,7 +76,7 @@ void PT3Filter::update_fcut(float f_cut)
     this->_gain = this->_period / (rc + this->_period);
 }
 
-float PT3Filter::apply(float input)
+float IRAM_ATTR PT3Filter::apply(float input)
 {
     this->_state[2] = this->_state[2] + this->_gain * (input - this->_state[2]);
     this->_state[1] = this->_state[1] + this->_gain * (this->_state[2] - this->_state[1]);
@@ -93,7 +94,7 @@ SlewFilter::SlewFilter(float slew_limit, float threshold):
 {
 }
 
-float SlewFilter::apply(float input)
+float IRAM_ATTR SlewFilter::apply(float input)
 {
     if (this->_state >= this->_threshold)
     {
@@ -137,12 +138,12 @@ BiQuadFilter::BiQuadFilter(float filter_freq, uint32_t refresh_rate, float Q)
     this->_y1 = this->_y2 = 0;
 }
 
-float BiQuadFilter::_compute_Q(float center_freq, float cutoff_freq)
+float IRAM_ATTR BiQuadFilter::_compute_Q(float center_freq, float cutoff_freq)
 {
     return center_freq * cutoff_freq / (center_freq * center_freq - cutoff_freq * cutoff_freq);
 }
 
-float BiQuadFilter::apply_df1(float input)
+float IRAM_ATTR BiQuadFilter::apply_df1(float input)
 {
     /* compute result */
     const float result = this->_b0 * input + this->_b1 * this->_x1 + this->_b2 * this->_x2 - this->_a1 * this->_y1 - this->_a2 * this->_y2;
@@ -158,7 +159,7 @@ float BiQuadFilter::apply_df1(float input)
     return result;
 }
 
-float BiQuadFilter::apply_df2(float input)
+float IRAM_ATTR BiQuadFilter::apply_df2(float input)
 {
     const float result = this->_b0 * input + this->_x1;
     this->_x1 = this->_b1 * input - this->_a1 * result + this->_x2;
@@ -166,7 +167,7 @@ float BiQuadFilter::apply_df2(float input)
     return result;
 }
 
-float BiQuadFilter::apply(float input)
+float IRAM_ATTR BiQuadFilter::apply(float input)
 {
     return this->apply_df2(input);
 }
@@ -176,7 +177,7 @@ BiQuadLfpFilter::BiQuadLfpFilter(float filter_freq, uint32_t refresh_rate)
 {
 }
 
-void BiQuadLfpFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
+void IRAM_ATTR BiQuadLfpFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
 {
     const float omega = 2.0f * M_PIf * filter_freq * refresh_rate * 0.000001f;
     const float sn = sinf(omega);
@@ -198,7 +199,7 @@ void BiQuadLfpFilter::_update_terms(float filter_freq, uint32_t refresh_rate, fl
     this->_a2 /= a0;
 }
 
-void BiQuadNotchFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
+void IRAM_ATTR BiQuadNotchFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
 {
     const float omega = 2.0f * M_PIf * filter_freq * refresh_rate * 0.000001f;
     const float sn = sinf(omega);
@@ -220,7 +221,7 @@ void BiQuadNotchFilter::_update_terms(float filter_freq, uint32_t refresh_rate, 
     this->_a2 /= a0;
 }
 
-void BiQuadBfpFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
+void IRAM_ATTR BiQuadBfpFilter::_update_terms(float filter_freq, uint32_t refresh_rate, float Q)
 {
     const float omega = 2.0f * M_PIf * filter_freq * refresh_rate * 0.000001f;
     const float sn = sinf(omega);

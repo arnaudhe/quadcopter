@@ -3,24 +3,26 @@
 
 Pid::Pid(float period, float kp, float ki, float kd) 
 {
-    _consign   = 0;
-    _previous  = 0;
-    _integrate = 0;
-    _period    = period;
-    _kp        = kp;
-    _ki        = ki;
-    _kd        = kd;
+    _consign      = 0;
+    _previous     = 0;
+    _integrate    = 0;
+    _period       = period;
+    _kp           = kp;
+    _ki           = ki;
+    _kd           = kd;
+    _dterm_filter = new PT1Filter(period, 80.0);
 }
 
 float IRAM_ATTR Pid::update(float input)
 {
-    float error     = _consign - input;
-    float derivate  = (error - _previous) / (_period);
-    float integrate = _integrate + (error * _period);
+    float error           = _consign - input;
+    float derivate        = (error - _previous) / (_period);
+    float integrate       = _integrate + (error * _period);
+    float filter_derivate = _dterm_filter->apply(derivate);
 
     float output    = _kp * error +
                       _ki * integrate +
-                      _kd * derivate;
+                      _kd * filter_derivate;
 
     _integrate = integrate;
     _previous = error;

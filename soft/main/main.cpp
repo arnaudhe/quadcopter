@@ -5,7 +5,6 @@
 #include <hal/wifi.h>
 #include <app/controllers/attitude_controller.h>
 #include <hal/udp_server.h>
-#include <hal/mdns.h>
 #include <utils/matrix.h>
 #include <data_model/data_ressources_registry.h>
 #include <data_model/json_protocol.h>
@@ -16,7 +15,6 @@ extern "C" void app_main(void)
     AttitudeController      * controller;
     Wifi                    * wifi;
     UdpServer               * udp;
-    Mdns                    * mdns;
     DataRessourcesRegistry  * registry;
     JsonDataProtocol        * protocol;
 
@@ -24,7 +22,6 @@ extern "C" void app_main(void)
 
     wifi       = new Wifi();
     udp        = new UdpServer("quadcopter_control", 5000);
-    mdns       = new Mdns("quadcopter", "quadcopter");
     registry   = new DataRessourcesRegistry("data_model.json");
     protocol   = new JsonDataProtocol(udp, registry);
     controller = new AttitudeController(0.02, registry);
@@ -37,7 +34,6 @@ extern "C" void app_main(void)
     Task::delay_ms(500);
 
     wifi->connect();
-    mdns->add_service("_quadcopter", "_udp", 5000);
     controller->start();
 
     while (true)

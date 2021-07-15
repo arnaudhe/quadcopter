@@ -14,15 +14,15 @@ Pid::Pid(float period, float kp, float ki, float kd)
 float Pid::update(float input)
 {
     float error     = _consign - input;
-    float derivate  = (input - _previous) / (_period);
+    float derivate  = (error - _previous) / (_period);
     float integrate = _integrate + (error * _period);
 
     float output    = _kp * error +
-                      _ki * integrate + 
+                      _ki * integrate +
                       _kd * derivate;
 
     _integrate = integrate;
-    _previous  = input;
+    _previous = error;
 
     return output;
 }

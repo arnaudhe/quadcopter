@@ -29,7 +29,7 @@ extern "C" void app_main(void)
     controller->set_height_target(Controller::Mode::SPEED, 0.0);
     controller->set_roll_target(Controller::Mode::POSITION, 0.0);
     controller->set_pitch_target(Controller::Mode::POSITION, 0.0);
-    controller->set_yaw_target(Controller::Mode::SPEED, 0.5);
+    controller->set_yaw_target(Controller::Mode::SPEED, 0.0);
 
     Task::delay_ms(500);
 

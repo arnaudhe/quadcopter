@@ -2,29 +2,29 @@
 
 #define I2C_MASTER_NUM      I2C_NUM_1         /*!< I2C port number for master dev */
 
-#define ATTITUDE_PID_ROLL_POSITION_KP               (3.0f)
-#define ATTITUDE_PID_ROLL_POSITION_KI               (0.3f)
-#define ATTITUDE_PID_ROLL_POSITION_KD               (0.0f)
+#define ATTITUDE_PID_ROLL_POSITION_KP               (0.08f)
+#define ATTITUDE_PID_ROLL_POSITION_KI               (0.012f)
+#define ATTITUDE_PID_ROLL_POSITION_KD               (0.03f)
 #define ATTITUDE_PID_ROLL_SPEED_KP                  (0.12f)
 #define ATTITUDE_PID_ROLL_SPEED_KI                  (0.0f)
 #define ATTITUDE_PID_ROLL_SPEED_KD                  (0.0f)
 #define ATTITUDE_PID_ROLL_CONSIGN                   (0.0f)
 
-#define ATTITUDE_PID_YAW_POSITION_KP                (1.5f)
-#define ATTITUDE_PID_YAW_POSITION_KI                (0.1f)
-#define ATTITUDE_PID_YAW_POSITION_KD                (0)
-#define ATTITUDE_PID_YAW_SPEED_KP                   (0.3f)
-#define ATTITUDE_PID_YAW_SPEED_KI                   (0.01f)
-#define ATTITUDE_PID_YAW_SPEED_KD                   (0)
-#define ATTITUDE_PID_YAW_CONSIGN                    (0)
-
-#define ATTITUDE_PID_PITCH_POSITION_KP              (3.0f)
-#define ATTITUDE_PID_PITCH_POSITION_KI              (0.3f)
-#define ATTITUDE_PID_PITCH_POSITION_KD              (0.0f)
+#define ATTITUDE_PID_PITCH_POSITION_KP              (0.08f)
+#define ATTITUDE_PID_PITCH_POSITION_KI              (0.012f)
+#define ATTITUDE_PID_PITCH_POSITION_KD              (0.03f)
 #define ATTITUDE_PID_PITCH_SPEED_KP                 (0.12f)
 #define ATTITUDE_PID_PITCH_SPEED_KI                 (0.0f)
 #define ATTITUDE_PID_PITCH_SPEED_KD                 (0.0f)
 #define ATTITUDE_PID_PITCH_CONSIGN                  (0.0f)
+
+#define ATTITUDE_PID_YAW_POSITION_KP                (0.12f)
+#define ATTITUDE_PID_YAW_POSITION_KI                (0.12f)
+#define ATTITUDE_PID_YAW_POSITION_KD                (0.06f)
+#define ATTITUDE_PID_YAW_SPEED_KP                   (0.3f)
+#define ATTITUDE_PID_YAW_SPEED_KI                   (0.01f)
+#define ATTITUDE_PID_YAW_SPEED_KD                   (0)
+#define ATTITUDE_PID_YAW_CONSIGN                    (0)
 
 #define ATTITUDE_PID_HEIGHT_POSITION_KP             (0)
 #define ATTITUDE_PID_HEIGHT_POSITION_KI             (0)

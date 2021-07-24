@@ -116,6 +116,14 @@ BiQuadraticFilter::BiQuadraticFilter(float period, float center_freq, float Q) :
     this->_Q           = Q;
 }
 
+void BiQuadraticFilter::update_internal(float center_freq, float Q)
+{
+    this->_center_freq = center_freq;
+    this->_Q           = Q;
+
+    this->_update_terms();
+}
+
 void BiQuadraticFilter::init(void)
 {
     this->_update_terms();
@@ -186,12 +194,17 @@ void IRAM_ATTR BiQuadraticLowPassFilter::_update_terms(void)
     this->_a2 /= a0;
 }
 
+void IRAM_ATTR BiQuadraticLowPassFilter::update(float cutoff_freq)
+{
+    this->update_internal(cutoff_freq, this->_compute_Q(cutoff_freq));
+}
+
 BiQuadraticNotchFilter::BiQuadraticNotchFilter(float period, float center_freq, float cutoff_freq)
     : BiQuadraticFilter(period, center_freq, _compute_Q(center_freq, cutoff_freq))
 {
 }
 
-float BiQuadraticNotchFilter::_compute_Q(float center_freq, float cutoff_freq)
+float IRAM_ATTR BiQuadraticNotchFilter::_compute_Q(float center_freq, float cutoff_freq)
 {
     return center_freq * cutoff_freq / (center_freq * center_freq - cutoff_freq * cutoff_freq);
 }
@@ -218,7 +231,12 @@ void IRAM_ATTR BiQuadraticNotchFilter::_update_terms(void)
     this->_a2 /= a0;
 }
 
-float BiQuadraticBandPassFilter::_compute_Q(float center_freq, float cutoff_freq)
+void IRAM_ATTR BiQuadraticNotchFilter::update(float center_freq, float cutoff_freq)
+{
+    this->update_internal(center_freq, this->_compute_Q(center_freq, cutoff_freq));
+}
+
+float IRAM_ATTR BiQuadraticBandPassFilter::_compute_Q(float center_freq, float cutoff_freq)
 {
     return center_freq * cutoff_freq / (center_freq * center_freq - cutoff_freq * cutoff_freq);
 }
@@ -248,4 +266,9 @@ void IRAM_ATTR BiQuadraticBandPassFilter::_update_terms(void)
     this->_b2 /= a0;
     this->_a1 /= a0;
     this->_a2 /= a0;
+}
+
+void IRAM_ATTR BiQuadraticBandPassFilter::update(float center_freq, float cutoff_freq)
+{
+    this->update_internal(center_freq, this->_compute_Q(center_freq, cutoff_freq));
 }

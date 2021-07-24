@@ -123,6 +123,8 @@ protected:
 
     virtual void _update_terms(void) = 0;
 
+    void update_internal(float center_freq, float Q);
+
 public:
 
     BiQuadraticFilter(float period, float filter_freq, float Q);
@@ -152,6 +154,8 @@ private:
 public:
 
     BiQuadraticLowPassFilter(float period, float cutoff_freq);
+
+    void update(float cutoff_freq);
 };
 
 /* Bi-quadratic notch (band-stop) */
@@ -169,6 +173,8 @@ private:
 public:
 
     BiQuadraticNotchFilter(float period, float center_freq, float cutoff_freq);
+
+    void update(float center_freq, float cutoff_freq);
 };
 
 /* Bi-quadratic band-pass */
@@ -186,4 +192,6 @@ private:
 public:
 
     BiQuadraticBandPassFilter(float period, float center_freq, float cutoff_freq);
+
+    void update(float center_freq, float cutoff_freq);
 };

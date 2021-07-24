@@ -11,6 +11,7 @@ set(COMPONENT_SRCS
     app/observers/euler_observer.cpp 
     app/observers/height_observer.cpp 
     app/observers/position_observer.cpp
+    app/workers/camera_controller.cpp 
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp

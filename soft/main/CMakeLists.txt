@@ -6,9 +6,11 @@ set(COMPONENT_SRCS
     drv/DShotRMT.cpp 
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
+    app/controllers/height_controller.cpp 
+    app/controllers/rate_controller.cpp 
     app/observers/euler_observer.cpp 
     app/observers/height_observer.cpp 
-    app/observers/position_observer.cpp 
+    app/observers/position_observer.cpp
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp
@@ -36,7 +38,6 @@ set(COMPONENT_SRCS
     utils/csv_reader.cpp 
     utils/matrix.cpp 
     utils/quaternion.cpp 
-    utils/controller.cpp 
     utils/filter.cpp 
     periph/i2c_master.cpp 
     periph/pulse.cpp 

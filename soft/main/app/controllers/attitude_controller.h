@@ -1,7 +1,7 @@
 #pragma once
 
-#include <utils/controller.h>
 #include <utils/mixer.h>
+#include <utils/pid.h>
 
 #include <hal/marg.h>
 #include <hal/barometer.h>
@@ -11,9 +11,11 @@
 #include <periph/timer.h>
 
 #include <os/periodic_task.h>
+#include <os/mutex.h>
 
 #include <app/observers/euler_observer.h>
 #include <app/observers/height_observer.h>
+#include <app/controllers/rate_controller.h>
 
 #include <data_model/data_ressources_registry.h>
 
@@ -23,34 +25,22 @@ class AttitudeController : public PeriodicTask
 private:
 
     DataRessourcesRegistry  * _registry;
-    Timer                   * _timer;
-    I2cMaster               * _i2c;
+    RateController          * _rate_controller;
     Marg                    * _marg;
-    Barometer               * _baro;
-    UltrasoundSensor        * _ultrasound;
-    HeightObserver          * _height_observer;
-    EulerObserver           * _euler_observer;
-    Controller              * _height_controller;
-    Controller              * _roll_controller;
-    Controller              * _pitch_controller;
-    Controller              * _yaw_controller;
+    EulerObserver           * _observer;
+    Pid                     * _height_controller;
+    Pid                     * _roll_controller;
+    Pid                     * _pitch_controller;
+    Pid                     * _yaw_controller;
     Mixer                   * _mixer;
-    float                    _period;
-
-    float _roll_speed;
-    float _pitch_speed;
-    float _yaw_speed;
-    float _height_speed;
+    Mutex                   * _mutex;
+    float                     _period;
 
     void run(void);
 
 public:
 
-    AttitudeController(float period, DataRessourcesRegistry * registry);
+    AttitudeController(float period, DataRessourcesRegistry * registry, RateController * rate_controller, Marg * marg);
 
-    void set_height_target(Controller::Mode mode, float target);
-    void set_roll_target(Controller::Mode mode, float target);
-    void set_pitch_target(Controller::Mode mode, float target);
-    void set_yaw_target(Controller::Mode mode, float target);
-
+    void rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r);
 };

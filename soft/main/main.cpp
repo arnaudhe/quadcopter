@@ -71,7 +71,7 @@ extern "C" void app_main(void)
     rear_right->set_speed(0.0f);
 
     registry            = new DataRessourcesRegistry("data_model.json");
-    wifi                = new Wifi();
+    wifi                = new Wifi(registry);
     udp                 = new UdpServer("quadcopter_control", 5000);
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);

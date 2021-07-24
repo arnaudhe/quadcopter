@@ -13,6 +13,8 @@ Pid::Pid(float period, float kp, float ki, float kd)
     _ki           = ki;
     _kd           = kd;
     _dterm_filter = new PT2Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
+
+    _dterm_filter->init();
 }
 
 float IRAM_ATTR Pid::update(float input)
@@ -45,12 +47,12 @@ void IRAM_ATTR Pid::set_ki(float ki)
 void IRAM_ATTR Pid::set_kd(float kd)
 {
     _kd = kd;
-} 
+}
 
 void IRAM_ATTR Pid::set_consign(float consign)
 {
     _consign = consign;
-} 
+}
 
 float IRAM_ATTR Pid::kp() const
 {

@@ -1,3 +1,4 @@
+#include <esp_attr.h>
 #include <os/mutex.h>
 
 Mutex::Mutex()
@@ -5,12 +6,12 @@ Mutex::Mutex()
     _handle = xSemaphoreCreateMutex();
 }
 
-void Mutex::lock()
+void IRAM_ATTR Mutex::lock()
 {
     xSemaphoreTake(_handle, portMAX_DELAY);
 }
 
-void Mutex::unlock()
+void IRAM_ATTR Mutex::unlock()
 {
     xSemaphoreGive(_handle);
 }

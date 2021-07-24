@@ -1,3 +1,4 @@
+#include <esp_attr.h>
 #include <os/semaphore.h>
 
 Semaphore::Semaphore()
@@ -5,25 +6,25 @@ Semaphore::Semaphore()
     _handle = xSemaphoreCreateBinary();
 }
 
-bool Semaphore::wait()
+bool IRAM_ATTR Semaphore::wait()
 {
     return (xSemaphoreTake(_handle, portMAX_DELAY) == pdTRUE);
 }
 
-bool Semaphore::notify()
+bool IRAM_ATTR Semaphore::notify()
 {
     xSemaphoreGive(_handle);
     return true;
 }
 
-bool Semaphore::notify_from_isr(bool &must_yield)
+bool IRAM_ATTR Semaphore::notify_from_isr(bool &must_yield)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(_handle, &xHigherPriorityTaskWoken);
     return (xHigherPriorityTaskWoken == pdTRUE);
 }
 
-void Semaphore::yield_from_isr()
+void IRAM_ATTR Semaphore::yield_from_isr()
 {
     portYIELD_FROM_ISR();
 }

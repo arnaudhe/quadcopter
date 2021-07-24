@@ -8,6 +8,7 @@
 #include <app/controllers/height_controller.h>
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
+#include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
 
 #include <data_model/data_ressources_registry.h>
@@ -82,6 +83,7 @@ extern "C" void app_main(void)
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
     position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
+    battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
 
     registry->internal_set<string>("control.mode", "off");

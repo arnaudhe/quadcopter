@@ -18,6 +18,7 @@
 #define ATTITUDE_CONTROLLER_PERIOD            (0.01)
 #define HEIGHT_CONTROLLER_PERIOD              (0.025)
 #define POSITION_CONTROLLER_PERIOD            (0.1)
+#define BATTERY_SUPERVISOR_PERIOD             (1.0)
 #define CAMERA_SUPERVISOR_PERIOD              (0.05)
 
 #define PLATFORM_HCSR04_ECHO_PIN              (5)

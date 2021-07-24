@@ -35,6 +35,7 @@ extern "C" void app_main(void)
     RateController          * rate_controller;
     AttitudeController      * attitude_controller;
     HeightController        * height_controller;
+    PositionController      * position_controller;
     Wifi                    * wifi;
     UdpServer               * udp;
     DataRessourcesRegistry  * registry;
@@ -78,6 +79,7 @@ extern "C" void app_main(void)
     rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer);
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
+    position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<float>("control.motors.front_left", 0.0);

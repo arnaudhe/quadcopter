@@ -8,6 +8,7 @@
 #include <app/controllers/height_controller.h>
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
+#include <app/data_recorder/data_recorder.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
 
@@ -25,6 +26,8 @@
 
 #include <utils/mixer.h>
 
+// #define DATA_RECORDING
+
 extern "C" void app_main(void)
 {
     Motor                   * front_left;
@@ -33,6 +36,9 @@ extern "C" void app_main(void)
     Motor                   * rear_right;
     I2cMaster               * sensors_i2c;
     Marg                    * marg;
+#ifdef DATA_RECORDING
+    DataRecorder            * data_recorder;
+#else
     Mixer                   * mixer;
     RateController          * rate_controller;
     AttitudeController      * attitude_controller;
@@ -42,9 +48,11 @@ extern "C" void app_main(void)
     UdpServer               * udp;
     DataRessourcesRegistry  * registry;
     JsonDataProtocol        * protocol;
+    BatterySupervisor       * battery;
     CameraController        * camera;
     UltrasoundSensor        * ultrasound;
     Barometer               * barometer;
+#endif
 
     nvs_flash_init();
 
@@ -74,6 +82,9 @@ extern "C" void app_main(void)
     rear_left->set_speed(0.0f);
     rear_right->set_speed(0.0f);
 
+#ifdef DATA_RECORDING
+    data_recorder       = new DataRecorder(front_left, front_right, rear_left, rear_right, marg);
+#else
     registry            = new DataRessourcesRegistry("data_model.json");
     wifi                = new Wifi(registry);
     udp                 = new UdpServer("quadcopter_control", 5000);
@@ -92,13 +103,18 @@ extern "C" void app_main(void)
     registry->internal_set<float>("control.motors.rear_left", 0.0);
     registry->internal_set<float>("control.motors.rear_right", 0.0);
 
+#endif
 
     Task::delay_ms(1500);
 
+#ifdef DATA_RECORDING
+    data_recorder->start();
+#else
     wifi->connect();
     rate_controller->start();
     attitude_controller->start();
     height_controller->start();
+#endif
 
     while (true)
     {

@@ -21,20 +21,26 @@ void Wifi::event_handler(void *arg, esp_event_base_t event_base,
     } 
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) 
     {
+        wifi->_registry->internal_set<string>("wifi.status", "disconnected");
         esp_wifi_connect();
         LOG_INFO("retry to connect to the AP");
     } 
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
     {
+        wifi->_registry->internal_set<string>("wifi.status", "connected");
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         LOG_INFO("Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
     }
 }
 
-Wifi::Wifi()
+Wifi::Wifi(DataRessourcesRegistry * registry)
 {
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
+
+    _registry = registry;
+
+    _registry->internal_set<string>("wifi.status", "off");
 
     _connection_request = false;
     _disconnection_request = false;

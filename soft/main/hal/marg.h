@@ -3,6 +3,7 @@
 #include <periph/i2c_master.h>
 #include <drv/MPU6050.h>
 #include <drv/HMC5883L.h>
+#include <os/mutex.h>
 
 using namespace std;
 
@@ -16,6 +17,7 @@ class Marg
     I2cMaster  * _i2c;      ///< i2c device
     MPU6050    * _mpu;
     HMC5883L   * _hmc;
+    Mutex      * _mutex;
 
   public:
 

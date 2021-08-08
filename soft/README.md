@@ -10,86 +10,62 @@ The project is based on Espressif's official [ESP-IDF SDK](https://github.com/es
 
 ## Setup
 
-### SDK
+### Get the SDK
 
 ```
 # git submodule update --init --recursive
 ```
 
-### Toolchain
-
-Get the toochain provided by espressif [here](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html#step-1-set-up-the-toolchain)
-
-Make sure to have the toolchain in your system path or edit your bashrc, zshrc, ...
-```
-# xtensa-esp32-elf-gcc -v
-(...)
-gcc version 5.2.0 (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a)
-```
-
 ### Python tools
 
-Make sure to have python 2.x and pip in your system path when running command
+Make sure to have python 3 and pip in your system path when running command
 ```
-# python --version
-Python 2.7.10
-```
-
-```
-# pip --version
-pip 19.1 from /Library/Python/2.7/site-packages/pip (python 2.7)
+# python3 --version
+Python 3.9.4
 ```
 
-Install necessary packages with the command
-```
-# sudo pip install -r esp-idf/requirements.txt
-```
+### Setup the espressif toolchain and tools
 
-### CMake - Make
-
-Make sure to have CMake or GNU Make installed and in your path.
-
-## Build and flash
-
-The SDK supports two build systems:
-* one base on CMake / ninja (newest)
-* one base on make (legacy)
-
-Both can be used to build the quadcopter firmware.
-
-### CMake
+Once SDK cloned, install espressif toolchain and tools with
 
 ```
-# export IDF_PATH=`pwd`/esp-idf
-# export PATH="$IDF_PATH/tools:$PATH"
+./esp-idf/install.sh
+```
+
+This will create a folder `.espressif` in your home folder, and:
+* download the espressif toolchain, bin utils and debug utils
+* setup a python virtual environement we will work into
+
+Note: Alternatively, you can consider setup the environement through vscode IDF extensions. However, SDK as submodule is not managed by the extension.
+
+## Build, flash, monitor
+
+### Setup the environement
+
+```
+# source ./env.sh
+```
+
+### Build
+
+```
 # idf.py build
+```
+
+### Flash
+
+```
 # idf.py flash [-p <port>]
 ```
 
-### Make (Legacy)
-
-```
-# make
-# make flash [ESPPORT=<port>]
-```
-
-## Monitor
-
-### CMake
+### Monitor
 
 ```
 # idf.py monitor [-p <port>]
 ```
-
 Hit `ctrl + $` to exit
 
-### Make (Legacy)
-
-```
-# make monitor [ESPPORT=<port>]
-```
-
-Hit `ctrl + $` to exit
+You can alternatively use any serial port util at 921600 bauds
 
 ## Visual Studio Code integration
 
@@ -101,8 +77,10 @@ Install ["C/C++" extension](https://marketplace.visualstudio.com/items?itemName=
 
 Open the folder `soft` in Visual Studio Code. You may already have:
 * C/C++ indexing and completion
-* Integrated build (with cmake)
+* Integrated build
 
-### Build (cmake)
+Don't forget to run Visual Studio in espressif python virtual environment
+
+### Build, Flash, Monitor
 
 Hit `cmd + shift + B` to build the project. The errors and warnings should be highlighted in the "problems" tab.

@@ -16,7 +16,7 @@ The project is based on Espressif's official [ESP-IDF SDK](https://github.com/es
 # git submodule update --init --recursive
 ```
 
-### Python tools
+### Requirements
 
 Make sure to have python 3 and pip in your system path when running command
 ```
@@ -24,17 +24,22 @@ Make sure to have python 3 and pip in your system path when running command
 Python 3.9.4
 ```
 
+Make sure to have cmake installed on your system and in your PATH
+```
+cmake --version
+```
+
 ### Setup the espressif toolchain and tools
 
 Once SDK cloned, install espressif toolchain and tools with
 
 ```
-./esp-idf/install.sh
+./setup.sh
 ```
 
-This will create a folder `.espressif` in your home folder, and:
-* download the espressif toolchain, bin utils and debug utils
-* setup a python virtual environement we will work into
+This will:
+* Create a folder `.espressif` in your home folder, and download the espressif toolchain, bin utils and debug utils
+* Setup a python virtual environement in local folder `.venv` we will work into
 
 Note: Alternatively, you can consider setup the environement through vscode IDF extensions. However, SDK as submodule is not managed by the extension.
 

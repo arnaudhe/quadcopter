@@ -21,3 +21,6 @@ hardware/quadcopter.xml
 #vscode
 soft/.vscode/ipch/
 soft/.vscode/settings.json
+
+# python virtual env
+soft/.venv

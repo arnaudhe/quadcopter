@@ -22,6 +22,7 @@ set(COMPONENT_SRCS
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp
     data_model/json_protocol.cpp
+    hal/battery.cpp
     hal/udp_server.cpp
     hal/ultrasound.cpp
     hal/log.cpp
@@ -51,6 +52,7 @@ set(COMPONENT_SRCS
     utils/quaternion.cpp
     utils/filter.cpp
     utils/string_utils.cpp
+    periph/adc.cpp 
     periph/i2c_master.cpp
     periph/pulse.cpp
     periph/timer.cpp

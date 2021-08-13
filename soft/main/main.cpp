@@ -61,16 +61,20 @@ extern "C" void app_main(void)
     UdpServer               * udp;
     DataRessourcesRegistry  * registry;
     JsonDataProtocol        * protocol;
-    BatterySupervisor       * battery;
+    BatterySupervisor       * battery_supervisor;
     CameraController        * camera;
     UltrasoundSensor        * ultrasound;
     Barometer               * barometer;
     Telemetry               * telemetry;
     RadioCommand            * radio_command;
-
+    Adc                     * adc;
+    Battery                 * battery;
 #endif
 
     nvs_flash_init();
+
+    adc = new Adc(PLATFORM_BATTERY_ADC_UNIT);
+    battery = new Battery(adc, PLATFORM_BATTERY_ADC_CHANNEL, PLATFORM_BATTERY_CELLS, PLATFORM_BATTERY_DIVIDER);
 
     sensors_i2c = new I2cMaster(I2C_MASTER_NUM);
     sensors_i2c->init();
@@ -118,7 +122,7 @@ extern "C" void app_main(void)
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
     position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
     gps                 = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
-    battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
+    battery_supervisor  = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
     radio_command       = new RadioCommand(registry);
@@ -141,6 +145,7 @@ extern "C" void app_main(void)
     gps->start();
     motors_controller->start();
     telemetry->start();
+    battery_supervisor->start();
 #endif
 
     while (true)

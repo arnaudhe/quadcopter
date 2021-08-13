@@ -19,7 +19,7 @@
 #define MOTORS_CONTROLLER_PERIOD              (0.05)
 #define HEIGHT_CONTROLLER_PERIOD              (0.025)
 #define POSITION_CONTROLLER_PERIOD            (0.1)
-#define BATTERY_SUPERVISOR_PERIOD             (1.0)
+#define BATTERY_SUPERVISOR_PERIOD             (5.0)
 #define CAMERA_SUPERVISOR_PERIOD              (0.05)
 
 #define PLATFORM_HCSR04_ECHO_PIN              (5)
@@ -41,3 +41,11 @@
 #define PLATFORM_SI4432_SPI_FREQ              (1000000)
 #define PLATFORM_SI4432_SPI_MODE              (0)
 #define PLATFORM_SI4432_IRQ_PIN               (GPIO_NUM_35)
+
+// TODO: So far the battery measure divider is too low, we overflow the ADC VRef voltage even with low battery
+// cf https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#adc-attenuation
+
+#define PLATFORM_BATTERY_ADC_UNIT             (Adc::UNIT_1)
+#define PLATFORM_BATTERY_ADC_CHANNEL          (Adc::CHANNEL_6)
+#define PLATFORM_BATTERY_CELLS                (3)
+#define PLATFORM_BATTERY_DIVIDER              (4.0f)

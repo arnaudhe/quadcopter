@@ -45,7 +45,7 @@ void IRAM_ATTR AttitudeController::run(void)
     float  gx, gy, gz;     /* gyro in drone frame (sensor data) */
     float  ax, ay, az;     /* accelero in drone frame (sensor data) */
     float  mx, my, mz;     /* magneto in drone frame (sensor data) */
-    float  roll_command, pitch_command, yaw_command;
+    float  roll_rate_setpoint, pitch_rate_setpoint, yaw_rate_setpoint;
     bool   roll_enable, pitch_enable, yaw_enable;
     float  roll, pitch, yaw;
 
@@ -72,61 +72,61 @@ void IRAM_ATTR AttitudeController::run(void)
             _roll_controller->set_ki(_registry->internal_get<float>("control.attitude.roll.ki"));
             _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.kd"));
 
-            _roll_controller->set_consign(_registry->internal_get<float>("control.attitude.roll.position_target"));
+            _roll_controller->set_setpoint(_registry->internal_get<float>("control.attitude.roll.position_target"));
 
-            roll_enable  = true;
-            roll_command = _roll_controller->update(roll);
+            roll_enable        = true;
+            roll_rate_setpoint = _roll_controller->update(roll);
         }
         else if (_registry->internal_get<string>("control.attitude.roll.mode") == "speed")
         {
-            roll_enable  = true;
-            roll_command = _registry->internal_get<float>("control.attitude.roll.speed_target");
+            roll_enable        = true;
+            roll_rate_setpoint = _registry->internal_get<float>("control.attitude.roll.speed_target");
         }
         else
         {
-            roll_enable  = false;
-            roll_command = 0.0f;
+            roll_enable        = false;
+            roll_rate_setpoint = 0.0f;
         }
 
         if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
         {
-            _pitch_controller->set_consign(_registry->internal_get<float>("control.attitude.pitch.position_target"));
+            _pitch_controller->set_setpoint(_registry->internal_get<float>("control.attitude.pitch.position_target"));
 
-            pitch_enable = true;
-            pitch_command = _pitch_controller->update(pitch);
+            pitch_enable        = true;
+            pitch_rate_setpoint = _pitch_controller->update(pitch);
         }
         else if (_registry->internal_get<string>("control.attitude.pitch.mode") == "speed")
         {
-            pitch_enable = true;
-            pitch_command = _registry->internal_get<float>("control.attitude.pitch.speed_target");
+            pitch_enable        = true;
+            pitch_rate_setpoint = _registry->internal_get<float>("control.attitude.pitch.speed_target");
         }
         else
         {
-            pitch_enable  = false;
-            pitch_command = 0.0f;
+            pitch_enable        = false;
+            pitch_rate_setpoint = 0.0f;
         }
 
         if (_registry->internal_get<string>("control.attitude.yaw.mode") == "position")
         {
-            _yaw_controller->set_consign(_registry->internal_get<float>("control.attitude.yaw.position_target"));
+            _yaw_controller->set_setpoint(_registry->internal_get<float>("control.attitude.yaw.position_target"));
 
-            yaw_enable  = true;
-            yaw_command = _yaw_controller->update(yaw);
+            yaw_enable        = true;
+            yaw_rate_setpoint = _yaw_controller->update(yaw);
         }
         else if (_registry->internal_get<string>("control.attitude.yaw.mode") == "speed")
         {
-            yaw_enable  = true;
-            yaw_command = _registry->internal_get<float>("control.attitude.yaw.speed_target");
+            yaw_enable        = true;
+            yaw_rate_setpoint = _registry->internal_get<float>("control.attitude.yaw.speed_target");
         }
         else
         {
-            yaw_enable  = false;
-            yaw_command = 0.0f;
+            yaw_enable        = false;
+            yaw_rate_setpoint = 0.0f;
         }
 
         /* Apply the controls to the motors */
         _rate_controller->set_enables(roll_enable, pitch_enable, yaw_enable);
-        _rate_controller->set_speed_targets(roll_command, pitch_command, yaw_command);
+        _rate_controller->set_speed_targets(roll_rate_setpoint, pitch_rate_setpoint, yaw_rate_setpoint);
     }
     else
     {

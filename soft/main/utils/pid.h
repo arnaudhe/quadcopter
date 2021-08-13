@@ -17,7 +17,7 @@ class Pid
     float      _ki;                 ///< integrate coeff
     float      _kd;                 ///< derivative coeff
     float      _kff;                ///< feed-forward coeff
-    float      _consign;            ///< current regulator setpoint
+    float      _setpoint;           ///< current regulator setpoint
     float      _previous;           ///< previous input, for derivate
     float      _integrate;          ///< accumalator, for integrate
     float      _period;             ///< time period
@@ -34,14 +34,14 @@ class Pid
     void set_kp(float kp);
     void set_ki(float ki);
     void set_kd(float kd);
-    void set_consign(float consign);
     void set_kff(float kff);
+    void set_setpoint(float setpoint);
 
     float kp() const;
     float ki() const;
     float kd() const;
-    float consign() const;
     float kff() const;
+    float setpoint() const;
 
     /* Other methods */
 

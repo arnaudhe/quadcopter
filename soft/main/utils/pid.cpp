@@ -5,7 +5,7 @@
 
 Pid::Pid(float period, float kp, float ki, float kd, float kff)
 {
-    _consign            = 0.0f;
+    _setpoint           = 0.0f;
     _previous           = 0.0f;
     _integrate          = 0.0f;
     _period             = period;
@@ -20,7 +20,7 @@ Pid::Pid(float period, float kp, float ki, float kd, float kff)
 
 float IRAM_ATTR Pid::update(float input)
 {
-    float error           = _consign - input;
+    float error           = _setpoint - input;
     float derivate        = (error - _previous) / (_period);
     float integrate       = _integrate + (error * _period);
     float derivate_filter = _dterm_filter->apply(derivate);
@@ -28,7 +28,7 @@ float IRAM_ATTR Pid::update(float input)
     float output = _kp  * error +
                    _ki  * _integrate +
                    _kd  * derivate_filter +
-                   _kff * _consign;
+                   _kff * _setpoint;
 
     _integrate = integrate;
     _previous = error;
@@ -56,9 +56,9 @@ void IRAM_ATTR Pid::set_kff(float kff)
     _kff = kff;
 }
 
-void IRAM_ATTR Pid::set_consign(float consign)
+void IRAM_ATTR Pid::set_setpoint(float setpoint)
 {
-    _consign = consign;
+    _setpoint = setpoint;
 }
 
 float IRAM_ATTR Pid::kp() const
@@ -81,7 +81,7 @@ float IRAM_ATTR Pid::kff() const
     return _kff;
 }
 
-float IRAM_ATTR Pid::consign() const
+float IRAM_ATTR Pid::setpoint() const
 {
-    return _consign;
+    return _setpoint;
 }

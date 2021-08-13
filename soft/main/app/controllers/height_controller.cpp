@@ -53,12 +53,12 @@ void IRAM_ATTR HeightController::run(void)
 
         if (_registry->internal_get<string>("control.attitude.height.mode") == "speed")
         {
-            _speed_controller->set_consign(_registry->internal_get<float>("control.attitude.height.speed_target"));
+            _speed_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.speed_target"));
             height_command = _speed_controller->update(_observer->vertical_speed());
         }
         else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
         {
-            _position_controller->set_consign(_registry->internal_get<float>("control.attitude.height.position_target"));
+            _position_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.position_target"));
             height_command = _position_controller->update(_observer->height());
         }
         else

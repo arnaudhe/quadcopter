@@ -109,9 +109,9 @@ void IRAM_ATTR RateController::run(void)
 void IRAM_ATTR RateController::set_speed_targets(float roll, float pitch, float yaw)
 {
     _mutex->lock();
-    _roll_controller->set_consign(roll);
-    _pitch_controller->set_consign(pitch);
-    _yaw_controller->set_consign(yaw);
+    _roll_controller->set_setpoint(roll);
+    _pitch_controller->set_setpoint(pitch);
+    _yaw_controller->set_setpoint(yaw);
     _mutex->unlock();
 }
 

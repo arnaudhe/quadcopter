@@ -32,4 +32,6 @@ class UdpServer : public Task
 
     void register_callback(function<void(string, string&)>);
 
+    bool send_broadcast(string msg, int port);
+
 };

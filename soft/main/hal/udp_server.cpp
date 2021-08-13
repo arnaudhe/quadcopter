@@ -12,6 +12,8 @@
 UdpServer::UdpServer(string name, int port) :
     Task(name, Task::Priority::LOW, 8192, false)
 {
+    int broadcast = 1;
+
     _name = name;
     _port = port;
 
@@ -33,6 +35,12 @@ UdpServer::UdpServer(string name, int port) :
     if (err < 0)
     {
         LOG_ERROR("Socket unable to bind: errno %d", errno);
+    }
+
+    if (setsockopt(_socket, SOL_SOCKET, SO_BROADCAST, (void *)&broadcast, sizeof(broadcast)) < 0)
+    {
+        LOG_ERROR("Failed to set broadcast option");
+        closesocket(_socket);
     }
 
     LOG_INFO("Server ready");
@@ -104,6 +112,27 @@ bool UdpServer::sendto(string msg, string address, int port)
     inet_aton(address.c_str(), &dest_addr.sin_addr);
     dest_addr.sin_family = AF_INET;
     dest_addr.sin_port   = htons(port);
+
+    len = ::sendto(_socket, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+
+    if (len > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool UdpServer::send_broadcast(string msg, int port)
+{
+    struct sockaddr_in dest_addr;
+    int                len;
+
+    dest_addr.sin_family      = AF_INET;
+    dest_addr.sin_port        = htons(port);
+    dest_addr.sin_addr.s_addr = IPADDR_BROADCAST;
 
     len = ::sendto(_socket, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
 

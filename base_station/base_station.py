@@ -147,7 +147,7 @@ class EnumRessourceWidget(DataRessourceWidget):
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, data_model):
+    def __init__(self, data_model, logger = True):
         super().__init__()
         self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sequence = 0
@@ -162,12 +162,33 @@ class MainWindow(QMainWindow):
         print(f'Detected announcement from {self.quadcopter_name} at {self.quadcopter_address}')
         self.setup_ui()
         self.running = True
+        if logger:
+            self.logger = Thread(target = self.run_logger)
+            self.logger.start()
+        else:
+            self.logger = None
         self.heartbeat = Thread(target = self.run_heartbeat)
         self.heartbeat.start()
 
     def shutdown(self):
         self.running = False
         self.heartbeat.join()
+        if self.logger:
+            self.logger.join()
+
+    def run_logger(self):
+        print('Logger started')
+        udp_logger = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_logger.bind(('0.0.0.0', 5002))
+        udp_logger.settimeout(0.1)
+        while self.running:
+            try:
+                data = udp_logger.recv(128)
+                if data:
+                    print(f'[{self.quadcopter_name}] {datetime.now()} {data.decode("utf-8")}')
+            except:
+                pass
+        print('Logger stopped')
 
     def run_heartbeat(self):
         print('Hearbeat started')
@@ -327,6 +348,11 @@ if __name__ == '__main__':
     with open('../data_model/data_model.json') as json_file:
         data_model = json.load(json_file)
 
+    logger = False
+
+    if len(sys.argv) >= 2:
+        if sys.argv[1] in ('-l', '--log', '--logger'):
+            logger = True
 
     app = QApplication([])
     w = MainWindow(data_model, logger)

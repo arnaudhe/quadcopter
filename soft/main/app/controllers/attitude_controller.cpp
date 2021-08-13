@@ -62,8 +62,6 @@ void IRAM_ATTR AttitudeController::run(void)
     yaw   = _observer->yaw();
     _mutex->unlock();
 
-    LOG_INFO("Hi !");
-
     /* Run the controllers */
     if (_registry->internal_get<string>("control.mode") == "attitude")
     {

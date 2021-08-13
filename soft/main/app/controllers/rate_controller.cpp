@@ -4,7 +4,7 @@
 #include <os/task.h>
 #include <esp_attr.h>
 
-#define GYRO_CALIBRATION_LOOPS          (50)
+#define GYRO_CALIBRATION_LOOPS          (100)
 #define RPM_FILTER_THURST_THRESHOLD     (0.1f)
 
 RateController::RateController(float period, Marg * marg, Mixer * mixer):

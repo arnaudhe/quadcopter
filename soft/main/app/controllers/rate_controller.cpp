@@ -17,9 +17,9 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer):
     _mixer  = mixer;
     _mutex  = new Mutex();
 
-    _roll_controller   = new Pid(period, RATE_PID_ROLL_KP, RATE_PID_ROLL_KI, RATE_PID_ROLL_KD);
-    _pitch_controller  = new Pid(period, RATE_PID_PITCH_KP, RATE_PID_PITCH_KI, RATE_PID_PITCH_KD);
-    _yaw_controller    = new Pid(period, RATE_PID_YAW_KP, RATE_PID_YAW_KI, RATE_PID_YAW_KD);
+    _roll_controller   = new Pid(period, RATE_PID_ROLL_KP, RATE_PID_ROLL_KI, RATE_PID_ROLL_KD, RATE_PID_ROLL_FF);
+    _pitch_controller  = new Pid(period, RATE_PID_PITCH_KP, RATE_PID_PITCH_KI, RATE_PID_PITCH_KD, RATE_PID_PITCH_FF);
+    _yaw_controller    = new Pid(period, RATE_PID_YAW_KP, RATE_PID_YAW_KI, RATE_PID_YAW_KD, RATE_PID_YAW_FF);
 
     _roll_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _pitch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);

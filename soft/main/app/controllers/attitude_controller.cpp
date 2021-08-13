@@ -18,6 +18,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.roll.position", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.speed_target", 0.0f);
 
     _registry->internal_set<float>("control.attitude.roll.kp", ATTITUDE_PID_ROLL_POSITION_KP);
     _registry->internal_set<float>("control.attitude.roll.ki", ATTITUDE_PID_ROLL_POSITION_KI);
@@ -27,11 +28,13 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.pitch.position", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.speed_target", 0.0f);
 
     _registry->internal_set<string>("control.attitude.yaw.mode", "off");
     _registry->internal_set<float>("control.attitude.yaw.position", 0.0f);
     _registry->internal_set<float>("control.attitude.yaw.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.yaw.speed", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.speed_target", 0.0f);
 
     _roll_controller  = new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD);
     _pitch_controller = new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD);

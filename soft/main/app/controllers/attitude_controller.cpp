@@ -14,7 +14,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _mutex           = new Mutex();
     _observer        = new EulerObserver(period);
 
-    _registry->internal_set<string>("control.attitude.roll.mode", "off");
+    _registry->internal_set<string>("control.attitude.roll.mode", "position");
     _registry->internal_set<float>("control.attitude.roll.position", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
@@ -25,13 +25,13 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.roll.kd", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.kff", 0.0f);
 
-    _registry->internal_set<string>("control.attitude.pitch.mode", "off");
+    _registry->internal_set<string>("control.attitude.pitch.mode", "position");
     _registry->internal_set<float>("control.attitude.pitch.position", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
     _registry->internal_set<float>("control.attitude.pitch.speed_target", 0.0f);
 
-    _registry->internal_set<string>("control.attitude.yaw.mode", "off");
+    _registry->internal_set<string>("control.attitude.yaw.mode", "speed");
     _registry->internal_set<float>("control.attitude.yaw.position", 0.0f);
     _registry->internal_set<float>("control.attitude.yaw.position_target", 0.0f);
     _registry->internal_set<float>("control.attitude.yaw.speed", 0.0f);

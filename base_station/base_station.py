@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
 
         self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; border: 1px solid rgb(100, 100, 100); }")
 
-        self.setWindowTitle('GUI')
+        self.setWindowTitle('Quadcopter base station')
 
         self.load_model(data_model, layout)
 

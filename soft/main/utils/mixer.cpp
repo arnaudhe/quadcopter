@@ -13,10 +13,10 @@ IRAM_ATTR Mixer::Mixer(Motor * front_left, Motor * front_right, Motor * rear_lef
 
 void IRAM_ATTR Mixer::update(float height_command, float roll_command, float pitch_command, float yaw_command)
 {
-    _front_left->set_speed( height_command - roll_command + pitch_command - yaw_command);
-    _front_right->set_speed( height_command + roll_command + pitch_command + yaw_command);
-    _rear_right->set_speed( height_command + roll_command - pitch_command - yaw_command);
-    _rear_left->set_speed( height_command - roll_command - pitch_command + yaw_command);
+    _front_left->set_speed( height_command - roll_command + pitch_command + yaw_command);
+    _front_right->set_speed( height_command + roll_command + pitch_command - yaw_command);
+    _rear_right->set_speed( height_command + roll_command - pitch_command + yaw_command);
+    _rear_left->set_speed( height_command - roll_command - pitch_command - yaw_command);
 }
 
 void IRAM_ATTR Mixer::set_motors_speeds(float front_left, float front_right, float rear_left, float rear_right)

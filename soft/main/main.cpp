@@ -121,6 +121,7 @@ extern "C" void app_main(void)
 
     while (true)
     {
+        udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);
         Task::delay_ms(1000);
     }
 }

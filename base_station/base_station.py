@@ -2,10 +2,11 @@ import json
 import sys
 import socket
 import time
+from datetime import datetime
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QMainWindow, QTextEdit, QVBoxLayout, QHBoxLayout, QSlider, QLabel, QPushButton, QCheckBox, QComboBox, QGroupBox, QScrollArea
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal, QRect
-from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf, DNSAddress
+from threading import Thread
 
 class FloatSlider(QSlider):
 
@@ -152,7 +153,58 @@ class MainWindow(QMainWindow):
         self.sequence = 0
         self.data_model = data_model
         self.widgets = {}
+        self.model_loaded = False
+        self.quadcopter_address = ''
+        self.quadcopter_name = ''
+        self.quadcopter_heartbeat = 5
+        print('Waiting for quadcopter announcement...')
+        self.wait_announcement(blocking = True)
+        print(f'Detected announcement from {self.quadcopter_name} at {self.quadcopter_address}')
         self.setup_ui()
+        self.running = True
+        self.heartbeat = Thread(target = self.run_heartbeat)
+        self.heartbeat.start()
+
+    def shutdown(self):
+        self.running = False
+        self.heartbeat.join()
+
+    def run_heartbeat(self):
+        print('Hearbeat started')
+        while self.running:
+            if self.wait_announcement(blocking = False):
+                if self.quadcopter_heartbeat == 0:
+                    print(f'Retrieved signal from {self.quadcopter_name}! Reload ressources !')
+                    for ressource in self.widgets.keys():
+                        self.on_read_request(ressource)
+                self.quadcopter_heartbeat = 5
+            else:
+                if self.quadcopter_heartbeat > 0:
+                    self.quadcopter_heartbeat -= 1
+                    if self.quadcopter_heartbeat == 0:
+                        print(f'Lost signal from {self.quadcopter_name}')
+        print('Hearbeat stopped')
+
+    def wait_announcement(self, blocking = False):
+        # Bind a new socket on 5001 to detect sent announcements
+        udp_detector = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_detector.bind(('0.0.0.0', 5001))
+        udp_detector.settimeout(1.1)
+        result = False
+        while True:
+            try:
+                data, address = udp_detector.recvfrom(128)
+                message = json.loads(data.decode('utf-8'))
+                if 'announcement' in message:
+                    self.quadcopter_address, _ = address
+                    self.quadcopter_name = message["announcement"]
+                    result = True
+            except:
+                pass
+            if (blocking == False) or (result == True):
+                break
+        udp_detector.close()
+        return result
 
     def load_model(self, data_model, container_layout, current_key = ''):
         for key, content in data_model.items():
@@ -226,7 +278,7 @@ class MainWindow(QMainWindow):
         print(f'write {key} {value}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'write', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : {key : value}}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
@@ -249,8 +301,8 @@ class MainWindow(QMainWindow):
         print(f'read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
-        self.udp_client.sendto(json.dumps(command).encode('utf-8'), ("192.168.1.69", 5000))
-        self.udp_client.settimeout(2.0)
+        self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
+        self.udp_client.settimeout(1.0)
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
@@ -273,8 +325,11 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
 
     with open('../data_model/data_model.json') as json_file:
-            data_model = json.load(json_file)
+        data_model = json.load(json_file)
 
-    app = QApplication(sys.argv)
-    w = MainWindow(data_model)
-    sys.exit(app.exec_())
+
+    app = QApplication([])
+    w = MainWindow(data_model, logger)
+    ret = app.exec_()
+    w.shutdown()
+    sys.exit(ret)

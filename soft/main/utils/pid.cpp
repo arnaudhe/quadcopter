@@ -2,6 +2,7 @@
 #include <esp_attr.h>
 
 #define PID_LOWPASS_CUTOFF_FREQUENCY    40.0
+#define PID_INTEGRATE_LIMIT             0.1f
 
 Pid::Pid(float period, float kp, float ki, float kd, float kff)
 {
@@ -22,15 +23,24 @@ float IRAM_ATTR Pid::update(float input)
 {
     float error           = _setpoint - input;
     float derivate        = (error - _previous) / (_period);
-    float integrate       = _integrate + (error * _period);
     float derivate_filter = _dterm_filter->apply(derivate);
+
+    _integrate = _integrate + (error * _period);
+
+    if (_integrate > PID_INTEGRATE_LIMIT)
+    {
+        _integrate = PID_INTEGRATE_LIMIT;
+    }
+    else if (_integrate < -PID_INTEGRATE_LIMIT)
+    {
+        _integrate = -PID_INTEGRATE_LIMIT;
+    }
 
     float output = _kp  * error +
                    _ki  * _integrate +
                    _kd  * derivate_filter +
                    _kff * _setpoint;
 
-    _integrate = integrate;
     _previous = error;
 
     return output;

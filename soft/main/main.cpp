@@ -21,6 +21,7 @@
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
 #include <hal/marg.h>
+#include <hal/log.h>
 
 #include <os/task.h>
 
@@ -30,6 +31,7 @@
 
 extern "C" void app_main(void)
 {
+    Logger                  * logger;
     Motor                   * front_left;
     Motor                   * front_right;
     Motor                   * rear_left;
@@ -88,6 +90,7 @@ extern "C" void app_main(void)
     registry            = new DataRessourcesRegistry("data_model.json");
     wifi                = new Wifi(registry);
     udp                 = new UdpServer("quadcopter_control", 5000);
+    logger              = new Logger(udp);
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
     rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer);

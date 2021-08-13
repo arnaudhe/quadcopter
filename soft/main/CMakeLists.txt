@@ -20,6 +20,7 @@ set(COMPONENT_SRCS
     data_model/json_protocol.cpp
     hal/udp_server.cpp 
     hal/ultrasound.cpp 
+    hal/log.cpp 
     hal/mdns.cpp 
     hal/barometer.cpp 
     hal/imu.cpp 

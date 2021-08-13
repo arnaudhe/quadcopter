@@ -30,6 +30,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r esp-idf/requirements.txt
+pip install -r ../base_station/requirements.txt
 
 echo ""
 echo "All done! You can now run:"

@@ -97,8 +97,6 @@ void IRAM_ATTR RateController::run(void)
 
     _mutex->unlock();
 
-    LOG_INFO("Hello");
-
     /* Update motors outputs */
     if ((_roll_enable || _pitch_enable || _yaw_enable) && (height_command > 0.01))
     {
@@ -128,8 +126,6 @@ void IRAM_ATTR RateController::set_throttle(float throttle)
 {
     float center_frequency = RATE_GYRO_FILTER_FREQ_SLOPE * throttle + RATE_GYRO_FILTER_FREQ_CUTOFF;
     float cutoff_frequency = center_frequency - 10.0;
-
-    LOG_INFO("Update gyro filter to %f Hz", center_frequency);
 
     _mutex->lock();
     _throttle = throttle;

@@ -20,9 +20,10 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.speed_target", 0.0f);
 
-    _registry->internal_set<float>("control.attitude.roll.kp", ATTITUDE_PID_ROLL_POSITION_KP);
-    _registry->internal_set<float>("control.attitude.roll.ki", ATTITUDE_PID_ROLL_POSITION_KI);
-    _registry->internal_set<float>("control.attitude.roll.kd", ATTITUDE_PID_ROLL_POSITION_KD);
+    _registry->internal_set<float>("control.attitude.roll.kp", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.ki", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.kd", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.kff", 0.0f);
 
     _registry->internal_set<string>("control.attitude.pitch.mode", "off");
     _registry->internal_set<float>("control.attitude.pitch.position", 0.0f);
@@ -70,10 +71,6 @@ void IRAM_ATTR AttitudeController::run(void)
     {
         if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
         {
-            _roll_controller->set_kp(_registry->internal_get<float>("control.attitude.roll.kp"));
-            _roll_controller->set_ki(_registry->internal_get<float>("control.attitude.roll.ki"));
-            _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.kd"));
-
             _roll_controller->set_setpoint(_registry->internal_get<float>("control.attitude.roll.position_target"));
 
             roll_enable        = true;

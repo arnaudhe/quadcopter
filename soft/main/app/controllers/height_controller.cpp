@@ -66,10 +66,10 @@ void IRAM_ATTR HeightController::run(void)
             height_command = _registry->internal_get<float>("control.thurst_offset");
         }
 
-        _rate_controller->set_thurst(height_command);
+        _rate_controller->set_throttle(height_command);
     }
     else
     {
-        _rate_controller->set_thurst(0.0f);
+        _rate_controller->set_throttle(0.0f);
     }
 }

@@ -77,23 +77,23 @@ void IRAM_ATTR RateController::run(void)
     _mutex->lock();
 
     /* Apply filter */
-    if (_thurst >= RPM_FILTER_THURST_THRESHOLD)
+    if (_throttle >= RPM_FILTER_THURST_THRESHOLD)
     {
         gx = _roll_filter->apply(gx);
         gy = _pitch_filter->apply(gy);
         gz = _yaw_filter->apply(gz);
     }
 
-    /* Update speed attributes */
-    _roll_speed  = gx;
-    _pitch_speed = gy;
-    _yaw_speed   = gz;
+    /* Update rate attributes */
+    _roll_rate  = gx;
+    _pitch_rate = gy;
+    _yaw_rate   = gz;
 
     /* Run PIDs */
-    roll_command   = _roll_enable  ? _roll_controller->update(_roll_speed) : 0.0f;
-    pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_speed) : 0.0f;
-    yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_speed) : 0.0f;
-    height_command = _thurst;
+    roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
+    pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
+    yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
+    height_command = _throttle;
 
     _mutex->unlock();
 
@@ -106,7 +106,7 @@ void IRAM_ATTR RateController::run(void)
     }
 }
 
-void IRAM_ATTR RateController::set_speed_targets(float roll, float pitch, float yaw)
+void IRAM_ATTR RateController::set_rate_targets(float roll, float pitch, float yaw)
 {
     _mutex->lock();
     _roll_controller->set_setpoint(roll);
@@ -124,50 +124,56 @@ void IRAM_ATTR RateController::set_enables(float roll, float pitch, float yaw)
     _mutex->unlock();
 }
 
-void IRAM_ATTR RateController::set_thurst(float thurst)
+void IRAM_ATTR RateController::set_throttle(float throttle)
 {
-    float center_frequency = RATE_GYRO_FILTER_FREQ_SLOPE * thurst + RATE_GYRO_FILTER_FREQ_CUTOFF;
+    float center_frequency = RATE_GYRO_FILTER_FREQ_SLOPE * throttle + RATE_GYRO_FILTER_FREQ_CUTOFF;
     float cutoff_frequency = center_frequency - 10.0;
 
     LOG_INFO("Update gyro filter to %f Hz", center_frequency);
 
     _mutex->lock();
-    _thurst = thurst;
+    _throttle = throttle;
     _roll_filter->update(center_frequency, cutoff_frequency);
     _roll_filter->update(center_frequency, cutoff_frequency);
     _roll_filter->update(center_frequency, cutoff_frequency);
     _mutex->unlock();
 }
 
-float IRAM_ATTR RateController::get_roll_speed(void)
+void IRAM_ATTR RateController::get_rates(float * roll, float * pitch, float * yaw)
 {
-    float speed;
-
     _mutex->lock();
-    speed = _roll_speed;
+    *roll  = _roll_rate;
+    *pitch = _pitch_rate;
+    *yaw   = _yaw_rate;
     _mutex->unlock();
-
-    return speed;
 }
 
-float IRAM_ATTR RateController::get_pitch_speed(void)
+void IRAM_ATTR RateController::set_roll_pid(float kp, float ki, float kd, float kff)
 {
-    float speed;
-
     _mutex->lock();
-    speed = _pitch_speed;
+    _roll_controller->set_kp(kp);
+    _roll_controller->set_ki(ki);
+    _roll_controller->set_kd(kd);
+    _roll_controller->set_kff(kff);
     _mutex->unlock();
-
-    return speed;
 }
 
-float IRAM_ATTR RateController::get_yaw_speed(void)
+void IRAM_ATTR RateController::set_pitch_pid(float kp, float ki, float kd, float kff)
 {
-    float speed;
-
     _mutex->lock();
-    speed = _yaw_speed;
+    _pitch_controller->set_kp(kp);
+    _pitch_controller->set_ki(ki);
+    _pitch_controller->set_kd(kd);
+    _pitch_controller->set_kff(kff);
     _mutex->unlock();
+}
 
-    return speed;
+void IRAM_ATTR RateController::set_yaw_pid(float kp, float ki, float kd, float kff)
+{
+    _mutex->lock();
+    _yaw_controller->set_kp(kp);
+    _yaw_controller->set_ki(ki);
+    _yaw_controller->set_kd(kd);
+    _yaw_controller->set_kff(kff);
+    _mutex->unlock();
 }

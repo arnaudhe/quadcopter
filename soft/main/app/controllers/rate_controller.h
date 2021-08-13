@@ -40,11 +40,11 @@ private:
     float _pitch_calib;
     float _yaw_calib;
 
-    float _roll_speed;
-    float _pitch_speed;
-    float _yaw_speed;
+    float _roll_rate;
+    float _pitch_rate;
+    float _yaw_rate;
 
-    float _thurst;
+    float _throttle;
 
     bool _roll_enable;
     bool _pitch_enable;
@@ -56,12 +56,15 @@ public:
 
     RateController(float period, Marg * marg, Mixer * mixer);
 
-    void set_speed_targets(float roll, float pitch, float yaw);
+    void set_rate_targets(float roll, float pitch, float yaw);
+
     void set_enables(float roll, float pitch, float yaw);
 
-    void set_thurst(float thurst);
+    void set_throttle(float throttle);
 
-    float get_roll_speed(void);
-    float get_pitch_speed(void);
-    float get_yaw_speed(void);
+    void set_roll_pid(float kp, float ki, float kd, float kff);
+    void set_pitch_pid(float kp, float ki, float kd, float kff);
+    void set_yaw_pid(float kp, float ki, float kd, float kff);
+
+    void get_rates(float * roll, float * pitch, float * yaw);
 };

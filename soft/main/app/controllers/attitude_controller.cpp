@@ -50,7 +50,8 @@ void IRAM_ATTR AttitudeController::run(void)
     float  roll, pitch, yaw;
 
     /* Read the sensors */
-    _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
+    _rate_controller->get_rates(&gx, &gy, &gz); // Get the filtered rates from rate_controller
+    _marg->read_acc(&ax, &ay, &az);
     _marg->read_mag(&mx, &my, &mz);
 
     /* Estimate the attitude */
@@ -126,7 +127,7 @@ void IRAM_ATTR AttitudeController::run(void)
 
         /* Apply the controls to the motors */
         _rate_controller->set_enables(roll_enable, pitch_enable, yaw_enable);
-        _rate_controller->set_speed_targets(roll_rate_setpoint, pitch_rate_setpoint, yaw_rate_setpoint);
+        _rate_controller->set_rate_targets(roll_rate_setpoint, pitch_rate_setpoint, yaw_rate_setpoint);
     }
     else
     {

@@ -1,0 +1,35 @@
+{
+    "source": {
+        "type": "udp",
+        "params": {
+            "port": 5002
+        }
+    },
+    "channels": {
+        "setpoint": {
+            "unit": "%"
+        },
+        "error": {
+            "unit": "%"
+        },
+        "p": {
+            "unit": "%"
+        },
+        "i": {
+            "unit": "%"
+        },
+        "d": {
+            "unit": "%"
+        },
+        "kff": {
+            "unit": "%"
+        }
+    },
+    "scope": {
+        "width": 1280,
+        "height": 800,
+        "x_depth": 800,
+        "y_min": -1.0,
+        "y_max": 1.0
+    }
+}

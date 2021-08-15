@@ -1,3 +1,6 @@
 [submodule "soft/esp-idf"]
 	path = soft/esp-idf
 	url = https://github.com/espressif/esp-idf
+[submodule "base_station/scope"]
+	path = base_station/scope
+	url = git@github.com:arnaudhe/python-scope

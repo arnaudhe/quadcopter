@@ -16,6 +16,7 @@
 #include <data_model/json_protocol.h>
 
 #include <periph/i2c_master.h>
+#include <periph/uart.h>
 
 #include <hal/motor.h>
 #include <hal/udp_server.h>
@@ -38,6 +39,7 @@ extern "C" void app_main(void)
     Motor                   * rear_right;
     I2cMaster               * sensors_i2c;
     Marg                    * marg;
+    Uart                    * uart_1;
 #ifdef DATA_RECORDING
     DataRecorder            * data_recorder;
 #else
@@ -60,6 +62,36 @@ extern "C" void app_main(void)
 
     sensors_i2c = new I2cMaster(I2C_MASTER_NUM);
     sensors_i2c->init();
+
+    uart_config_t uart_01_config = {
+        .baud_rate              = 9600,
+        .data_bits              = UART_DATA_8_BITS,
+        .parity                 = UART_PARITY_DISABLE,
+        .stop_bits              = UART_STOP_BITS_1,
+        .flow_ctrl              = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk             = UART_SCLK_APB
+    };
+
+    uart_pin_config_t uart_01_pin_config = {
+        .tx                     = GPIO_NUM_4,
+        .rx                     = GPIO_NUM_5,
+        .rts                    = UART_PIN_NO_CHANGE,
+        .cts                    = UART_PIN_NO_CHANGE
+    };
+
+    uart_1 = new Uart(UART_NUM_1, uart_01_config, uart_01_pin_config);
+    uart_1->init();
+
+    uart_pattern_t pattern_config = {
+        .pattern_chr            = '\n',
+        .chr_num                = 1,
+        .chr_tout               = 9,
+        .post_idle              = 0,
+        .pre_idle               = 0,
+    };
+
+    uart_1->start_pattern_detection(pattern_config, NULL);
+
 
     marg = new Marg(sensors_i2c);
     marg->init();

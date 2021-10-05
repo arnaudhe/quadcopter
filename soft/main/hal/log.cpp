@@ -11,15 +11,31 @@ Logger::Logger(UdpServer *udp)
     _logger = this;
 }
 
-void IRAM_ATTR Logger::Debug(const char * filename, const char * format, ...)
+void IRAM_ATTR Logger::Verbose(const char * filename, const char * fmt, ...)
 {
     char buffer[256];
     va_list args;
 
-    va_start(args, format);
-    vsprintf(buffer, format, args);
+    va_start(args, fmt);
+    vsprintf(buffer, fmt, args);
     va_end(args);
-    esp_log_write(ESP_LOG_DEBUG, filename, LOG_COLOR_D "W (%d) %s: %s\n" LOG_RESET_COLOR, esp_log_timestamp(), filename, buffer);
+    esp_log_write(ESP_LOG_VERBOSE, filename, LOG_COLOR_V "V (%d) %s: %s\n" LOG_RESET_COLOR, esp_log_timestamp(), filename, buffer);
+
+    if (_logger)
+    {
+        _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+    }
+}
+
+void IRAM_ATTR Logger::Debug(const char * filename, const char * fmt, ...)
+{
+    char buffer[256];
+    va_list args;
+
+    va_start(args, fmt);
+    vsprintf(buffer, fmt, args);
+    va_end(args);
+    esp_log_write(ESP_LOG_DEBUG, filename, LOG_COLOR_D "D (%d) %s: %s\n" LOG_RESET_COLOR, esp_log_timestamp(), filename, buffer);
 
     if (_logger)
     {

@@ -37,6 +37,7 @@ Change Activity:
   Date         Description
   -----------  -------------
   03 Oct 2021  Created.
+  05 Oct 2021  Use project custom logging.
 
 ****************************************************************************************************************************/
 
@@ -52,7 +53,7 @@ Change Activity:
 #include "freertos/queue.h"
 #include "driver/uart.h"
 #include "esp_err.h"
-#include "esp_log.h"
+#include "hal/log.h"
 
 #include "periph/uart.h"
 
@@ -63,7 +64,6 @@ Change Activity:
 
 #define RX_BUF_SIZE (1024)
 #define TX_BUF_SIZE (1024)
-#define TAG "UART"
 
 
 /****************************************************************************************************************************
@@ -86,8 +86,7 @@ Uart::Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_p
     _init = false;
     _data_available = false;
     _pattern_enable = false;
-    ESP_LOGI(TAG, "Uart object created for port %d.", _port);
-    esp_log_level_set(TAG, ESP_LOG_ERROR);
+    LOG_INFO("Uart object created for port %d.", _port);
 }
 
 
@@ -101,9 +100,9 @@ esp_err_t Uart::init()
     {
         r = true;
         _init = true;
-        ESP_LOGV(TAG, "UART port %d opened.", _port);
+        LOG_VERBOSE("UART port %d opened.", _port);
     } else {
-        ESP_LOGE(TAG, "Unable to open UART port %d.", _port);
+        LOG_ERROR("Unable to open UART port %d.", _port);
     }
     return r;
 }
@@ -113,7 +112,7 @@ void Uart::deinit()
 {
     uart_driver_delete(_port);
     _init = false;
-    ESP_LOGV(TAG, "UART port %d closed.", _port);
+    LOG_VERBOSE("UART port %d closed.", _port);
 }
 
 
@@ -155,10 +154,10 @@ void Uart::start_pattern_detection(uart_pattern_t pattern_ptr, std::function<voi
             _pattern_enable = true;
             _pattern_callback = callback;
             uart_pattern_queue_reset(_port, 16);
-            ESP_LOGV(TAG, "Start detecting pattern on UART port %d.", _port);
-            xTaskCreate(uart_event_worker_task, "uart_event_worker_task", 2048, this, 12, NULL);
+            LOG_VERBOSE("Start detecting pattern on UART port %d.", _port);
+            xTaskCreate(uart_event_worker_task, "uart_event_worker_task", 3072, this, 12, NULL);
         } else {
-            ESP_LOGE(TAG, "Unable to start detecting pattern on UART port %d.", _port);
+            LOG_ERROR("Unable to start detecting pattern on UART port %d.", _port);
         }
     }
 }
@@ -169,7 +168,7 @@ void Uart::uart_event_worker_task(void * instance_pointer)
     Uart * instance_ptr;
     instance_ptr = (Uart *)instance_pointer;
     
-    ESP_LOGV(TAG, "Start event worker task on UART port %d.", instance_ptr->_port);
+    LOG_VERBOSE("Start event worker task on UART port %d.", instance_ptr->_port);
 
     uart_event_t event;
     size_t buffered_size;
@@ -186,35 +185,35 @@ void Uart::uart_event_worker_task(void * instance_pointer)
                     // a callback could be good here
                     break;
                 case UART_BREAK:
-                    ESP_LOGI(TAG, "UART break signal detected on port %d.", instance_ptr->_port);
+                    LOG_INFO("UART break signal detected on port %d.", instance_ptr->_port);
                     break;
                 case UART_BUFFER_FULL:
-                    ESP_LOGW(TAG, "Full buffer detected. Flushing UART port %d.", instance_ptr->_port);
+                    LOG_WARNING("Full buffer detected. Flushing UART port %d.", instance_ptr->_port);
                     uart_flush_input(instance_ptr->_port);
                     xQueueReset(instance_ptr->_uart_queue);
                     break;
                 case UART_FIFO_OVF:
-                    ESP_LOGW(TAG, "HW FIFO overflow detected. Flushing UART port %d.", instance_ptr->_port);
+                    LOG_WARNING("HW FIFO overflow detected. Flushing UART port %d.", instance_ptr->_port);
                     uart_flush_input(instance_ptr->_port);
                     xQueueReset(instance_ptr->_uart_queue);
                     break;
                 case UART_FRAME_ERR:
-                    ESP_LOGW(TAG, "UART frame error detected on port %d.", instance_ptr->_port);
+                    LOG_WARNING("UART frame error detected on port %d.", instance_ptr->_port);
                     break;
                 case UART_PARITY_ERR:
-                    ESP_LOGW(TAG, "UART parity check error detected on port %d.", instance_ptr->_port);
+                    LOG_WARNING("UART parity check error detected on port %d.", instance_ptr->_port);
                     break;
                 case UART_DATA_BREAK:
-                    ESP_LOGI(TAG, "UART TX data and break event detected on port %d.", instance_ptr->_port);
+                    LOG_INFO("UART TX data and break event detected on port %d.", instance_ptr->_port);
                     break;
                 case UART_PATTERN_DET:
                 {
-                    ESP_LOGI(TAG, "UART pattern event detected on port %d.", instance_ptr->_port);
+                    LOG_INFO("UART pattern event detected on port %d.", instance_ptr->_port);
                     uart_get_buffered_data_len(instance_ptr->_port, &buffered_size);
                     int pos = uart_pattern_pop_pos(instance_ptr->_port);
                     if ( pos == -1 )
                     {
-                        ESP_LOGW(TAG, "Full pattern position queue detected. Flushing UART port %d.", instance_ptr->_port);
+                        LOG_WARNING("Full pattern position queue detected. Flushing UART port %d.", instance_ptr->_port);
                         uart_flush_input(instance_ptr->_port);
                     } else {
                         uart_read_bytes(instance_ptr->_port, buffer, pos, 100 / portTICK_PERIOD_MS);
@@ -223,21 +222,21 @@ void Uart::uart_event_worker_task(void * instance_pointer)
                         {
                             instance_ptr->_pattern_callback(buffered_size, std::string(reinterpret_cast<char*>(buffer)));
                         } else {
-                            ESP_LOGI(TAG, "No callback provided for pattern detection on port %d.", instance_ptr->_port);
+                            LOG_INFO("No callback provided for pattern detection on port %d.", instance_ptr->_port);
                         }
                     }
                     break;
                 }
                 case UART_EVENT_MAX:
                 default:
-                    ESP_LOGI(TAG, "Unhandled UART event deteted on port %d. Event id: %d", instance_ptr->_port, event.type);
+                    LOG_INFO("Unhandled UART event deteted on port %d. Event id: %d", instance_ptr->_port, event.type);
                     break;
             }
         }
     }
     free(buffer);
     buffer = NULL;
-    ESP_LOGI(TAG, "Pattern detection worker task stopped on port %d.", instance_ptr->_port);
+    LOG_INFO("Pattern detection worker task stopped on port %d.", instance_ptr->_port);
     vTaskDelete(NULL);
 }
 
@@ -246,7 +245,7 @@ void Uart::stop_pattern_detection()
 {
     _pattern_enable = false;
     uart_disable_pattern_det_intr(_port);
-    ESP_LOGI(TAG, "Stoppinng pattern detection worker task on port %d.", _port);
+    LOG_INFO("Stoppinng pattern detection worker task on port %d.", _port);
 }
 
 

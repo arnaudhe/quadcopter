@@ -51,6 +51,8 @@ Change Activity:
 #include <string.h>
 #include <driver/uart.h>
 
+#include "os/task.h"
+
 
 /****************************************************************************************************************************
     Defines
@@ -79,33 +81,38 @@ typedef struct // uart pattern detection conf
     Class declarations
 ****************************************************************************************************************************/
 
-class Uart
+class Uart : public Task
 {
     private:
         uart_port_t                             _port;
         uart_config_t                           _uart_config;
         uart_pin_config_t                       _uart_pin_config;
-        bool                                    _init;
+        bool                                    _open;
         int                                     _data_available;
-        bool                                    _pattern_enable;
+        bool                                    _event_enable;
         static QueueHandle_t                    _uart_queue;
+        std::function<void(int)>                _data_in_callback;
         std::function<void(int, std::string)>   _pattern_callback;
 
+        void run();
         static void uart_event_worker_task(void * instance_pointer);
 
     public:
         Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_pin_config);
+        ~Uart();
 
-        esp_err_t       init();
-        void            deinit();
-        void            write(uint8_t * data,
-                              uint8_t len);
-        int             get_data_available();
-        int             read(uint8_t * data,
-                             uint32_t len,
-                             uint32_t timeout);
-        void            start_pattern_detection(uart_pattern_t pattern,
-                                                std::function<void(int, std::string)> callback);
-        void            stop_pattern_detection();
-        void            flush();
+        void        close();
+        void        write(uint8_t * data,
+                          uint8_t len);
+        int         get_data_available();
+        int         read(uint8_t * data,
+                         uint32_t len,
+                         uint32_t timeout);
+        void        start_uart_event();
+        void        stop_uart_event();
+        void        register_data_in_callback(std::function<void(int)> callback);
+        void        register_pattern_detected_callback(std::function<void(int, std::string)> callback);
+        void        enable_pattern_detect(uart_pattern_t pattern);
+        void        disable_pattern_detect();
+        void        flush();
 };

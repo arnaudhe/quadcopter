@@ -71,17 +71,14 @@ extern "C" void app_main(void)
         .flow_ctrl              = UART_HW_FLOWCTRL_DISABLE,
         .source_clk             = UART_SCLK_APB
     };
-
     uart_pin_config_t uart_01_pin_config = {
         .tx                     = GPIO_NUM_4,
         .rx                     = GPIO_NUM_5,
         .rts                    = UART_PIN_NO_CHANGE,
         .cts                    = UART_PIN_NO_CHANGE
     };
-
     uart_1 = new Uart(UART_NUM_1, uart_01_config, uart_01_pin_config);
-    uart_1->init();
-
+    
     uart_pattern_t pattern_config = {
         .pattern_chr            = '\n',
         .chr_num                = 1,
@@ -89,8 +86,10 @@ extern "C" void app_main(void)
         .post_idle              = 0,
         .pre_idle               = 0,
     };
+    uart_1->enable_pattern_detect(pattern_config);
+    uart_1->register_pattern_detected_callback(NULL);
 
-    uart_1->start_pattern_detection(pattern_config, NULL);
+    uart_1->start_uart_event();
 
 
     marg = new Marg(sensors_i2c);

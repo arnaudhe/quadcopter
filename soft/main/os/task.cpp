@@ -12,10 +12,10 @@ void Task::run_static(void * pvParameters)
     Task * task = (Task *)pvParameters;
     if (!task->_auto_start)
     {
-        LOG_INFO("suspend task");
+        LOG_INFO("waiting to start task"); // task name could be good
         vTaskSuspend(task->_handle);
     }
-    LOG_INFO("resume task");
+    LOG_INFO("start task"); // task name could be good
     task->run();
     vTaskDelete(NULL);
 }

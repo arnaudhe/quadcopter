@@ -39,6 +39,7 @@ Change Activity:
   03 Oct 2021  Created.
   05 Oct 2021  Use project custom logging.
   06 Oct 2021  Use project custom task.
+  09 Oct 2021  Use project custom queue.
 
 ****************************************************************************************************************************/
 
@@ -54,6 +55,8 @@ Change Activity:
 
 #include "hal/log.h"
 #include "os/task.h"
+#include "os/queue.h"
+#include "freertos/queue.h"
 
 #include "periph/uart.h"
 
@@ -64,6 +67,7 @@ Change Activity:
 
 #define RX_BUF_SIZE (1024)
 #define TX_BUF_SIZE (1024)
+#define QUEUE_SIZE  (20)
 
 
 /****************************************************************************************************************************
@@ -71,7 +75,7 @@ Change Activity:
 ****************************************************************************************************************************/
 
 //static const char *TAG = "UART";
-QueueHandle_t Uart::_uart_queue;
+queue_handle_t Uart::_uart_queue_handle;
 
 
 /****************************************************************************************************************************
@@ -93,10 +97,16 @@ Uart::Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_p
 
     uart_param_config(_port, &_uart_config);
     uart_set_pin(_port, _uart_pin_config.tx, _uart_pin_config.rx, _uart_pin_config.cts, _uart_pin_config.rts);
-    esp_err_t err = uart_driver_install(_port, RX_BUF_SIZE * 2, TX_BUF_SIZE * 2, 20, &_uart_queue, 0);
+    esp_err_t err = uart_driver_install(_port, RX_BUF_SIZE * 2, TX_BUF_SIZE * 2, QUEUE_SIZE, &_uart_queue_handle, 0);
     if ( err == ESP_OK )
     {
         _open = true;
+        if ( _uart_queue_handle != NULL )
+        {
+            _uart_event_queue = new Queue<uart_event_t>(_uart_queue_handle);
+        } else {
+            LOG_ERROR("Failed to create UART event queue on port %d.", _port);
+        }
         LOG_VERBOSE("UART port %d opened.", _port);
     } else {
         LOG_ERROR("Unable to open UART port %d.", _port);
@@ -109,7 +119,12 @@ Uart::~Uart()
     {
         close();
     }
-    LOG_VERBOSE("UART port %d opened.", _port);
+    if ( _uart_event_queue != NULL )
+    {
+        delete _uart_event_queue;
+    }
+
+    LOG_VERBOSE("UART object destroyed for port %d.", _port);
 }
 
 
@@ -117,7 +132,7 @@ void Uart::close()
 {
     uart_driver_delete(_port);
     _open = false;
-    LOG_VERBOSE("UART object destroyed for port %d.", _port);
+    LOG_VERBOSE("UART port %d closed.", _port);
 }
 
 
@@ -181,7 +196,7 @@ void Uart::enable_pattern_detect(uart_pattern_t pattern)
                                                           pattern.pre_idle);
         if ( err == ESP_OK )
         {
-            uart_pattern_queue_reset(_port, 16);
+            uart_pattern_queue_reset(_port, QUEUE_SIZE/2);
         } else {
             LOG_ERROR("Unable to configure pattern detecttion on UART port %d.", _port);
         }
@@ -206,21 +221,21 @@ void Uart::run()
 {
     LOG_VERBOSE("Start event worker task on UART port %d.", _port);
 
-    uart_event_t event;
+    uart_event_t * event = new uart_event_t();
     size_t buffered_size;
     uint8_t * buffer = (uint8_t *) malloc(RX_BUF_SIZE);
     while ( _event_enable )
     {
-        if ( xQueueReceive(_uart_queue, (void *)&event, (portTickType)portMAX_DELAY) )
+        if ( _uart_event_queue->pop(*event) )
         {
             memset(buffer, '\0', RX_BUF_SIZE);
-            switch (event.type)
+            switch (event->type)
             {
                 case UART_DATA:
-                    _data_available = event.size;
+                    _data_available = event->size;
                     if ( _data_in_callback != NULL)
                     {
-                        _data_in_callback(event.size);
+                        _data_in_callback(event->size);
                     }
                     break;
                 case UART_BREAK:
@@ -229,12 +244,12 @@ void Uart::run()
                 case UART_BUFFER_FULL:
                     LOG_WARNING("Full buffer detected. Flushing UART port %d.", _port);
                     uart_flush_input(_port);
-                    xQueueReset(_uart_queue);
+                    _uart_event_queue->empty();
                     break;
                 case UART_FIFO_OVF:
                     LOG_WARNING("HW FIFO overflow detected. Flushing UART port %d.", _port);
                     uart_flush_input(_port);
-                    xQueueReset(_uart_queue);
+                    _uart_event_queue->empty();
                     break;
                 case UART_FRAME_ERR:
                     LOG_WARNING("UART frame error detected on port %d.", _port);
@@ -268,7 +283,7 @@ void Uart::run()
                 }
                 case UART_EVENT_MAX:
                 default:
-                    LOG_INFO("Unhandled UART event deteted on port %d. Event id: %d", _port, event.type);
+                    LOG_INFO("Unhandled UART event deteted on port %d. Event id: %d", _port, event->type);
                     break;
             }
         }

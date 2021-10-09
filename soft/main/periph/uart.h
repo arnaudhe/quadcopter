@@ -37,6 +37,7 @@ Change Activity:
   Date         Description
   -----------  -------------
   03 Oct 2021  Created.
+  09 Oct 2021  Use project custom queue.
 
 ****************************************************************************************************************************/
 
@@ -52,6 +53,7 @@ Change Activity:
 #include <driver/uart.h>
 
 #include "os/task.h"
+#include "os/queue.h"
 
 
 /****************************************************************************************************************************
@@ -90,7 +92,8 @@ class Uart : public Task
         bool                                    _open;
         int                                     _data_available;
         bool                                    _event_enable;
-        static QueueHandle_t                    _uart_queue;
+        static queue_handle_t                   _uart_queue_handle;
+        Queue<uart_event_t> *                   _uart_event_queue;
         std::function<void(int)>                _data_in_callback;
         std::function<void(int, std::string)>   _pattern_callback;
 

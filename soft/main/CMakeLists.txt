@@ -54,3 +54,5 @@ set(COMPONENT_SRCS
 set(COMPONENT_ADD_INCLUDEDIRS ".")
 
 register_component()
+
+spiffs_create_partition_image(storage ../storgage_img FLASH_IN_PROJECT)

@@ -1,9 +1,11 @@
+
+#include <esp_spiffs.h>
+
 #include <data_model/data_ressources_registry.h>
 #include <data_model/ressource_enum.h>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
-#include <data_model/data_model_json.h>
 
 #include <hal/log.h>
 
@@ -11,12 +13,68 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
     _mutex(),
     _callback(NULL)
 {
-    // ifstream t(data_model_file);
-    // string str((istreambuf_iterator<char>(t)), istreambuf_iterator<char>());
+    bool aborted = false;
 
-    json data_model_json = json::parse(JSON_DATA_MODEL);
+    esp_vfs_spiffs_conf_t storage_conf = {
+      .base_path = "/spiffs",
+      .partition_label = NULL,
+      .max_files = 5,
+      .format_if_mount_failed = false
+    };
 
-    load_data_model(data_model_json);
+    esp_err_t err = esp_vfs_spiffs_register(&storage_conf);
+
+    if ( err != ESP_OK )
+    {
+        if ( err == ESP_FAIL )
+        {
+            LOG_ERROR("Failed to mount or format filesystem.");
+        } else if ( err == ESP_ERR_NOT_FOUND ) {
+            LOG_ERROR("Failed to find SPIFFS partition.");
+        } else {
+            LOG_ERROR("Failed to initialize SPIFFS (%s).", esp_err_to_name(err));
+        }
+        aborted = true;
+    }
+
+    if ( !aborted )
+    {
+        size_t total = 0, used = 0;
+        err = esp_spiffs_info(NULL, &total, &used);
+        if ( err != ESP_OK )
+        {
+            LOG_ERROR("Failed to get SPIFFS partition information (%s).", esp_err_to_name(err));
+            aborted = true;
+        } else {
+            LOG_INFO("Partition size: total: %d, used: %d", total, used);
+        }
+    }
+
+    FILE* file = NULL;
+
+    if ( !aborted )
+    {
+        data_model_file = storage_conf.base_path + std::string("/") + data_model_file;
+        file = fopen(data_model_file.c_str(), "r");
+        if (file == NULL)
+        {
+            LOG_ERROR("Failed to open registry data model file.");
+            aborted = true;
+        }
+    }
+
+    if ( !aborted )
+    {
+        json data_model_json = json::parse(file);
+        fclose(file);
+        load_data_model(data_model_json);
+        LOG_INFO("Data ressourecs registry initialized using data model file.");
+    } else {
+        LOG_ERROR("Data ressourecs registry initialization aborted.");
+    }
+    
+    esp_vfs_spiffs_unregister(NULL);
+
 }
 
 void DataRessourcesRegistry::load_data_model(json node, string current_key)

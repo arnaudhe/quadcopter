@@ -101,7 +101,7 @@ void DataRessourcesRegistry::load_data_model(json node, string current_key)
                 }
                 else if (it.value().at("type").get<string>() == "float")
                 {
-                    _map[new_key] = new DataRessource(0.0f);
+                    _map[new_key] = new DataRessource(float(0.0f));
                     if (it.value().contains("min"))
                     {
                         _map[new_key]->set_minimum<float>(it.value().at("min").get<float>());
@@ -109,6 +109,18 @@ void DataRessourcesRegistry::load_data_model(json node, string current_key)
                     if (it.value().contains("max"))
                     {
                         _map[new_key]->set_maximum<float>(it.value().at("max").get<float>());
+                    }
+                }
+                else if (it.value().at("type").get<string>() == "double")
+                {
+                    _map[new_key] = new DataRessource(double(0.0f));
+                    if (it.value().contains("min"))
+                    {
+                        _map[new_key]->set_minimum<double>(it.value().at("min").get<double>());
+                    }
+                    if (it.value().contains("max"))
+                    {
+                        _map[new_key]->set_maximum<double>(it.value().at("max").get<double>());
                     }
                 }
                 else if (it.value().at("type").get<string>() == "bool")

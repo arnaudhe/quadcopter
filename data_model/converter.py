@@ -37,8 +37,8 @@ class DataProtocolConverter:
             'length'  / Byte,
             'fields'  / Array(this.length, Int8ul)
         ),
-        'type'    / Enum(Byte, empty=0, integer=1, float=2, enum=3, bool=4, status=5),
-        'value'   / Switch(this.type, {'integer':Int32sl, 'float':Float32b, 'enum':Enum(Byte), 'bool':Flag, 'status':STATUS_ENUM})
+        'type'    / Enum(Byte, empty=0, integer=1, float=2, enum=3, bool=4, status=5, double=6),
+        'value'   / Switch(this.type, {'integer':Int32sl, 'float':Float32b, 'enum':Enum(Byte), 'bool':Flag, 'status':STATUS_ENUM, 'double':Float64b})
     )
 
     FRAME_STRUCT = Struct (

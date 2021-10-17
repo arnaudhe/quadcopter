@@ -120,6 +120,24 @@ class FloatRessourceWidget(DataRessourceWidget):
         self.value_widget.setValue(value)
 
 
+class DoubleRessourceWidget(DataRessourceWidget):
+
+    def __init__(self, write_callback, read_callback, key, permissions, unit, minimum=0, maximum=10):
+        super().__init__(FloatSlider(), read_callback, key, permissions)
+        self.write_callback = write_callback
+        self.unit = unit
+        self.value_widget.setMinimum(minimum)
+        self.value_widget.setMaximum(maximum)
+        self.value_widget.floatValueChanged.connect(self.on_value_changed)
+
+    def on_value_changed(self, value):
+        if self.read_pending == False:
+            self.write_callback(self.key, value)
+
+    def set_value(self, value):
+        self.value_widget.setValue(value)
+
+
 class BoolRessourceWidget(DataRessourceWidget):
 
     def __init__(self, write_callback, read_callback, key, permissions):
@@ -186,6 +204,17 @@ class MainWindow(QMainWindow):
                         else:
                             maximum = 1.0
                         widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                                                    content['unit'], minimum, maximum)
+                    elif content['type'] == 'double':
+                        if 'min' in content:
+                            minimum = content['min']
+                        else:
+                            minimum = 0.0
+                        if 'max' in content:
+                            maximum = content['max']
+                        else:
+                            maximum = 1.0
+                        widget = DoubleRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
                                                     content['unit'], minimum, maximum)
                     elif content['type'] == 'bool':
                         widget = BoolRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])

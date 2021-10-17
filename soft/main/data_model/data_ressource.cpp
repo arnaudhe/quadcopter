@@ -21,8 +21,15 @@ DataRessource::DataRessource(int value):
 DataRessource::DataRessource(float value):
     DataRessource()
 {
-    _value_integer = value;
+    _value_float = value;
     _type = DataRessource::FLOAT;
+}
+
+DataRessource::DataRessource(double value):
+    DataRessource()
+{
+    _value_double = value;
+    _type = DataRessource::DOUBLE;
 }
 
 DataRessource::DataRessource(bool value):

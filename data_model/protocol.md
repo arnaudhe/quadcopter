@@ -128,14 +128,15 @@ where "level x" is the id of the json node in the tree
 
 Indicates the length of the following value
 
-| type | code | length |
-|---|---|---|
-| `empty` | 0 | 0 |
-| `integer` | 1 | 4 |
-| `float` | 2 | 4 |
-| `enum` | 3 | 1 |
-| `bool` | 4 | 1 |
-| `status` | 5 | 1 |
+|   type    | code | length |
+|-----------|------|--------|
+| `empty`   | 0    | 0      |
+| `integer` | 1    | 4      |
+| `float`   | 2    | 4      |
+| `enum`    | 3    | 1      |
+| `bool`    | 4    | 1      |
+| `status`  | 5    | 1      |
+| `double`  | 6    | 8      |
 
 `empty` type is used on READ requests
 

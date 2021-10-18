@@ -38,6 +38,7 @@ Change Activity:
   Date         Description
   -----------  -------------
   17 Oct 2021  Created.
+  18 Oct 2021  Use project custom logging.
 
 ****************************************************************************************************************************/
 
@@ -51,16 +52,10 @@ Change Activity:
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_log.h"
+
+#include <hal/log.h>
 
 #include <app/controllers/nmea_controller.h>
-
-
-/****************************************************************************************************************************
-    Class variables
-****************************************************************************************************************************/
-
-static const char *TAG = "NMEA_CTRLR";
 
 
 /****************************************************************************************************************************
@@ -81,26 +76,25 @@ void NMEA_controller::_worker_task(void * task_parameters)
 {
     NMEA_controller * instance_ptr;
     instance_ptr = (NMEA_controller*)task_parameters;
-    ESP_LOGI(TAG, "worker task started");
-    esp_log_level_set(TAG, ESP_LOG_ERROR);
+    LOG_INFO("worker task started");
 
     while ( instance_ptr->_worker_enable ) {
         if ( instance_ptr->_new_sequence )
         {
-            ESP_LOGI(TAG, "new sequence to parse");
+            LOG_VERBOSE("new sequence to parse");
 
             _parse(instance_ptr);
 
             std::string str = instance_ptr->_nmea_sequence;
             char *cstr = new char[str.length() + 1];
             strcpy(cstr, str.c_str());            
-            ESP_LOGI(TAG, "Sequence parsed:%s", cstr);
+            LOG_VERBOSE("Sequence parsed:%s", cstr);
             delete [] cstr;
             instance_ptr->_new_sequence = false;
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-    ESP_LOGI(TAG, "stoppinng worker task");
+    LOG_INFO("stoppinng worker task");
     vTaskDelete(NULL);
 }
 
@@ -117,11 +111,11 @@ bool NMEA_controller::_check_start_delimiter(std::string *sequence_s)
     char leading_c = (*sequence_s).at(0);
     if ( leading_c == '$' )
     {
-        ESP_LOGV(TAG, "Valid start sequence");
+        LOG_VERBOSE("Valid start sequence");
         (*sequence_s).erase(0, 1);
         return true;
     } else {
-        ESP_LOGV(TAG, "Invalid start sequence");
+        LOG_WARNING("Invalid start sequence");
         return false;
     }
 }
@@ -132,10 +126,10 @@ bool NMEA_controller::_has_checksum(std::string *sequence_s)
     char crc_provided_c = (*sequence_s).at((*sequence_s).size() - 4 );
     if ( crc_provided_c == '*' )
     {
-        ESP_LOGV(TAG, "Sequence with checksum.");
+        LOG_VERBOSE("Sequence with checksum.");
         return true;
     } else {
-        ESP_LOGV(TAG, "Sequence without checksum.");
+        LOG_VERBOSE("Sequence without checksum.");
         return false;
     }
 }
@@ -146,7 +140,7 @@ bool NMEA_controller::_check_integrity(std::string *sequence_s)
     bool r = false;
     std::string crc_provided_s = (*sequence_s).substr ((*sequence_s).size() - 3);
     uint8_t crc_provided = (uint8_t)strtol(crc_provided_s.c_str(), NULL, 16);
-    ESP_LOGV(TAG, "CRC provided: 0x%02hX.", unsigned(crc_provided));
+    LOG_VERBOSE("CRC provided: 0x%02hX.", unsigned(crc_provided));
     if ( crc_provided )
     {
         (*sequence_s).erase((*sequence_s).size() - 4, 4);
@@ -155,16 +149,16 @@ bool NMEA_controller::_check_integrity(std::string *sequence_s)
         {
             crc_computed ^= (uint8_t)(c);
         }
-        ESP_LOGV(TAG, "CRC computed: 0x%02hX.", unsigned(crc_computed));
+        LOG_VERBOSE("CRC computed: 0x%02hX.", unsigned(crc_computed));
         if ( crc_provided == crc_computed )
         {
-            ESP_LOGV(TAG, "Sequence integrity check pass.");
+            LOG_VERBOSE("Sequence integrity check pass.");
             r = true;
         } else {
-            ESP_LOGV(TAG, "Sequence integrity check fail.");
+            LOG_WARNING("Sequence integrity check fail.");
         }
     } else {
-        ESP_LOGV(TAG, "Invalid checksum provided");
+        LOG_WARNING("Invalid checksum provided");
     }
     return r;
 }
@@ -289,14 +283,14 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
 
     if ( ! _check_start_delimiter(&str) )
     {
-        ESP_LOGW(TAG, "Invalid start sequence. Parsing aborted.");
+        LOG_WARNING("Invalid start sequence. Parsing aborted.");
     }
 
     if ( _has_checksum(&str) )
     {
         if ( ! _check_integrity(&str) )
         {
-            ESP_LOGW(TAG, "Sequence integrity check fail. Parsing aborted.");
+            LOG_WARNING("Sequence integrity check fail. Parsing aborted.");
             return;
         }
     }
@@ -530,13 +524,13 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                 case GSV:
                 case VTG:
                 {
-                    ESP_LOGI(TAG, "Unsupported message type. Parsing aborted.");
+                    LOG_VERBOSE("Unsupported message type. Parsing aborted.");
                     break;
                 }
                 case Unknown_message_type:
                 default:
                 {
-                    ESP_LOGW(TAG, "Unknown message type. Parsing aborted.");
+                    LOG_WARNING("Unknown message type. Parsing aborted.");
                     break;
                 }
             }
@@ -546,13 +540,13 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
         case GLONASS:
         case BEIDOU:
         {
-            ESP_LOGI(TAG, "Unsupported talker ID. Parsing aborted.");
+            LOG_VERBOSE("Unsupported talker ID. Parsing aborted.");
             break;
         }
         case Unknown_talker_ID:
         default:
         {
-            ESP_LOGW(TAG, "Unknown talker ID. Parsing aborted.");
+            LOG_WARNING("Unknown talker ID. Parsing aborted.");
             break;
         }
     }

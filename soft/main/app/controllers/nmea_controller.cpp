@@ -39,6 +39,7 @@ Change Activity:
   -----------  -------------
   17 Oct 2021  Created.
   18 Oct 2021  Use project custom logging.
+  18 Oct 2021  Use project custom task.
 
 ****************************************************************************************************************************/
 
@@ -54,6 +55,7 @@ Change Activity:
 #include "freertos/task.h"
 
 #include <hal/log.h>
+#include <os/task.h>
 
 #include <app/controllers/nmea_controller.h>
 
@@ -62,41 +64,23 @@ Change Activity:
     Class functions
 ****************************************************************************************************************************/
 
-NMEA_controller::NMEA_controller(DataRessourcesRegistry * registry)
+NMEA_controller::NMEA_controller(DataRessourcesRegistry * registry) :
+    Task("NMEA CTRLR", Task::Priority::LOW, 4608, true)
 {
     _registry = registry;
     _new_sequence = false;
     _worker_enable = true;
 
-    xTaskCreate(_worker_task, "NMEA_controller_worker_task", 3072, this, 10, NULL);
+    LOG_INFO("NMEA controler object created.");
 }
 
 
-void NMEA_controller::_worker_task(void * task_parameters)
+NMEA_controller::~NMEA_controller()
 {
-    NMEA_controller * instance_ptr;
-    instance_ptr = (NMEA_controller*)task_parameters;
-    LOG_INFO("worker task started");
-
-    while ( instance_ptr->_worker_enable ) {
-        if ( instance_ptr->_new_sequence )
-        {
-            LOG_VERBOSE("new sequence to parse");
-
-            _parse(instance_ptr);
-
-            std::string str = instance_ptr->_nmea_sequence;
-            char *cstr = new char[str.length() + 1];
-            strcpy(cstr, str.c_str());            
-            LOG_VERBOSE("Sequence parsed:%s", cstr);
-            delete [] cstr;
-            instance_ptr->_new_sequence = false;
-        }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
-    }
-    LOG_INFO("stoppinng worker task");
-    vTaskDelete(NULL);
+    _worker_enable = false;
+    LOG_VERBOSE("NMEA controler object destroyed.");
 }
+
 
 
 void NMEA_controller::parse(int len, std::string str)
@@ -277,9 +261,34 @@ bool NMEA_controller::_parse_longitude_cardinality(std::string *line_s, std::str
 }
 
 
-void NMEA_controller::_parse(NMEA_controller * instance_ptr)
+void NMEA_controller::run()
 {
-    std::string str = instance_ptr->_nmea_sequence;
+    LOG_INFO("worker task started");
+
+    while (_worker_enable ) {
+        if ( _new_sequence )
+        {
+            LOG_VERBOSE("new sequence to parse");
+
+            _parse();
+
+            std::string str = _nmea_sequence;
+            char *cstr = new char[str.length() + 1];
+            strcpy(cstr, str.c_str());            
+            LOG_VERBOSE("Sequence parsed:%s", cstr);
+            delete [] cstr;
+            _new_sequence = false;
+        }
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+    LOG_INFO("stoppinng worker task");
+    vTaskDelete(NULL);
+}
+
+
+void NMEA_controller::_parse()
+{
+    std::string str = _nmea_sequence;
 
     if ( ! _check_start_delimiter(&str) )
     {
@@ -344,10 +353,10 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_time(&line, &utc_hour, &utc_minute, &utc_second, &utc_millis) )
                                 {
-                                    instance_ptr->_registry->internal_set<int>("gps.time.hour", utc_hour);
-                                    instance_ptr->_registry->internal_set<int>("gps.time.minute", utc_minute);
-                                    instance_ptr->_registry->internal_set<int>("gps.time.second", utc_second);
-                                    instance_ptr->_registry->internal_set<float>("gps.time.millis", utc_millis);
+                                    _registry->internal_set<int>("gps.time.hour", utc_hour);
+                                    _registry->internal_set<int>("gps.time.minute", utc_minute);
+                                    _registry->internal_set<int>("gps.time.second", utc_second);
+                                    _registry->internal_set<float>("gps.time.millis", utc_millis);
                                 }
                                 break;
                             }
@@ -355,9 +364,9 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_coordinates(&line, &latitude_deg, &latitude_min, &latitude_sec) )
                                 {
-                                    instance_ptr->_registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
-                                    instance_ptr->_registry->internal_set<int>("gps.position.latitude.min", latitude_min);
-                                    instance_ptr->_registry->internal_set<float>("gps.position.latitude.sec", latitude_sec);
+                                    _registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
+                                    _registry->internal_set<int>("gps.position.latitude.min", latitude_min);
+                                    _registry->internal_set<float>("gps.position.latitude.sec", latitude_sec);
                                 }
                                 break;
                             }
@@ -365,8 +374,8 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_latitude_cardinality(&line, &latitude_card, &latitude_deg) )
                                 {
-                                    instance_ptr->_registry->internal_set<string>("gps.position.latitude.deg", latitude_card);
-                                    instance_ptr->_registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
+                                    _registry->internal_set<string>("gps.position.latitude.cardinality", latitude_card);
+                                    _registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
                                 }
                                 break;
                             }
@@ -374,9 +383,9 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_coordinates(&line, &longitude_deg, &longitude_min, &longitude_sec) )
                                 {
-                                    instance_ptr->_registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
-                                    instance_ptr->_registry->internal_set<int>("gps.position.longitude.min", longitude_min);
-                                    instance_ptr->_registry->internal_set<float>("gps.position.longitude.sec", longitude_sec);
+                                    _registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
+                                    _registry->internal_set<int>("gps.position.longitude.min", longitude_min);
+                                    _registry->internal_set<float>("gps.position.longitude.sec", longitude_sec);
                                 }
                                 break;
                             }
@@ -384,8 +393,8 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_longitude_cardinality(&line, &longitude_card, &longitude_deg) )
                                 {
-                                    instance_ptr->_registry->internal_set<string>("gps.position.longitude.deg", longitude_card);
-                                    instance_ptr->_registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
+                                    _registry->internal_set<string>("gps.position.longitude.cardinality", longitude_card);
+                                    _registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
                                 }
                                 break;
                             }
@@ -393,7 +402,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_int(&line, &satellite_fix_status) )
                                 {
-                                    instance_ptr->_registry->internal_set<string>("gps.status.module_status", ( satellite_fix_status > 0 ? "fixed" : "unfixed"));
+                                    _registry->internal_set<string>("gps.status.module_status", ( satellite_fix_status > 0 ? "fixed" : "unfixed"));
                                 }
                                 break;
                             }
@@ -401,7 +410,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_int(&line, &fixed_satellite) )
                                 {
-                                    instance_ptr->_registry->internal_set<int>("gps.status.fixed_satellite", fixed_satellite);
+                                    _registry->internal_set<int>("gps.status.fixed_satellite", fixed_satellite);
                                 }
                                 break;
                             }
@@ -409,7 +418,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_float(&line, &altitude_msl) )
                                 {
-                                    instance_ptr->_registry->internal_set<float>("gps.position.altitude.msl", altitude_msl);
+                                    _registry->internal_set<float>("gps.position.altitude.msl", altitude_msl);
                                 }
                                 break;
                             }
@@ -417,7 +426,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_float(&line, &geoidal_altitude_separation) )
                                 {
-                                    instance_ptr->_registry->internal_set<float>("gps.position.altitude.geo", geoidal_altitude_separation);
+                                    _registry->internal_set<float>("gps.position.altitude.geo", geoidal_altitude_separation);
                                 }
                                 break;
                             }
@@ -442,10 +451,10 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_time(&line, &utc_hour, &utc_minute, &utc_second, &utc_millis) )
                                 {
-                                    instance_ptr->_registry->internal_set<int>("gps.time.hour", utc_hour);
-                                    instance_ptr->_registry->internal_set<int>("gps.time.minute", utc_minute);
-                                    instance_ptr->_registry->internal_set<int>("gps.time.second", utc_second);
-                                    instance_ptr->_registry->internal_set<float>("gps.time.millis", utc_millis);
+                                    _registry->internal_set<int>("gps.time.hour", utc_hour);
+                                    _registry->internal_set<int>("gps.time.minute", utc_minute);
+                                    _registry->internal_set<int>("gps.time.second", utc_second);
+                                    _registry->internal_set<float>("gps.time.millis", utc_millis);
                                 }
                                 break;
                             }
@@ -453,9 +462,9 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_coordinates(&line, &latitude_deg, &latitude_min, &latitude_sec) )
                                 {
-                                    instance_ptr->_registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
-                                    instance_ptr->_registry->internal_set<int>("gps.position.latitude.min", latitude_min);
-                                    instance_ptr->_registry->internal_set<float>("gps.position.latitude.sec", latitude_sec);
+                                    _registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
+                                    _registry->internal_set<int>("gps.position.latitude.min", latitude_min);
+                                    _registry->internal_set<float>("gps.position.latitude.sec", latitude_sec);
                                 }
                                 break;
                             }
@@ -463,8 +472,8 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_latitude_cardinality(&line, &latitude_card, &latitude_deg) )
                                 {
-                                    instance_ptr->_registry->internal_set<string>("gps.position.latitude.deg", latitude_card);
-                                    instance_ptr->_registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
+                                    _registry->internal_set<string>("gps.position.latitude.cardinality", latitude_card);
+                                    _registry->internal_set<double>("gps.position.latitude.deg", latitude_deg);
                                 }
                                 break;
                             }
@@ -472,9 +481,9 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_coordinates(&line, &longitude_deg, &longitude_min, &longitude_sec) )
                                 {
-                                    instance_ptr->_registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
-                                    instance_ptr->_registry->internal_set<int>("gps.position.longitude.min", longitude_min);
-                                    instance_ptr->_registry->internal_set<float>("gps.position.longitude.sec", longitude_sec);
+                                    _registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
+                                    _registry->internal_set<int>("gps.position.longitude.min", longitude_min);
+                                    _registry->internal_set<float>("gps.position.longitude.sec", longitude_sec);
                                 }
                                 break;
                             }
@@ -482,8 +491,8 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_longitude_cardinality(&line, &longitude_card, &longitude_deg) )
                                 {
-                                    instance_ptr->_registry->internal_set<string>("gps.position.longitude.deg", longitude_card);
-                                    instance_ptr->_registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
+                                    _registry->internal_set<string>("gps.position.longitude.cardinality", longitude_card);
+                                    _registry->internal_set<double>("gps.position.longitude.deg", longitude_deg);
                                 }
                                 break;
                             }
@@ -492,7 +501,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                                 if ( _parse_float(&line, &speed_ms) )
                                 {
                                     speed_ms *= 0.514444f; // knots to m/s convertion
-                                    instance_ptr->_registry->internal_set<float>("gps.speed.ground_speed", speed_ms);
+                                    _registry->internal_set<float>("gps.speed.ground_speed", speed_ms);
                                 }
                                 break;
                             }
@@ -500,7 +509,7 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_float(&line, &course_made_good) )
                                 {
-                                    instance_ptr->_registry->internal_set<float>("gps.speed.cmg_speed", course_made_good);
+                                    _registry->internal_set<float>("gps.speed.cmg_speed", course_made_good);
                                 }
                                 break;
                             }
@@ -508,9 +517,9 @@ void NMEA_controller::_parse(NMEA_controller * instance_ptr)
                             {
                                 if ( _parse_date(&line, &utc_day, &utc_month, &utc_year) )
                                 {
-                                    instance_ptr->_registry->internal_set<int>("gps.date.day", utc_day);
-                                    instance_ptr->_registry->internal_set<int>("gps.date.month", utc_month);
-                                    instance_ptr->_registry->internal_set<int>("gps.date.year", 2000 + utc_year);
+                                    _registry->internal_set<int>("gps.date.day", utc_day);
+                                    _registry->internal_set<int>("gps.date.month", utc_month);
+                                    _registry->internal_set<int>("gps.date.year", 2000 + utc_year);
                                 }
                                 break;
                             }

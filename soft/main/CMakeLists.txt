@@ -8,6 +8,7 @@ set(COMPONENT_SRCS
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
     app/controllers/height_controller.cpp 
+    app/controllers/nmea_controller.cpp 
     app/controllers/rate_controller.cpp 
     app/observers/euler_observer.cpp 
     app/observers/height_observer.cpp 
@@ -54,3 +55,5 @@ set(COMPONENT_SRCS
 set(COMPONENT_ADD_INCLUDEDIRS ".")
 
 register_component()
+
+spiffs_create_partition_image(storage ../storgage_img FLASH_IN_PROJECT)

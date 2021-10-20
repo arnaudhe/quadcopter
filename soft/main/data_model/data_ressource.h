@@ -51,6 +51,7 @@ class DataRessource
     {
         INTEGER,
         FLOAT,
+        DOUBLE,
         BOOL,
         ENUM
     };
@@ -61,6 +62,7 @@ class DataRessource
   
     int           _value_integer;
     float         _value_float;
+    double        _value_double;
     bool          _value_bool;
     EnumRessource _value_enum;
 
@@ -70,10 +72,12 @@ class DataRessource
 
     bool          _has_minimum;
     float         _minimum_float;
-    float         _minimum_int;
+    double        _minimum_double;
+    int           _minimum_int;
     bool          _has_maximum;
     float         _maximum_float;
-    float         _maximum_int;
+    double        _maximum_double;
+    int           _maximum_int;
 
     template <typename T>
     bool check_type();
@@ -87,6 +91,7 @@ class DataRessource
 
     DataRessource(int value);
     DataRessource(float value);
+    DataRessource(double value);
     DataRessource(bool value);
     DataRessource(EnumRessource value);
 
@@ -121,6 +126,13 @@ inline void DataRessource::set_minimum<float>(float minimum)
 }
 
 template <>
+inline void DataRessource::set_minimum<double>(double minimum)
+{
+    _has_minimum    = true;
+    _minimum_double = minimum;
+}
+
+template <>
 inline void DataRessource::set_minimum<int>(int minimum)
 {
     _has_minimum   = true;
@@ -132,6 +144,13 @@ inline void DataRessource::set_maximum<float>(float maximum)
 {
     _has_maximum   = true;
     _maximum_float = maximum;
+}
+
+template <>
+inline void DataRessource::set_maximum<double>(double maximum)
+{
+    _has_maximum    = true;
+    _maximum_double = maximum;
 }
 
 template <>
@@ -158,6 +177,19 @@ template <>
 inline bool DataRessource::check_type<float>()
 {
     if (_type == DataRessource::FLOAT)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+template <>
+inline bool DataRessource::check_type<double>()
+{
+    if (_type == DataRessource::DOUBLE)
     {
         return true;
     }
@@ -232,6 +264,19 @@ inline bool DataRessource::check_value<float>(float value)
 }
 
 template <>
+inline bool DataRessource::check_value<double>(double value)
+{
+    if (((_has_minimum) && (value < _minimum_double)) || ((_has_maximum) && (value > _maximum_double)))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+template <>
 inline bool DataRessource::check_value<bool>(bool value)
 {
     return true;
@@ -263,6 +308,12 @@ inline void DataRessource::internal_set<float>(float value)
 }
 
 template <>
+inline void DataRessource::internal_set<double>(double value)
+{
+    _value_double = value;
+}
+
+template <>
 inline void DataRessource::internal_set<bool>(bool value)
 {
     _value_bool = value;
@@ -291,6 +342,12 @@ template <>
 inline float DataRessource::internal_get<float>()
 {
     return _value_float;
+}
+
+template <>
+inline double DataRessource::internal_get<double>()
+{
+    return _value_double;
 }
 
 template <>

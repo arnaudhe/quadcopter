@@ -1,6 +1,7 @@
 #include <data_model/json_protocol.h>
 #include <utils/json.hpp>
 #include <iostream>
+#include <hal/log.h>
 
 using json = nlohmann::json;
 
@@ -50,6 +51,16 @@ void JsonDataProtocol::on_received_packet(string request, string &response)
                         ressources_values[key] = value;
                     }
                 }
+                else if (_registry->type(key) == DataRessource::DOUBLE)
+                {
+                    double value = 0.0;
+                    DataRessourceRegistryStatus st = _registry->get<double>(key, value);
+                    json_status[key] = st.get();
+                    if (st.get<int>() == DataRessourceRegistryStatus::SUCCESS)
+                    {
+                        ressources_values[key] = value;
+                    }
+                }
                 else if (_registry->type(key) == DataRessource::BOOL)
                 {
                     bool value = false;
@@ -70,6 +81,10 @@ void JsonDataProtocol::on_received_packet(string request, string &response)
                         ressources_values[key] = value;
                     }
                 }
+                else
+                {
+                    LOG_ERROR("Invalid type of ressource for key \"%s\"", key.c_str());
+                }
             }
             json_response["command"]    = "read";
             json_response["sequence"]   = sequence;
@@ -85,7 +100,14 @@ void JsonDataProtocol::on_received_packet(string request, string &response)
             {
                 if (it.value().type() == json::value_t::number_float)
                 {
-                    json_status[it.key()] = _registry->set(it.key(), it.value().get<float>()).get();
+                    if ( _registry->type(it.key()) ==  DataRessource::FLOAT )
+                    {
+                        json_status[it.key()] = _registry->set(it.key(), it.value().get<float>()).get();
+                    } else if ( _registry->type(it.key()) ==  DataRessource::DOUBLE ) {
+                        json_status[it.key()] = _registry->set(it.key(), it.value().get<double>()).get();
+                    } else {
+                        LOG_ERROR("Write error, data type mismatch for key:%s", it.key().c_str());
+                    }
                 }
                 else if (it.value().type() == json::value_t::number_integer)
                 {

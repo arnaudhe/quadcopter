@@ -24,3 +24,6 @@ soft/.vscode/settings.json
 
 # python virtual env
 soft/.venv
+
+# python cache
+__pycache__

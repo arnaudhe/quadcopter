@@ -15,11 +15,11 @@ class Task
 
     enum Priority
     {
-        VERY_LOW  = 0,
-        LOW       = 1,
-        MEDIUM    = 2,
-        HIGH      = 3,
-        VERY_HIGH = 4
+        VERY_LOW  = configMAX_PRIORITIES - 6,
+        LOW       = configMAX_PRIORITIES - 5,
+        MEDIUM    = configMAX_PRIORITIES - 4,
+        HIGH      = configMAX_PRIORITIES - 3,
+        VERY_HIGH = configMAX_PRIORITIES - 2,
     };
 
   private:

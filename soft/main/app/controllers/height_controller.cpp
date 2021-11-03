@@ -5,7 +5,7 @@
 #include <esp_attr.h>
 
 HeightController::HeightController(float period, DataRessourcesRegistry * registry, Marg * marg, Barometer * baro, UltrasoundSensor * ultrasound, AttitudeController * attitude_controller, RateController * rate_controller):
-    PeriodicTask("height_ctlr", configMAX_PRIORITIES - 3, (int)(period * 1000), false)
+    PeriodicTask("height_ctlr", Task::Priority::HIGH, (int)(period * 1000), false)
 {
     _period              = period;
     _registry            = registry;

@@ -8,7 +8,7 @@
 #define RPM_FILTER_THURST_THRESHOLD     (0.1f)
 
 RateController::RateController(float period, Marg * marg, Mixer * mixer):
-    PeriodicTask("rate_ctlr", configMAX_PRIORITIES - 2, (int)(period * 1000), false)
+    PeriodicTask("rate_ctlr", Task::Priority::VERY_HIGH, (int)(period * 1000), false)
 {
     float gx, gy, gz;
 

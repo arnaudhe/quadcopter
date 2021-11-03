@@ -2,7 +2,7 @@
 #include <hal/log.h>
 
 BatterySupervisor::BatterySupervisor(float period, DataRessourcesRegistry * registry):
-    PeriodicTask("battery_supervisor", configMAX_PRIORITIES - 5, (int)(period * 1000), false)
+    PeriodicTask("battery_supervisor", Task::Priority::VERY_LOW, (int)(period * 1000), false)
 {
     _registry = registry;
 

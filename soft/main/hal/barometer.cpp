@@ -2,7 +2,7 @@
 #include <hal/log.h>
 
 Barometer::Barometer(I2cMaster * i2c) : 
-    Task("barometer", Task::Priority::VERY_LOW, 2048, false),
+    Task("barometer", Task::Priority::MEDIUM, 2048, false),
     _i2c(i2c),
     _mutex()
 {

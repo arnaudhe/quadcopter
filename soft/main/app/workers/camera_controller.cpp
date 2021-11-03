@@ -2,7 +2,7 @@
 #include <hal/log.h>
 
 CameraController::CameraController(float period, DataRessourcesRegistry * registry):
-    PeriodicTask("camera_controller", configMAX_PRIORITIES - 5, (int)(period * 1000), false)
+    PeriodicTask("camera_controller", Task::Priority::VERY_LOW, (int)(period * 1000), false)
 {
     _registry = registry;
 

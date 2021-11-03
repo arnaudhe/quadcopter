@@ -1,12 +1,19 @@
+#! /usr/bin/env python3
+
 import json
 import sys
 import socket
 import time
+import argparse
+import signal
+
 from datetime import datetime
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QMainWindow, QTextEdit, QVBoxLayout, QHBoxLayout, QSlider, QLabel, QPushButton, QCheckBox, QComboBox, QGroupBox, QScrollArea
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal, QRect
 from threading import Thread
+from xbox import XBoxController
+from logger import UdpLogger
 
 class FloatSlider(QSlider):
 
@@ -147,85 +154,11 @@ class EnumRessourceWidget(DataRessourceWidget):
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, data_model, logger = True):
+    def __init__(self, controller):
         super().__init__()
-        self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sequence = 0
-        self.data_model = data_model
+        self.controller = controller
         self.widgets = {}
-        self.model_loaded = False
-        self.quadcopter_address = ''
-        self.quadcopter_name = ''
-        self.quadcopter_heartbeat = 5
-        print('Waiting for quadcopter announcement...')
-        self.wait_announcement(blocking = True)
-        print(f'Detected announcement from {self.quadcopter_name} at {self.quadcopter_address}')
         self.setup_ui()
-        self.running = True
-        if logger:
-            self.logger = Thread(target = self.run_logger)
-            self.logger.start()
-        else:
-            self.logger = None
-        self.heartbeat = Thread(target = self.run_heartbeat)
-        self.heartbeat.start()
-
-    def shutdown(self):
-        self.running = False
-        self.heartbeat.join()
-        if self.logger:
-            self.logger.join()
-
-    def run_logger(self):
-        print('Logger started')
-        udp_logger = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udp_logger.bind(('0.0.0.0', 5002))
-        udp_logger.settimeout(0.1)
-        while self.running:
-            try:
-                data = udp_logger.recv(128)
-                if data:
-                    print(f'[{self.quadcopter_name}] {datetime.now()} {data.decode("utf-8")}')
-            except:
-                pass
-        print('Logger stopped')
-
-    def run_heartbeat(self):
-        print('Hearbeat started')
-        while self.running:
-            if self.wait_announcement(blocking = False):
-                if self.quadcopter_heartbeat == 0:
-                    print(f'Retrieved signal from {self.quadcopter_name}! Reload ressources !')
-                    for ressource in self.widgets.keys():
-                        self.on_read_request(ressource)
-                self.quadcopter_heartbeat = 5
-            else:
-                if self.quadcopter_heartbeat > 0:
-                    self.quadcopter_heartbeat -= 1
-                    if self.quadcopter_heartbeat == 0:
-                        print(f'Lost signal from {self.quadcopter_name}')
-        print('Hearbeat stopped')
-
-    def wait_announcement(self, blocking = False):
-        # Bind a new socket on 5001 to detect sent announcements
-        udp_detector = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        udp_detector.bind(('0.0.0.0', 5001))
-        udp_detector.settimeout(1.1)
-        result = False
-        while True:
-            try:
-                data, address = udp_detector.recvfrom(128)
-                message = json.loads(data.decode('utf-8'))
-                if 'announcement' in message:
-                    self.quadcopter_address, _ = address
-                    self.quadcopter_name = message["announcement"]
-                    result = True
-            except:
-                pass
-            if (blocking == False) or (result == True):
-                break
-        udp_detector.close()
-        return result
 
     def load_model(self, data_model, container_layout, current_key = ''):
         for key, content in data_model.items():
@@ -273,53 +206,190 @@ class MainWindow(QMainWindow):
     def setup_ui(self):
         self.centralWidget = QWidget()
         layout = QVBoxLayout(self.centralWidget)
-
         self.scrollArea = QScrollArea(self.centralWidget)
         layout.addWidget(self.scrollArea)
-
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 970, 3500))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-
         layout = QVBoxLayout(self.scrollAreaWidgetContents)     
         self.setCentralWidget(self.centralWidget)
-
         self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; border: 1px solid rgb(100, 100, 100); }")
-
         self.setWindowTitle('Quadcopter base station')
-
-        self.load_model(data_model, layout)
-
+        self.load_model(self.controller.get_data_model(), layout)
         self.setCentralWidget(self.centralWidget)
-
         self.resize(1000, 800)
         self.show()
 
     def on_write_request(self, key, value):
-        print(f'write {key} {value}')
+        return self.controller.write(key, value)
+
+    def on_read_request(self, key):
+        return self.controller.read(key)
+
+class QuadcopterController:
+
+    ROLL_PITCH_TRIM_STEP   = 0.01
+    YAW_THROTTLE_TRIM_STEP = 0.02
+    STICK_SCALE = 500000
+
+    def __init__(self, data_model):
+        self.sequence = 0
+        self.data_model = data_model
+        self.model_loaded = False
+        self.quadcopter_address = ''
+        self.quadcopter_name = ''
+        self.quadcopter_heartbeat = 5
+        print('Waiting for quadcopter announcement...')
+        res = self.wait_announcement(blocking = True)
+        if not res:
+            sys.exit(1)
+        print(f'Detected announcement from {self.quadcopter_name} at {self.quadcopter_address}')
+        self.running = True
+        self.heartbeat_task = Thread(target = self.run_heartbeat)
+        self.heartbeat_task.start()
+        self.xbox_controller = None
+
+    def attach_xbox_controller(self, xbox_controller):
+        self.xbox_controller = xbox_controller
+        self.xbox_task = Thread(target = self.run_xbox)
+        self.xbox_task.start()
+
+    def get_data_model(self):
+        return self.data_model
+
+    def shutdown(self):
+        self.running = False
+        self.heartbeat_task.join()
+        if self.xbox_controller:
+            self.xbox_task.join()
+
+    def run_heartbeat(self):
+        print('[HEARTBEAT] Started')
+        while self.running:
+            if self.wait_announcement(blocking = False):
+                if self.quadcopter_heartbeat == 0:
+                    print(f'[HEARTBEAT] Retrieved signal from {self.quadcopter_name}!')
+                self.quadcopter_heartbeat = 5
+            else:
+                if self.quadcopter_heartbeat > 0:
+                    self.quadcopter_heartbeat -= 1
+                    if self.quadcopter_heartbeat == 0:
+                        print(f'[HEARTBEAT] Lost signal from {self.quadcopter_name}')
+        print('[HEARTBEAT] Stopped')
+
+    def run_xbox(self):
+        print('[XBOX] Started')
+        armed = False
+        roll_trim = 0.0
+        pitch_trim = 0.0
+        yaw_trim = 0.0
+        throttle_trim = 0.3
+        roll = 0.0
+        pitch = 0.0
+        yaw = 0.0
+        throttle = 0.3
+        while self.running:
+            state = self.xbox_controller.get_state()
+            if state:
+                if state['keys']['X']:
+                    roll_trim = roll_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['B']:
+                    roll_trim = roll_trim + QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['A']:
+                    pitch_trim = pitch_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['Y']:
+                    pitch_trim = pitch_trim + QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['left']:
+                    yaw_trim = yaw_trim - QuadcopterController.YAW_THROTTLE_TRIM_STEP
+                if state['keys']['right']:
+                    yaw_trim = yaw_trim + QuadcopterController.YAW_THROTTLE_TRIM_STEP
+                if state['keys']['down']:
+                    throttle_trim = throttle_trim - QuadcopterController.YAW_THROTTLE_TRIM_STEP
+                if state['keys']['up']:
+                    throttle_trim = throttle_trim + QuadcopterController.YAW_THROTTLE_TRIM_STEP
+                if state['keys']['left_trigger'] and state['keys']['right_trigger']:
+                    armed = not armed
+                    if armed:
+                        self.write('control.attitude.roll.mode', 'position')
+                        self.write('control.attitude.pitch.mode', 'position')
+                        self.write('control.attitude.yaw.mode', 'speed')
+                        self.write('control.mode', 'attitude')
+                    else:
+                        self.write('control.mode', 'off')
+                roll_stick     = state['right_stick']['horizontal'] / QuadcopterController.STICK_SCALE
+                pitch_stick    = state['right_stick']['vertical']   / QuadcopterController.STICK_SCALE
+                yaw_stick      = state['left_stick']['horizontal']  / QuadcopterController.STICK_SCALE
+                throttle_stick = state['left_stick']['vertical']    / QuadcopterController.STICK_SCALE
+                if roll_trim + roll_stick != roll:
+                    roll = roll_trim + roll_stick
+                    self.write('control.attitude.roll.position_target', roll)
+                if pitch_trim + pitch_stick != pitch:
+                    pitch = pitch_trim + pitch_stick
+                    self.write('control.attitude.pitch.position_target', pitch)
+                if yaw_trim + yaw_stick != yaw:
+                    yaw = yaw_trim + yaw_stick
+                    self.write('control.attitude.yaw.speed_target', yaw)
+                if throttle_trim + throttle_stick != throttle:
+                    throttle = throttle_trim + throttle_stick
+                    self.write('control.thurst_offset', throttle)
+            time.sleep(0.1)
+        print('[XBOX] Stopped')
+
+class QuadcopterUdpController(QuadcopterController):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.udp_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def wait_announcement(self, blocking = False):
+        # Bind a new socket on 5001 to detect sent announcements
+        udp_detector = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_detector.bind(('0.0.0.0', 5001))
+        udp_detector.settimeout(1.1)
+        result = False
+        while True:
+            try:
+                data, address = udp_detector.recvfrom(128)
+                message = json.loads(data.decode('utf-8'))
+                if 'announcement' in message:
+                    self.quadcopter_address, _ = address
+                    self.quadcopter_name = message["announcement"]
+                    result = True
+            except KeyboardInterrupt:
+                result = False
+                break
+            except Exception as e:
+                pass
+            if (blocking == False) or (result == True):
+                break
+        udp_detector.close()
+        return result
+    
+    def write(self, key, value):
+        print(f'[UDP CTRL] write {key} {value}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'write', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : {key : value}}
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
-            print(f'Response timeout when writing ressource {key}')
+            print(f'[UDP CTRL] Response timeout when writing ressource {key}')
             return
         try:
             response = json.loads(data)
         except:
-            print(f'Invalid response')
+            print(f'[UDP CTRL] Invalid response')
             return
         if (response['command'] == "write" and response['sequence'] == self.sequence and response['direction'] == 'response'):
             if response['status'][key] == 'success':
-                print('Success')
+                print('[UDP CTRL] Success')
             else:
-                print('Write status {}'.format(response['status'][key]))
+                print('[UDP CTRL] Write status {}'.format(response['status'][key]))
         else:
-            print('Not matching response. Drop it.')
+            print('[UDP CTRL] Not matching response. Drop it.')
 
-    def on_read_request(self, key):
-        print(f'read {key}')
+    def read(self, key):
+        print(f'[UDP CTRL] read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
@@ -327,35 +397,76 @@ class MainWindow(QMainWindow):
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
-            print(f'Response timeout when reading ressource {key}')
+            print(f'[UDP CTRL] Response timeout when reading ressource {key}')
             return False, None
         try:
             response = json.loads(data)
         except:
-            print(f'Invalid response')
+            print(f'[UDP CTRL] Invalid response')
             return
         if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
             if response['status'][key] == 'success':
                 print(response['ressources'][key])
                 return True, response['ressources'][key]
             else:
-                print('Read status {}'.format(response['status'][key]))
+                print('[UDP CTRL] Read status {}'.format(response['status'][key]))
         else:
-            print('Not matching response. Drop it.')
+            print('[UDP CTRL] Not matching response. Drop it.')
+
+class QuadcopterRadioController(QuadcopterController):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def wait_announcement(self, blocking = False):
+        # TODO
+        return False
+
+    def write(self, key, value):
+        print(f'[RADIO CTRL] write {key} {value}')
+        self.sequence = (self.sequence + 1) % 256
+        # TODO
+        return
+
+    def read(self, key):
+        print(f'[RADIO CTRL] read {key}')
+        self.sequence = (self.sequence + 1) % 256
+        # TODO
+        return False, None
+
 
 if __name__ == '__main__':
 
     with open('../data_model/data_model.json') as json_file:
         data_model = json.load(json_file)
 
-    logger = False
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('-l', '--logger', action='store_true', help='Enable logging')
+    parser.add_argument('-g', '--gui',    action='store_true', help='Enable gui')
+    parser.add_argument('-r', '--remote', action='store_true', help='Enable xbox remote controller')
+    args = parser.parse_args()
 
-    if len(sys.argv) >= 2:
-        if sys.argv[1] in ('-l', '--log', '--logger'):
-            logger = True
+    controller = QuadcopterUdpController(data_model = data_model)
 
-    app = QApplication([])
-    w = MainWindow(data_model, logger)
-    ret = app.exec_()
-    w.shutdown()
-    sys.exit(ret)
+    if args.remote:
+        xbox = XBoxController()
+        xbox.start()
+        controller.attach_xbox_controller(xbox)
+
+    if args.logger:
+        logger = UdpLogger()
+
+    if args.gui:
+        app = QApplication([])
+        w = MainWindow(controller)
+        app.exec_()
+
+    if args.remote:
+        xbox.stop()
+
+    if args.logger:
+        logger.shutdown()
+
+    controller.shutdown()
+
+    sys.exit(0)

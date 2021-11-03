@@ -19,7 +19,8 @@ esp_err_t Pulse::init()
 {
     if (!_init)
     {
-        _timer_conf.duty_resolution = LEDC_TIMER_8_BIT;
+        _timer_conf.clk_cfg         = LEDC_AUTO_CLK;
+        _timer_conf.duty_resolution = (ledc_timer_bit_t)PULSE_BIT_SIZE;
         _timer_conf.freq_hz         = PULSE_FREQUENCY_Hz;
         _timer_conf.speed_mode      = LEDC_HIGH_SPEED_MODE;
         _timer_conf.timer_num       = PULSE_TIMER;
@@ -56,6 +57,3 @@ esp_err_t Pulse::set(uint16_t pulse_width_us)
 
     return ESP_OK;
 }
-
-
-

@@ -41,6 +41,13 @@ class XBoxController:
         )
     )
 
+    @staticmethod
+    def detect():
+        if usb.core.find(idVendor = 1118, idProduct = 654):
+            return True
+        else:
+            return False
+
     def __init__(self):
         self.dev = usb.core.find(idVendor = 1118, idProduct = 654)
         self.dev.set_configuration()
@@ -84,15 +91,17 @@ class XBoxController:
         return state_copy
 
 if __name__ == '__main__':
-    controller = XBoxController()
-    controller.start()
-    while True:
-        try:
-            state = controller.get_state()
-            if state:
-                print(controller.get_state())
-            time.sleep(0.1)
-        except KeyboardInterrupt:
-            break
-    controller.stop()
-
+    if XBoxController.detect():
+        controller = XBoxController()
+        controller.start()
+        while True:
+            try:
+                state = controller.get_state()
+                if state:
+                    print(controller.get_state())
+                time.sleep(0.1)
+            except KeyboardInterrupt:
+                break
+        controller.stop()
+    else:
+        print('Not detected any xbox controller')

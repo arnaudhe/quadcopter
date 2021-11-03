@@ -22,6 +22,8 @@ class PeriodicTask
     string            _name;
     Semaphore       * _semaphore;
     int               _priority;
+    int               _measure_count;
+    TickType_t        _measure_tick;
 
     static void timer_function(TimerHandle_t timer);
     static void task_function(void * param);

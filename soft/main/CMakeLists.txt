@@ -38,6 +38,7 @@ set(COMPONENT_SRCS
     utils/pid.cpp 
     utils/madgwick.cpp 
     utils/mixer.cpp 
+    utils/nmea_parser.cpp 
     utils/kalman.cpp 
     utils/vector.cpp 
     utils/csv_reader.cpp 

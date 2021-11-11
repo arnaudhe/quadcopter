@@ -58,23 +58,7 @@ Change Activity:
     Defines
 ****************************************************************************************************************************/
 
-enum NMEA_talker_ID {
-    GPS,
-    GALILEO,
-    GLONASS,
-    BEIDOU,
-    Unknown_talker_ID
-};
 
-enum NMEA_message_type {
-    GGA,
-    GLL,
-    GSA,
-    GSV,
-    VTG,
-    RMC,
-    Unknown_message_type
-};
 
 
 /****************************************************************************************************************************
@@ -89,44 +73,11 @@ class NMEA_controller : public Task
         bool                        _new_sequence;
         bool                        _worker_enable;
 
-        void        _parse();
-        static bool _check_start_delimiter(std::string * sequence_s);
-        static bool _has_checksum(std::string * sequence_s);
-        static bool _check_integrity(std::string * sequence_s);
-        static bool _parse_int(std::string * line_s,
-                               int * data_i);
-        static bool _parse_float(std::string * line_s,
-                                 float *data_f);
-        static bool _parse_char(std::string * line_s,
-                                char * data_c);
-        static bool _parse_time(std::string * line_s,
-                                int * utc_hour,
-                                int * utc_minute,
-                                int * utc_second,
-                                float * utc_millis);
-        static bool _parse_date(std::string * line_s,
-                                int * utc_day,
-                                int * utc_month,
-                                int * utc_year);
-        static bool _parse_coordinates(std::string * line_s,
-                                       double * coordinates_deg,
-                                       int * coordinates_min,
-                                       float * coordinates_sec);
-        static bool _parse_latitude_cardinality(std::string * line_s,
-                                                std::string * latitude_card,
-                                                double * latitude_deg);
-        static bool _parse_longitude_cardinality(std::string * line_s,
-                                                 std::string * longitude_card,
-                                                 double * longitude_deg);
-
         void run();
 
     public:
         NMEA_controller(DataRessourcesRegistry * registry);
         ~NMEA_controller();
 
-        void                        parse(int len,
-                                          std::string str);
-        static NMEA_talker_ID       resolve_talker_ID(std::string talker_ID);
-        static NMEA_message_type    resolve_message_type(std::string message_type);
+        void                        parse(int len, std::string str);
 };

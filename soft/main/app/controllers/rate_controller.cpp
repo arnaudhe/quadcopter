@@ -24,9 +24,16 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer):
     _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
+    _roll_low_pass_filter  = new PT3Filter(period, 20.0);
+    _pitch_low_pass_filter = new PT3Filter(period, 20.0);
+    _yaw_low_pass_filter   = new PT3Filter(period, 20.0);
+
     _roll_notch_filter->init();
     _pitch_notch_filter->init();
     _yaw_notch_filter->init();
+    _roll_low_pass_filter->init();
+    _pitch_low_pass_filter->init();
+    _yaw_low_pass_filter->init();
 
     _roll_target  = 0.0;
     _pitch_target = 0.0;
@@ -78,9 +85,9 @@ void IRAM_ATTR RateController::run(void)
     /* Apply filter */
     if (_throttle >= RPM_FILTER_THURST_THRESHOLD)
     {
-        gx = _roll_filter->apply(gx);
-        gy = _pitch_filter->apply(gy);
-        gz = _yaw_filter->apply(gz);
+        gx = _roll_low_pass_filter->apply(_roll_notch_filter->apply(gx));
+        gy = _pitch_low_pass_filter->apply(_pitch_notch_filter->apply(gy));
+        gz = _yaw_low_pass_filter->apply(_yaw_notch_filter->apply(gz));
     }
 
     /* Update rate attributes */

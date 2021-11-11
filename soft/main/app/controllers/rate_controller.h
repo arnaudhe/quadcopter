@@ -30,6 +30,9 @@ private:
     BiQuadraticNotchFilter  * _roll_notch_filter;
     BiQuadraticNotchFilter  * _pitch_notch_filter;
     BiQuadraticNotchFilter  * _yaw_notch_filter;
+    PTFilter                * _roll_low_pass_filter;
+    PTFilter                * _pitch_low_pass_filter;
+    PTFilter                * _yaw_low_pass_filter;
     float                     _period;
 
     float _roll_target;

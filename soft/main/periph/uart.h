@@ -104,18 +104,15 @@ class Uart : public Task
         Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_pin_config);
         ~Uart();
 
-        void        close();
-        void        write(uint8_t * data,
-                          uint8_t len);
-        int         get_data_available();
-        int         read(uint8_t * data,
-                         uint32_t len,
-                         uint32_t timeout);
-        void        start_uart_event();
-        void        stop_uart_event();
-        void        register_data_in_callback(std::function<void(int)> callback);
-        void        register_pattern_detected_callback(std::function<void(int, std::string)> callback);
-        void        enable_pattern_detect(uart_pattern_t pattern);
-        void        disable_pattern_detect();
-        void        flush();
+        void close();
+        void write(uint8_t * data, uint8_t len);
+        int  get_data_available();
+        int  read(uint8_t * data, uint32_t len, uint32_t timeout);
+        void start_uart_event();
+        void stop_uart_event();
+        void register_data_in_callback(std::function<void(int)> callback);
+        void register_pattern_detected_callback(std::function<void(int, std::string)> callback);
+        void enable_pattern_detect(uart_pattern_t pattern);
+        void disable_pattern_detect();
+        void flush();
 };

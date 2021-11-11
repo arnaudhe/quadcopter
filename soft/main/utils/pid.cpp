@@ -2,7 +2,7 @@
 #include <esp_attr.h>
 #include <hal/log.h>
 
-#define PID_LOWPASS_CUTOFF_FREQUENCY    40.0
+#define PID_LOWPASS_CUTOFF_FREQUENCY    10.0
 #define PID_INTEGRATE_LIMIT             0.1f
 #define PID_DEBUG_PERIOD                20
 
@@ -16,7 +16,7 @@ Pid::Pid(float period, float kp, float ki, float kd, float kff, bool debug_enabl
     _ki                 = ki;
     _kd                 = kd;
     _kff                = kff;
-    _dterm_filter       = new PT2Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
+    _dterm_filter       = new PT3Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
     _debug_ticks        = 0;
     _debug_enable       = debug_enable;
 

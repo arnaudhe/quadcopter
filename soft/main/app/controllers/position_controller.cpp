@@ -9,22 +9,22 @@ PositionController::PositionController(float period, DataRessourcesRegistry * re
     _registry = registry;
 
     _registry->internal_set<string>("control.position.x.mode", "off");
-    _registry->internal_set<float>("control.position.x.position", 0.0f);
-    _registry->internal_set<float>("control.position.x.position_target", 0.0f);
-    _registry->internal_set<float>("control.position.x.speed", 0.0f);
-    _registry->internal_set<float>("control.position.x.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.x.position.current", 0.0f);
+    _registry->internal_set<float>("control.position.x.position.target", 0.0f);
+    _registry->internal_set<float>("control.position.x.speed.current", 0.0f);
+    _registry->internal_set<float>("control.position.x.speed.target", 0.0f);
 
     _registry->internal_set<string>("control.position.x.mode", "off");
-    _registry->internal_set<float>("control.position.y.position", 0.0f);
-    _registry->internal_set<float>("control.position.y.position_target", 0.0f);
-    _registry->internal_set<float>("control.position.y.speed", 0.0f);
-    _registry->internal_set<float>("control.position.y.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.y.position.current", 0.0f);
+    _registry->internal_set<float>("control.position.y.position.target", 0.0f);
+    _registry->internal_set<float>("control.position.y.speed.current", 0.0f);
+    _registry->internal_set<float>("control.position.y.speed.target", 0.0f);
 
     _registry->internal_set<string>("control.position.x.mode", "off");
-    _registry->internal_set<float>("control.position.z.position", 0.0f);
-    _registry->internal_set<float>("control.position.z.position_target", 0.0f);
-    _registry->internal_set<float>("control.position.z.speed", 0.0f);
-    _registry->internal_set<float>("control.position.z.speed_target", 0.0f);
+    _registry->internal_set<float>("control.position.z.position.current", 0.0f);
+    _registry->internal_set<float>("control.position.z.position.target", 0.0f);
+    _registry->internal_set<float>("control.position.z.speed.current", 0.0f);
+    _registry->internal_set<float>("control.position.z.speed.target", 0.0f);
 
     LOG_INFO("Init done");
 }

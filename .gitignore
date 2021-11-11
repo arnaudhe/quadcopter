@@ -27,3 +27,6 @@ soft/.venv
 
 # python cache
 __pycache__
+
+# temporary build filesystem
+soft/main/storage_img

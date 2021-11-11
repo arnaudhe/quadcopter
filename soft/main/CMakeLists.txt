@@ -56,4 +56,11 @@ set(COMPONENT_ADD_INCLUDEDIRS ".")
 
 register_component()
 
-spiffs_create_partition_image(storage ../storgage_img FLASH_IN_PROJECT)
+add_custom_command(OUTPUT ${COMPONENT_DIR}/data_model.json
+     COMMAND mkdir -p ${COMPONENT_DIR}/storage_img && cp ${COMPONENT_DIR}/../../data_model/data_model.json ${COMPONENT_DIR}/storage_img
+     DEPENDS ${COMPONENT_DIR}/../../data_model/data_model.json
+     VERBATIM)
+
+add_custom_target(generate_filesystem DEPENDS ${COMPONENT_DIR}/data_model.json)
+
+spiffs_create_partition_image(storage ${COMPONENT_DIR}/storage_img FLASH_IN_PROJECT DEPENDS generate_filesystem)

@@ -15,27 +15,37 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _observer        = new EulerObserver(period);
 
     _registry->internal_set<string>("control.attitude.roll.mode", "position");
-    _registry->internal_set<float>("control.attitude.roll.position", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.position_target", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.speed", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.speed_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.position.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.position.target", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.speed.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.speed.target", 0.0f);
 
-    _registry->internal_set<float>("control.attitude.roll.kp", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.ki", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.kd", 0.0f);
-    _registry->internal_set<float>("control.attitude.roll.kff", 0.0f);
+    _registry->internal_set<float>("control.attitude.roll.position.kp", ATTITUDE_PID_ROLL_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.roll.position.ki", ATTITUDE_PID_ROLL_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.roll.position.kd", ATTITUDE_PID_ROLL_POSITION_KD);
+    _registry->internal_set<float>("control.attitude.roll.position.kff", ATTITUDE_PID_ROLL_POSITION_FF);
 
     _registry->internal_set<string>("control.attitude.pitch.mode", "position");
-    _registry->internal_set<float>("control.attitude.pitch.position", 0.0f);
-    _registry->internal_set<float>("control.attitude.pitch.position_target", 0.0f);
-    _registry->internal_set<float>("control.attitude.pitch.speed", 0.0f);
-    _registry->internal_set<float>("control.attitude.pitch.speed_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.position.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.position.target", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.speed.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.pitch.speed.target", 0.0f);
+
+    _registry->internal_set<float>("control.attitude.pitch.position.kp", ATTITUDE_PID_PITCH_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.pitch.position.ki", ATTITUDE_PID_PITCH_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.pitch.position.kd", ATTITUDE_PID_PITCH_POSITION_KD);
+    _registry->internal_set<float>("control.attitude.pitch.position.kff", ATTITUDE_PID_PITCH_POSITION_FF);
 
     _registry->internal_set<string>("control.attitude.yaw.mode", "speed");
-    _registry->internal_set<float>("control.attitude.yaw.position", 0.0f);
-    _registry->internal_set<float>("control.attitude.yaw.position_target", 0.0f);
-    _registry->internal_set<float>("control.attitude.yaw.speed", 0.0f);
-    _registry->internal_set<float>("control.attitude.yaw.speed_target", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.position.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.position.target", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.speed.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.yaw.speed.target", 0.0f);
+
+    _registry->internal_set<float>("control.attitude.yaw.position.kp", ATTITUDE_PID_YAW_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.yaw.position.ki", ATTITUDE_PID_YAW_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.yaw.position.kd", ATTITUDE_PID_YAW_POSITION_KD);
+    _registry->internal_set<float>("control.attitude.yaw.position.kff", ATTITUDE_PID_YAW_POSITION_FF);
 
     _roll_controller  = new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD, ATTITUDE_PID_ROLL_POSITION_FF);
     _pitch_controller = new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD, ATTITUDE_PID_PITCH_POSITION_FF);
@@ -66,12 +76,31 @@ void IRAM_ATTR AttitudeController::run(void)
     yaw   = _observer->yaw();
     _mutex->unlock();
 
+    _registry->internal_set<float>("control.attitude.roll.position.current", roll);
+    _registry->internal_set<float>("control.attitude.pitch.position.current", pitch);
+    _registry->internal_set<float>("control.attitude.yaw.position.current", yaw);
+
     /* Run the controllers */
     if (_registry->internal_get<string>("control.mode") == "attitude")
     {
+        _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.position.kp"));
+        _roll_controller->set_ki(_registry->internal_get<float>("control.attitude.roll.position.ki"));
+        _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.position.kd"));
+        _roll_controller->set_kff(_registry->internal_get<float>("control.attitude.roll.position.kff"));
+
+        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kp"));
+        _pitch_controller->set_ki(_registry->internal_get<float>("control.attitude.pitch.position.ki"));
+        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kd"));
+        _pitch_controller->set_kff(_registry->internal_get<float>("control.attitude.pitch.position.kff"));
+
+        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kp"));
+        _yaw_controller->set_ki(_registry->internal_get<float>("control.attitude.yaw.position.ki"));
+        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kd"));
+        _yaw_controller->set_kff(_registry->internal_get<float>("control.attitude.yaw.position.kff"));
+
         if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
         {
-            _roll_controller->set_setpoint(_registry->internal_get<float>("control.attitude.roll.position_target"));
+            _roll_controller->set_setpoint(_registry->internal_get<float>("control.attitude.roll.position.target"));
 
             roll_enable        = true;
             roll_rate_setpoint = _roll_controller->update(roll);
@@ -79,7 +108,7 @@ void IRAM_ATTR AttitudeController::run(void)
         else if (_registry->internal_get<string>("control.attitude.roll.mode") == "speed")
         {
             roll_enable        = true;
-            roll_rate_setpoint = _registry->internal_get<float>("control.attitude.roll.speed_target");
+            roll_rate_setpoint = _registry->internal_get<float>("control.attitude.roll.speed.target");
         }
         else
         {
@@ -89,7 +118,7 @@ void IRAM_ATTR AttitudeController::run(void)
 
         if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
         {
-            _pitch_controller->set_setpoint(_registry->internal_get<float>("control.attitude.pitch.position_target"));
+            _pitch_controller->set_setpoint(_registry->internal_get<float>("control.attitude.pitch.position.target"));
 
             pitch_enable        = true;
             pitch_rate_setpoint = _pitch_controller->update(pitch);
@@ -97,7 +126,7 @@ void IRAM_ATTR AttitudeController::run(void)
         else if (_registry->internal_get<string>("control.attitude.pitch.mode") == "speed")
         {
             pitch_enable        = true;
-            pitch_rate_setpoint = _registry->internal_get<float>("control.attitude.pitch.speed_target");
+            pitch_rate_setpoint = _registry->internal_get<float>("control.attitude.pitch.speed.target");
         }
         else
         {
@@ -107,7 +136,7 @@ void IRAM_ATTR AttitudeController::run(void)
 
         if (_registry->internal_get<string>("control.attitude.yaw.mode") == "position")
         {
-            _yaw_controller->set_setpoint(_registry->internal_get<float>("control.attitude.yaw.position_target"));
+            _yaw_controller->set_setpoint(_registry->internal_get<float>("control.attitude.yaw.position.target"));
 
             yaw_enable        = true;
             yaw_rate_setpoint = _yaw_controller->update(yaw);
@@ -115,7 +144,7 @@ void IRAM_ATTR AttitudeController::run(void)
         else if (_registry->internal_get<string>("control.attitude.yaw.mode") == "speed")
         {
             yaw_enable        = true;
-            yaw_rate_setpoint = _registry->internal_get<float>("control.attitude.yaw.speed_target");
+            yaw_rate_setpoint = _registry->internal_get<float>("control.attitude.yaw.speed.target");
         }
         else
         {

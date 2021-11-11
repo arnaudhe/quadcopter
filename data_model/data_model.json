@@ -51,196 +51,625 @@
         "attitude" : {
             "id" : 4,
             "roll" : {
-                "id" : 1,
+                "id": 2,
+                "mode": {
+                    "id": 5,
+                    "type": "enum",
+                    "values": {
+                        "off": 1,
+                        "position": 2,
+                        "speed": 3
+                    },
+                    "permissions": [
+                        "read",
+                        "write"
+                    ]
+                },
                 "position": {
                     "id": 1,
-                    "type": "float",
-                    "permissions": [
-                        "read"
-                    ],
-                    "unit": "radians"
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radians"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radian/s"
-                },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : -3.14,
-                    "max" :  3.14,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radians"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "min" : -10.0,
-                    "max" :  10.0,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radian/s"
-                },
-                "mode" : {
-                    "id" : 5,
-                    "type" : "enum",
-                    "values" : {"off" : 1, "position" : 2, "speed" : 3},
-                    "permissions" : ["read", "write"]
-                },
-                "kp": {
-                    "id": 5,
-                    "type": "float",
-                    "min" : 0.0,
-                    "max" : 1.0,
-                    "permissions": [
-                        "read",
-                        "write"
-                    ],
-                    "unit": ""
-                },
-                "ki": {
-                    "id": 6,
-                    "type": "float",
-                    "min" : 0.0,
-                    "max" : 0.5,
-                    "permissions": [
-                        "read",
-                        "write"
-                    ],
-                    "unit": ""
-                },
-                "kd": {
-                    "id": 7,
-                    "type": "float",
-                    "min" : 0.0,
-                    "max" : 0.5,
-                    "permissions": [
-                        "read",
-                        "write"
-                    ],
-                    "unit": ""
-                },
-                "kff": {
-                    "id": 8,
-                    "type": "float",
-                    "min": 0.0,
-                    "max": 0.5,
-                    "permissions": [
-                        "read",
-                        "write"
-                    ],
-                    "unit": ""
+                "speed": {
+                    "id": 2,
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians/s"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radian/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             },
             "pitch" : {
-                "id" : 1,
+                "id" : 3,
+                "mode": {
+                    "id": 5,
+                    "type": "enum",
+                    "values": {
+                        "off": 1,
+                        "position": 2,
+                        "speed": 3
+                    },
+                    "permissions": [
+                        "read",
+                        "write"
+                    ]
+                },
                 "position" : {
                     "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radians"
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radians"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 },
                 "speed" : {
                     "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radians/s"
-                },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : -3.14,
-                    "max" :  3.14,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radians"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "min" : -10.0,
-                    "max" :  10.0,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radian/s"
-                },
-                "mode" : {
-                    "id" : 5,
-                    "type" : "enum",
-                    "values" : {"off" : 1, "position" : 2, "speed" : 3},
-                    "permissions" : ["read", "write"]
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians/s"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radian/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             },
             "yaw" : {
-                "id" : 3,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radians"
+                "id" : 4,
+                "mode": {
+                    "id": 5,
+                    "type": "enum",
+                    "values": {
+                        "off": 1,
+                        "position": 2,
+                        "speed": 3
+                    },
+                    "permissions": [
+                        "read",
+                        "write"
+                    ]
                 },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "radians/s"
+                "position": {
+                    "id": 1,
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radians"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : -3.14,
-                    "max" :  3.14,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radians"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "min" : -1.0,
-                    "max" :  1.0,
-                    "permissions" : ["read", "write"],
-                    "unit" : "radian/s"
-                },
-                "mode" : {
-                    "id" : 5,
-                    "type" : "enum",
-                    "values" : {"off" : 1, "speed" : 2, "position" : 3},
-                    "permissions" : ["read", "write"]
+                "speed": {
+                    "id": 2,
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians/s"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radian/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             },
             "height" : {
-                "id" : 4,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m"
+                "id" : 5,
+                "mode": {
+                    "id": 5,
+                    "type": "enum",
+                    "values": {
+                        "manual": 1,
+                        "position": 2,
+                        "speed": 3
+                    },
+                    "permissions": [
+                        "read",
+                        "write"
+                    ]
                 },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m/s"
+                "manual": {
+                    "id": 1,
+                    "throttle": {
+                        "id": 1,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 1.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "%"
+                    }
                 },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : 0.0,
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
+                "position": {
+                    "id": 1,
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -3.14,
+                        "max": 3.14,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radians"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "min" : -1.0,
-                    "max" :  1.0,
-                    "permissions" : ["read", "write"],
-                    "unit" : "m/s"
-                },
-                "mode" : {
-                    "id" : 5,
-                    "type" : "enum",
-                    "values" : {"off" : 1, "speed" : 2, "position" : 3},
-                    "permissions" : ["read", "write"]
+                "speed": {
+                    "id": 2,
+                    "current": {
+                        "id": 1,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read"
+                        ],
+                        "unit": "radians/s"
+                    },
+                    "target": {
+                        "id": 2,
+                        "type": "float",
+                        "min": -10.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": "radian/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             }
         },
@@ -249,114 +678,385 @@
             "id" : 5,
             "x" : {
                 "id" : 1,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m"
-                },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m/s"
-                },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
                 "mode" : {
-                    "id" : 5,
+                    "id" : 1,
                     "type" : "enum",
                     "values" : {"off" : 1, "speed" : 2, "position" : 3},
                     "permissions" : ["read", "write"]
+                },
+                "position" : {
+                    "id" : 2,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
+                },
+                "speed" : {
+                    "id" : 3,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             },
             "y" : {
                 "id" : 2,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m"
-                },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m/s"
-                },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
                 "mode" : {
-                    "id" : 5,
+                    "id" : 1,
                     "type" : "enum",
                     "values" : {"off" : 1, "speed" : 2, "position" : 3},
                     "permissions" : ["read", "write"]
+                },
+                "position" : {
+                    "id" : 2,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
+                },
+                "speed" : {
+                    "id" : 3,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             },
             "z" : {
                 "id" : 3,
-                "position" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m"
-                },
-                "speed" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "permissions" : ["read"],
-                    "unit" : "m/s"
-                },
-                "position_target" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
-                "speed_target" : {
-                    "id" : 4,
-                    "type" : "float",
-                    "permissions" : ["read", "write"],
-                    "unit" : "m"
-                },
                 "mode" : {
-                    "id" : 5,
+                    "id" : 1,
                     "type" : "enum",
                     "values" : {"off" : 1, "speed" : 2, "position" : 3},
                     "permissions" : ["read", "write"]
+                },
+                "position" : {
+                    "id" : 2,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
+                },
+                "speed" : {
+                    "id" : 3,
+                    "current" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "target" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "permissions" : ["read"],
+                        "unit" : "m/s"
+                    },
+                    "kp": {
+                        "id": 3,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "ki": {
+                        "id": 4,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kd": {
+                        "id": 5,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 20.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kff": {
+                        "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    }
                 }
             }
-        },
-        "thurst_offset": {
-            "id": 6,
-            "type": "float",
-            "min": 0.0,
-            "max": 1.0,
-            "permissions": [
-                "read",
-                "write"
-            ],
-            "unit": "%"
         }
     },
     "battery" : {

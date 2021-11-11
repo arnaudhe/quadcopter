@@ -21,13 +21,12 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer):
     _pitch_controller  = new Pid(period, RATE_PID_PITCH_KP, RATE_PID_PITCH_KI, RATE_PID_PITCH_KD, RATE_PID_PITCH_FF);
     _yaw_controller    = new Pid(period, RATE_PID_YAW_KP, RATE_PID_YAW_KI, RATE_PID_YAW_KD, RATE_PID_YAW_FF);
 
-    _roll_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-    _pitch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-    _yaw_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-
-    _roll_filter->init();
-    _pitch_filter->init();
-    _yaw_filter->init();
+    _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
+    _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
+    _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
+    _roll_notch_filter->init();
+    _pitch_notch_filter->init();
+    _yaw_notch_filter->init();
 
     _roll_target  = 0.0;
     _pitch_target = 0.0;
@@ -129,9 +128,9 @@ void IRAM_ATTR RateController::set_throttle(float throttle)
 
     _mutex->lock();
     _throttle = throttle;
-    _roll_filter->update(center_frequency, cutoff_frequency);
-    _roll_filter->update(center_frequency, cutoff_frequency);
-    _roll_filter->update(center_frequency, cutoff_frequency);
+    _roll_notch_filter->update(center_frequency, cutoff_frequency);
+    _pitch_notch_filter->update(center_frequency, cutoff_frequency);
+    _yaw_notch_filter->update(center_frequency, cutoff_frequency);
     _mutex->unlock();
 }
 

@@ -27,9 +27,9 @@ private:
     Pid                     * _yaw_controller;
     Mixer                   * _mixer;
     Mutex                   * _mutex;
-    BiQuadraticNotchFilter  * _roll_filter;
-    BiQuadraticNotchFilter  * _pitch_filter;
-    BiQuadraticNotchFilter  * _yaw_filter;
+    BiQuadraticNotchFilter  * _roll_notch_filter;
+    BiQuadraticNotchFilter  * _pitch_notch_filter;
+    BiQuadraticNotchFilter  * _yaw_notch_filter;
     float                     _period;
 
     float _roll_target;

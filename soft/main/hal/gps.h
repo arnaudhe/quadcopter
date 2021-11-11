@@ -50,6 +50,7 @@ Change Activity:
 
 #include <stdlib.h>
 #include <string>
+#include <periph/uart.h>
 
 #include <data_model/data_ressources_registry.h>
 
@@ -72,12 +73,14 @@ class Gps : public Task
         std::string                 _nmea_sequence;
         bool                        _new_sequence;
         bool                        _worker_enable;
+        Uart                   *    _uart;
 
         void run();
+        void parse(int len, std::string str);
 
     public:
-        Gps(DataRessourcesRegistry * registry);
+        Gps(DataRessourcesRegistry * registry, uart_port_t uart_port, int rx_pin, int tx_pin);
         ~Gps();
 
-        void parse(int len, std::string str);
+        void start(void);
 };

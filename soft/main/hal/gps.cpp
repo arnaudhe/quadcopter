@@ -50,6 +50,7 @@ Change Activity:
 
 #include <string.h>
 #include <sstream>
+#include <functional>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -65,12 +66,29 @@ Change Activity:
     Class functions
 ****************************************************************************************************************************/
 
-Gps::Gps(DataRessourcesRegistry * registry) :
+Gps::Gps(DataRessourcesRegistry * registry, uart_port_t uart_port, int rx_pin, int tx_pin) :
     Task("GPS", Task::Priority::LOW, 4608, true)
 {
+    uart_config_t uart_config = {
+        .baud_rate              = 9600,
+        .data_bits              = UART_DATA_8_BITS,
+        .parity                 = UART_PARITY_DISABLE,
+        .stop_bits              = UART_STOP_BITS_1,
+        .flow_ctrl              = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk             = UART_SCLK_APB
+    };
+
+    uart_pin_config_t uart_pin_config = {
+        .tx                     = tx_pin,
+        .rx                     = rx_pin,
+        .rts                    = UART_PIN_NO_CHANGE,
+        .cts                    = UART_PIN_NO_CHANGE
+    };
+
     _registry = registry;
     _new_sequence = false;
     _worker_enable = true;
+    _uart = new Uart(uart_port, uart_config, uart_pin_config);
 
     LOG_INFO("GPS object created.");
 }
@@ -110,4 +128,21 @@ void Gps::run()
     }
     LOG_INFO("Stoppinng worker task");
     vTaskDelete(NULL);
+}
+
+void Gps::start()
+{
+    uart_pattern_t pattern_config = {
+        .pattern_chr = '\n',
+        .chr_num     = 1,
+        .chr_tout    = 9,
+        .post_idle   = 0,
+        .pre_idle    = 0,
+    };
+
+    _uart->enable_pattern_detect(pattern_config);
+    _uart->register_pattern_detected_callback(NULL);
+    _uart->start_uart_event();
+    _uart->register_pattern_detected_callback(std::bind(&Gps::parse, this, std::placeholders::_1, std::placeholders::_2));
+    Task::start();
 }

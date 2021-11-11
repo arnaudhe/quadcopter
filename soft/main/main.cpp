@@ -40,7 +40,6 @@ extern "C" void app_main(void)
     Motor                   * rear_right;
     I2cMaster               * sensors_i2c;
     Marg                    * marg;
-    Uart                    * uart_1;
 #ifdef DATA_RECORDING
     DataRecorder            * data_recorder;
 #else
@@ -64,35 +63,6 @@ extern "C" void app_main(void)
 
     sensors_i2c = new I2cMaster(I2C_MASTER_NUM);
     sensors_i2c->init();
-
-    uart_config_t uart_01_config = {
-        .baud_rate              = 9600,
-        .data_bits              = UART_DATA_8_BITS,
-        .parity                 = UART_PARITY_DISABLE,
-        .stop_bits              = UART_STOP_BITS_1,
-        .flow_ctrl              = UART_HW_FLOWCTRL_DISABLE,
-        .source_clk             = UART_SCLK_APB
-    };
-    uart_pin_config_t uart_01_pin_config = {
-        .tx                     = GPIO_NUM_4,
-        .rx                     = GPIO_NUM_5,
-        .rts                    = UART_PIN_NO_CHANGE,
-        .cts                    = UART_PIN_NO_CHANGE
-    };
-    uart_1 = new Uart(UART_NUM_1, uart_01_config, uart_01_pin_config);
-    
-    uart_pattern_t pattern_config = {
-        .pattern_chr            = '\n',
-        .chr_num                = 1,
-        .chr_tout               = 9,
-        .post_idle              = 0,
-        .pre_idle               = 0,
-    };
-    uart_1->enable_pattern_detect(pattern_config);
-    uart_1->register_pattern_detected_callback(NULL);
-
-    uart_1->start_uart_event();
-
 
     marg = new Marg(sensors_i2c);
     marg->init();
@@ -130,12 +100,9 @@ extern "C" void app_main(void)
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
     position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
-    gps                 = new Gps(registry);
+    gps                 = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
     battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
-
-    std::function<void(int, std::string)> callback = std::bind(&Gps::parse, gps, std::placeholders::_1, std::placeholders::_2);
-    uart_1->register_pattern_detected_callback(callback);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<float>("control.motors.front_left", 0.0);
@@ -154,6 +121,7 @@ extern "C" void app_main(void)
     rate_controller->start();
     attitude_controller->start();
     height_controller->start();
+    gps->start();
 #endif
 
     while (true)

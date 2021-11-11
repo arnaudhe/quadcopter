@@ -24,3 +24,7 @@
 #define PLATFORM_HCSR04_ECHO_PIN              (5)
 #define PLATFORM_HCSR04_TRIG_CHANNEL          (4)
 #define PLATFORM_HCSR04_TRIG_PIN              (4)
+
+#define PLATFORM_GPS_UART                     (UART_NUM_1)
+#define PLATFORM_GPS_RX_PIN                   (GPIO_NUM_22)
+#define PLATFORM_GPS_TX_PIN                   (GPIO_NUM_23)

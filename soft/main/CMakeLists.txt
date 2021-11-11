@@ -8,6 +8,7 @@ set(COMPONENT_SRCS
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
     app/controllers/height_controller.cpp 
+    app/controllers/motors_controller.cpp 
     app/controllers/rate_controller.cpp 
     app/observers/euler_observer.cpp 
     app/observers/height_observer.cpp 

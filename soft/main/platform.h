@@ -16,6 +16,7 @@
 
 #define RATE_CONTROLLER_PERIOD                (0.002)
 #define ATTITUDE_CONTROLLER_PERIOD            (0.01)
+#define MOTORS_CONTROLLER_PERIOD              (0.05)
 #define HEIGHT_CONTROLLER_PERIOD              (0.025)
 #define POSITION_CONTROLLER_PERIOD            (0.1)
 #define BATTERY_SUPERVISOR_PERIOD             (1.0)

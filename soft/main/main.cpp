@@ -8,6 +8,7 @@
 #include <app/controllers/height_controller.h>
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
+#include <app/controllers/motors_controller.h>
 #include <app/data_recorder/data_recorder.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
@@ -49,6 +50,7 @@ extern "C" void app_main(void)
     HeightController        * height_controller;
     PositionController      * position_controller;
     Gps                     * gps;
+    MotorsController        * motors_controller;
     Wifi                    * wifi;
     UdpServer               * udp;
     DataRessourcesRegistry  * registry;
@@ -98,6 +100,7 @@ extern "C" void app_main(void)
     logger              = new Logger(udp);
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
+    motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
     rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer);
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
@@ -107,10 +110,6 @@ extern "C" void app_main(void)
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
 
     registry->internal_set<string>("control.mode", "off");
-    registry->internal_set<float>("control.motors.front_left", 0.0);
-    registry->internal_set<float>("control.motors.front_right", 0.0);
-    registry->internal_set<float>("control.motors.rear_left", 0.0);
-    registry->internal_set<float>("control.motors.rear_right", 0.0);
 
 #endif
 
@@ -124,6 +123,7 @@ extern "C" void app_main(void)
     attitude_controller->start();
     height_controller->start();
     gps->start();
+    motors_controller->start();
 #endif
 
     while (true)

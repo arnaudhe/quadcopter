@@ -92,10 +92,10 @@ class Uart : public Task
         bool                                    _open;
         int                                     _data_available;
         bool                                    _event_enable;
-        static queue_handle_t                   _uart_queue_handle;
         Queue<uart_event_t> *                   _uart_event_queue;
         std::function<void(int)>                _data_in_callback;
         std::function<void(int, std::string)>   _pattern_callback;
+        queue_handle_t                          _uart_queue_handle;
 
         void run();
         static void uart_event_worker_task(void * instance_pointer);

@@ -67,10 +67,12 @@ extern "C" void app_main(void)
     marg = new Marg(sensors_i2c);
     marg->init();
 
+#ifndef DATA_RECORDING
     barometer = new Barometer(sensors_i2c);
     barometer->init();
 
     ultrasound = new UltrasoundSensor();
+#endif
 
     front_left  = new Motor(PLATFORM_FRONT_LEFT_PULSE_CHANNEL,  PLATFORM_FRONT_LEFT_PULSE_PIN);
     front_right = new Motor(PLATFORM_FRONT_RIGHT_PULSE_CHANNEL, PLATFORM_FRONT_RIGHT_PULSE_PIN);
@@ -126,7 +128,9 @@ extern "C" void app_main(void)
 
     while (true)
     {
+#ifndef DATA_RECORDING
         udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);
+#endif
         Task::delay_ms(1000);
     }
 }

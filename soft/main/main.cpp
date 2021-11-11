@@ -110,6 +110,7 @@ extern "C" void app_main(void)
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
 
     registry->internal_set<string>("control.mode", "off");
+    registry->internal_set<string>("control.phase", "landed");
 
 #endif
 

@@ -47,12 +47,17 @@ void HcSr04::echo_handler()
 
 void HcSr04::run()
 {
+    float tmp;
     while(1)
     {
         _sem_falling.wait();
-        _mutex.lock();
-        _height = _echo_timer->get_time() / HCSR04_SCALE_FACTOR;
-        _mutex.unlock();
+        tmp = _echo_timer->get_time() / HCSR04_SCALE_FACTOR;
+        if (tmp < 1.0)
+        {
+            _mutex.lock();
+            _height = tmp;
+            _mutex.unlock();
+        }
     }
 }
 

@@ -15,8 +15,6 @@ public:
         UNKNOWN
     };
 
-private:
-
     enum TalkerID {
         GPS,
         GALILEO,
@@ -34,6 +32,8 @@ private:
         RMC,
         Unknown_message_type
     };
+
+private:
 
     static bool _check_start_delimiter(std::string *sequence_s);
     static bool _has_checksum(std::string *sequence_s);

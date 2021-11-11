@@ -121,6 +121,44 @@ void Gps::run()
             if (NMEAParser::parse(_nmea_sequence, &sentence))
             {
                 LOG_DEBUG("Sequence parsed : %s", _nmea_sequence.c_str());
+                switch (sentence.type)
+                {
+                    case NMEAParser::GGA:
+                        _registry->internal_set<int>("gps.time.hour", sentence.gga.utc_hour);
+                        _registry->internal_set<int>("gps.time.minute", sentence.gga.utc_hour);
+                        _registry->internal_set<int>("gps.time.second", sentence.gga.utc_hour);
+                        _registry->internal_set<float>("gps.time.millis", sentence.gga.utc_hour);
+                        _registry->internal_set<double>("gps.position.latitude.deg", sentence.gga.latitude_deg);
+                        _registry->internal_set<int>("gps.position.latitude.min", sentence.gga.latitude_min);
+                        _registry->internal_set<float>("gps.position.latitude.sec", sentence.gga.latitude_sec);
+                        _registry->internal_set<double>("gps.position.longitude.deg", sentence.gga.longitude_deg);
+                        _registry->internal_set<int>("gps.position.longitude.min", sentence.gga.longitude_min);
+                        _registry->internal_set<float>("gps.position.longitude.sec", sentence.gga.longitude_sec);
+                        _registry->internal_set<string>("gps.status.module_status", ( sentence.gga.satellite_fix_status > 0 ? "fixed" : "unfixed"));
+                        _registry->internal_set<int>("gps.status.fixed_satellite", sentence.gga.fixed_satellite);
+                        _registry->internal_set<float>("gps.position.altitude.msl", sentence.gga.altitude_msl);
+                        _registry->internal_set<float>("gps.position.altitude.geo", sentence.gga.geoidal_altitude_separation);
+                        break;
+
+                    case NMEAParser::RMC:
+                        _registry->internal_set<int>("gps.time.hour", sentence.rmc.utc_hour);
+                        _registry->internal_set<int>("gps.time.minute", sentence.rmc.utc_hour);
+                        _registry->internal_set<int>("gps.time.second", sentence.rmc.utc_hour);
+                        _registry->internal_set<float>("gps.time.millis", sentence.rmc.utc_hour);
+                        _registry->internal_set<double>("gps.position.latitude.deg", sentence.rmc.latitude_deg);
+                        _registry->internal_set<int>("gps.position.latitude.min", sentence.rmc.latitude_min);
+                        _registry->internal_set<float>("gps.position.latitude.sec", sentence.rmc.latitude_sec);
+                        _registry->internal_set<double>("gps.position.longitude.deg", sentence.rmc.longitude_deg);
+                        _registry->internal_set<int>("gps.position.longitude.min", sentence.rmc.longitude_min);
+                        _registry->internal_set<float>("gps.position.longitude.sec", sentence.rmc.longitude_sec);
+                        _registry->internal_set<float>("gps.speed.ground_speed", sentence.rmc.speed_ms);
+                        _registry->internal_set<int>("gps.date.day", sentence.rmc.utc_day);
+                        _registry->internal_set<int>("gps.date.month", sentence.rmc.utc_month);
+                        _registry->internal_set<int>("gps.date.year", sentence.rmc.utc_year);
+
+                    default:
+                        break;
+                }
             }
             _new_sequence = false;
         }

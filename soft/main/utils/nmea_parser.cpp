@@ -405,7 +405,11 @@ bool NMEAParser::parse(std::string sequence, ParsedSentence * sentence)
                             }
                             case 9: // date
                             {
-                                if ( _parse_date(&line, &(sentence->rmc.utc_day), &(sentence->rmc.utc_month), &(sentence->rmc.utc_year)) == false)
+                                if ( _parse_date(&line, &(sentence->rmc.utc_day), &(sentence->rmc.utc_month), &(sentence->rmc.utc_year)) == true)
+                                {
+                                    sentence->rmc.utc_year += 2000;
+                                }
+                                else
                                 {
                                     sentence->rmc.utc_day   = 0;
                                     sentence->rmc.utc_month = 0;

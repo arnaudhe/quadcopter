@@ -65,7 +65,7 @@ Change Activity:
     Class declarations
 ****************************************************************************************************************************/
 
-class NMEA_controller : public Task
+class Gps : public Task
 {
     private:
         DataRessourcesRegistry *    _registry;
@@ -76,8 +76,8 @@ class NMEA_controller : public Task
         void run();
 
     public:
-        NMEA_controller(DataRessourcesRegistry * registry);
-        ~NMEA_controller();
+        Gps(DataRessourcesRegistry * registry);
+        ~Gps();
 
-        void                        parse(int len, std::string str);
+        void parse(int len, std::string str);
 };

@@ -8,7 +8,6 @@
 #include <app/controllers/height_controller.h>
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
-#include <app/controllers/nmea_controller.h>
 #include <app/data_recorder/data_recorder.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
@@ -19,11 +18,12 @@
 #include <periph/i2c_master.h>
 #include <periph/uart.h>
 
+#include <hal/gps.h>
+#include <hal/log.h>
+#include <hal/marg.h>
 #include <hal/motor.h>
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
-#include <hal/marg.h>
-#include <hal/log.h>
 
 #include <os/task.h>
 
@@ -49,7 +49,7 @@ extern "C" void app_main(void)
     AttitudeController      * attitude_controller;
     HeightController        * height_controller;
     PositionController      * position_controller;
-    NMEA_controller         * nmea_controller;
+    Gps                     * gps;
     Wifi                    * wifi;
     UdpServer               * udp;
     DataRessourcesRegistry  * registry;
@@ -130,11 +130,11 @@ extern "C" void app_main(void)
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
     position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
-    nmea_controller     = new NMEA_controller(registry);
+    gps                 = new Gps(registry);
     battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
 
-    std::function<void(int, std::string)> callback = std::bind(&NMEA_controller::parse, nmea_controller, std::placeholders::_1, std::placeholders::_2);
+    std::function<void(int, std::string)> callback = std::bind(&Gps::parse, gps, std::placeholders::_1, std::placeholders::_2);
     uart_1->register_pattern_detected_callback(callback);
 
     registry->internal_set<string>("control.mode", "off");

@@ -8,7 +8,6 @@ set(COMPONENT_SRCS
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
     app/controllers/height_controller.cpp 
-    app/controllers/nmea_controller.cpp 
     app/controllers/rate_controller.cpp 
     app/observers/euler_observer.cpp 
     app/observers/height_observer.cpp 
@@ -30,6 +29,7 @@ set(COMPONENT_SRCS
     hal/wifi.cpp 
     hal/wifi_config.c 
     hal/marg.cpp 
+    hal/gps.cpp 
     os/mutex.cpp
     os/periodic_task.cpp
     os/queue.cpp

@@ -58,49 +58,48 @@ Change Activity:
 #include <os/task.h>
 #include <utils/nmea_parser.h>
 
-#include <app/controllers/nmea_controller.h>
+#include <hal/gps.h>
 
 
 /****************************************************************************************************************************
     Class functions
 ****************************************************************************************************************************/
 
-NMEA_controller::NMEA_controller(DataRessourcesRegistry * registry) :
-    Task("NMEA CTRLR", Task::Priority::LOW, 4608, true)
+Gps::Gps(DataRessourcesRegistry * registry) :
+    Task("GPS", Task::Priority::LOW, 4608, true)
 {
     _registry = registry;
     _new_sequence = false;
     _worker_enable = true;
 
-    LOG_INFO("NMEA controler object created.");
+    LOG_INFO("GPS object created.");
 }
 
 
-NMEA_controller::~NMEA_controller()
+Gps::~Gps()
 {
     _worker_enable = false;
-    LOG_VERBOSE("NMEA controler object destroyed.");
+    LOG_VERBOSE("GPS object destroyed.");
 }
 
 
-void NMEA_controller::parse(int len, std::string str)
+void Gps::parse(int len, std::string str)
 {
     _nmea_sequence = str;
     _new_sequence = true;
 }
 
-
-void NMEA_controller::run()
+void Gps::run()
 {
     NMEAParser::ParsedSentence sentence;
 
-    LOG_INFO("worker task started");
+    LOG_INFO("Worker task started");
 
     while (_worker_enable )
     {
         if ( _new_sequence )
         {
-            LOG_VERBOSE("new sequence to parse");
+            LOG_VERBOSE("New sequence to parse");
             if (NMEAParser::parse(_nmea_sequence, &sentence))
             {
                 LOG_DEBUG("Sequence parsed : %s", _nmea_sequence.c_str());
@@ -109,6 +108,6 @@ void NMEA_controller::run()
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-    LOG_INFO("stoppinng worker task");
+    LOG_INFO("Stoppinng worker task");
     vTaskDelete(NULL);
 }

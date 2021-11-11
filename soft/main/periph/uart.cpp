@@ -198,7 +198,7 @@ void Uart::enable_pattern_detect(uart_pattern_t pattern)
         {
             uart_pattern_queue_reset(_port, QUEUE_SIZE/2);
         } else {
-            LOG_ERROR("Unable to configure pattern detecttion on UART port %d.", _port);
+            LOG_ERROR("Unable to configure pattern detection on UART port %d.", _port);
         }
     }
 }
@@ -239,8 +239,8 @@ void Uart::run()
                     }
                     break;
                 case UART_BREAK:
-                    LOG_INFO("UART break signal detected on port %d.", _port);
-                    break;
+                  LOG_DEBUG("UART break signal detected on port %d.", _port);
+                  break;
                 case UART_BUFFER_FULL:
                     LOG_WARNING("Full buffer detected. Flushing UART port %d.", _port);
                     uart_flush_input(_port);
@@ -258,11 +258,11 @@ void Uart::run()
                     LOG_WARNING("UART parity check error detected on port %d.", _port);
                     break;
                 case UART_DATA_BREAK:
-                    LOG_INFO("UART TX data and break event detected on port %d.", _port);
+                    LOG_DEBUG("UART TX data and break event detected on port %d.", _port);
                     break;
                 case UART_PATTERN_DET:
                 {
-                    LOG_INFO("UART pattern event detected on port %d.", _port);
+                    LOG_DEBUG("UART pattern event detected on port %d.", _port);
                     uart_get_buffered_data_len(_port, &buffered_size);
                     int pos = uart_pattern_pop_pos(_port);
                     if ( pos == -1 )
@@ -276,14 +276,14 @@ void Uart::run()
                         {
                             _pattern_callback(buffered_size, std::string(reinterpret_cast<char*>(buffer)));
                         } else {
-                            LOG_INFO("No callback provided for pattern detection on port %d.", _port);
+                            LOG_WARNING("No callback provided for pattern detection on port %d.", _port);
                         }
                     }
                     break;
                 }
                 case UART_EVENT_MAX:
                 default:
-                    LOG_INFO("Unhandled UART event deteted on port %d. Event id: %d", _port, event->type);
+                    LOG_WARNING("Unhandled UART event deteted on port %d. Event id: %d", _port, event->type);
                     break;
             }
         }

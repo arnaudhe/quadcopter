@@ -10,6 +10,7 @@
 #include <app/controllers/rate_controller.h>
 #include <app/controllers/motors_controller.h>
 #include <app/data_recorder/data_recorder.h>
+#include <app/data_recorder/telemetry.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
 
@@ -59,6 +60,7 @@ extern "C" void app_main(void)
     CameraController        * camera;
     UltrasoundSensor        * ultrasound;
     Barometer               * barometer;
+    Telemetry               * telemetry;
 #endif
 
     nvs_flash_init();
@@ -108,6 +110,7 @@ extern "C" void app_main(void)
     gps                 = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
     battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
+    telemetry           = new Telemetry(registry, 100);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -125,6 +128,7 @@ extern "C" void app_main(void)
     height_controller->start();
     gps->start();
     motors_controller->start();
+    telemetry->start();
 #endif
 
     while (true)

@@ -5,6 +5,7 @@ set(COMPONENT_SRCS
     drv/HCSR04.cpp 
     drv/DShotRMT.cpp 
     app/data_recorder/data_recorder.cpp
+    app/data_recorder/telemetry.cpp
     app/controllers/position_controller.cpp 
     app/controllers/attitude_controller.cpp 
     app/controllers/height_controller.cpp 
@@ -46,6 +47,7 @@ set(COMPONENT_SRCS
     utils/matrix.cpp 
     utils/quaternion.cpp 
     utils/filter.cpp 
+    utils/string_utils.cpp
     periph/i2c_master.cpp 
     periph/pulse.cpp 
     periph/timer.cpp 

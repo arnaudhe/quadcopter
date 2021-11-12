@@ -1099,192 +1099,344 @@
             "unit" : "deg"
         }
     },
-    "gps" : {
+    "sensors" : {
         "id" : 5,
-        "time" : {
+        "gyroscope" : {
             "id" : 1,
-            "hour" : {
+            "raw" : {
                 "id" : 1,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 24,
-                "permissions" : ["read", "notify"],
-                "unit" : "h"
+                "x" : {
+                    "id" : 1,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                },
+                "y" : {
+                    "id" : 2,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                },
+                "z" : {
+                    "id" : 3,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                }
             },
-            "minute" : {
+            "filtered" : {
                 "id" : 2,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 60,
-                "permissions" : ["read", "notify"],
-                "unit" : "m"
-            },
-            "second" : {
-                "id" : 3,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 60,
-                "permissions" : ["read", "notify"],
-                "unit" : "s"
-            },
-            "millis" : {
-                "id" : 4,
-                "type" : "float",
-                "min" : -1.0,
-                "max" : 1000.0,
-                "permissions" : ["read", "notify"],
-                "unit" : "ms"
+                "x" : {
+                    "id" : 1,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                },
+                "y" : {
+                    "id" : 2,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                },
+                "z" : {
+                    "id" : 3,
+                    "type" : "float",
+                    "unit" : "rad/s",
+                    "min" : -10.0,
+                    "max" : 10.0,
+                    "permissions" : ["read", "notify"]
+                }
             }
         },
-        "date" : {
+        "accelerometer" : {
             "id" : 2,
-            "year" : {
-                "id" : 1,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 2100,
-                "permissions" : ["read", "notify"],
-                "unit" : "yyyy"
-            },
-            "month" : {
-                "id" : 2,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 12,
-                "permissions" : ["read", "notify"],
-                "unit" : "mm"
-            },
-            "day" : {
-                "id" : 3,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 31,
-                "permissions" : ["read", "notify"],
-                "unit" : "dd"
-            }
-        },
-        "position" : {
-            "id" : 3,
-            "latitude" : {
-                "id" : 1,
-                "deg" : {
-                    "id" : 1,
-                    "type" : "double",
-                    "min" : -180.0,
-                    "max" : 180.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "°"
-                },
-                "min" : {
-                    "id" : 2,
-                    "type" : "integer",
-                    "min" : -1,
-                    "max" : 60,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "'"
-                },
-                "sec" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : -1.0,
-                    "max" : 60.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "\""
-                },
-                "cardinality" : {
-                    "id" : 4,
-                    "type" : "enum",
-                    "values" : {"undefined" : 0, "north" : 1, "south" : 2},
-                    "permissions" : ["read", "notify"]
-                }
-            },
-            "longitude" : {
-                "id" : 2,
-                "deg" : {
-                    "id" : 1,
-                    "type" : "double",
-                    "min" : -180.0,
-                    "max" : 180.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "°"
-                },
-                "min" : {
-                    "id" : 2,
-                    "type" : "integer",
-                    "min" : -1,
-                    "max" : 60,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "'"
-                },
-                "sec" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "min" : -1.0,
-                    "max" : 60.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "\""
-                },
-                "cardinality" : {
-                    "id" : 4,
-                    "type" : "enum",
-                    "values" : {"undefined" : 0, "east" : 1, "west" : 2},
-                    "permissions" : ["read", "notify"]
-                }
-            },
-            "altitude" : {
-                "id" : 3,
-                "msl" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "min" : -1.0,
-                    "max" : 4000.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "m"
-                },
-                "geo" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "min" : -500.0,
-                    "max" : 500.0,
-                    "permissions" : ["read", "notify"],
-                    "unit" : "m"
-                }
-            }
-        },
-        "speed" : {
-            "id" : 4,
-            "ground_speed" : {
+            "x" : {
                 "id" : 1,
                 "type" : "float",
-                "min" : -1.0,
-                "max" : 300.0,
-                "permissions" : ["read", "notify"],
-                "unit" : "m/s"
-            },
-            "cmg_speed" : {
-                "id" : 2,
-                "type" : "float",
-                "min" : -1.0,
-                "max" : 300.0,
-                "permissions" : ["read", "notify"],
-                "unit" : "m/s"
-            }
-        },
-        "status" : {
-            "id" : 5,
-            "module_status" : {
-                "id" : 1,
-                "type" : "enum",
-                "values" : {"unfixed" : 0, "fixed" : 1},
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
                 "permissions" : ["read", "notify"]
             },
-            "fixed_satellite" : {
+            "y" : {
                 "id" : 2,
-                "type" : "integer",
-                "min" : -1,
-                "max" : 24,
-                "permissions" : ["read", "notify"],
-                "unit" : "#"
+                "type" : "float",
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            },
+            "z" : {
+                "id" : 3,
+                "type" : "float",
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            }
+        },
+        "magnetometer" : {
+            "id" : 3,
+            "x" : {
+                "id" : 1,
+                "type" : "float",
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            },
+            "y" : {
+                "id" : 2,
+                "type" : "float",
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            },
+            "z" : {
+                "id" : 3,
+                "type" : "float",
+                "unit" : "g",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            }
+        },
+        "ultrasound" : {
+            "id" : 4,
+            "height" : {
+                "id" : 1,
+                "type" : "float",
+                "unit" : "m",
+                "min" : 0,
+                "max" : 5.0,
+                "permissions" : ["read", "notify"]
+            }
+        },
+        "barometer" : {
+            "id" : 5,
+            "height" : {
+                "id" : 1,
+                "type" : "float",
+                "unit" : "m",
+                "min" : -100.0,
+                "max" : 100.0,
+                "permissions" : ["read", "notify"]
+            },
+            "pressure" : {
+                "id" : 2,
+                "type" : "float",
+                "unit" : "m",
+                "min" : 0.0,
+                "max" : 2000.0,
+                "permissions" : ["read", "notify"]
+            },
+            "temperature" : {
+                "id" : 3,
+                "type" : "float",
+                "unit" : "celius",
+                "min" : 0.0,
+                "max" : 50.0,
+                "permissions" : ["read", "notify"]
+            }
+        },
+        "gps" : {
+            "id" : 6,
+            "time" : {
+                "id" : 1,
+                "hour" : {
+                    "id" : 1,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 24,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "h"
+                },
+                "minute" : {
+                    "id" : 2,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 60,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "m"
+                },
+                "second" : {
+                    "id" : 3,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 60,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "s"
+                },
+                "millis" : {
+                    "id" : 4,
+                    "type" : "float",
+                    "min" : -1.0,
+                    "max" : 1000.0,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "ms"
+                }
+            },
+            "date" : {
+                "id" : 2,
+                "year" : {
+                    "id" : 1,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 2100,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "yyyy"
+                },
+                "month" : {
+                    "id" : 2,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 12,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "mm"
+                },
+                "day" : {
+                    "id" : 3,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 31,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "dd"
+                }
+            },
+            "position" : {
+                "id" : 3,
+                "latitude" : {
+                    "id" : 1,
+                    "deg" : {
+                        "id" : 1,
+                        "type" : "double",
+                        "min" : -180.0,
+                        "max" : 180.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "°"
+                    },
+                    "min" : {
+                        "id" : 2,
+                        "type" : "integer",
+                        "min" : -1,
+                        "max" : 60,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "'"
+                    },
+                    "sec" : {
+                        "id" : 3,
+                        "type" : "float",
+                        "min" : -1.0,
+                        "max" : 60.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "\""
+                    },
+                    "cardinality" : {
+                        "id" : 4,
+                        "type" : "enum",
+                        "values" : {"undefined" : 0, "north" : 1, "south" : 2},
+                        "permissions" : ["read", "notify"]
+                    }
+                },
+                "longitude" : {
+                    "id" : 2,
+                    "deg" : {
+                        "id" : 1,
+                        "type" : "double",
+                        "min" : -180.0,
+                        "max" : 180.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "°"
+                    },
+                    "min" : {
+                        "id" : 2,
+                        "type" : "integer",
+                        "min" : -1,
+                        "max" : 60,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "'"
+                    },
+                    "sec" : {
+                        "id" : 3,
+                        "type" : "float",
+                        "min" : -1.0,
+                        "max" : 60.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "\""
+                    },
+                    "cardinality" : {
+                        "id" : 4,
+                        "type" : "enum",
+                        "values" : {"undefined" : 0, "east" : 1, "west" : 2},
+                        "permissions" : ["read", "notify"]
+                    }
+                },
+                "altitude" : {
+                    "id" : 3,
+                    "msl" : {
+                        "id" : 1,
+                        "type" : "float",
+                        "min" : -1.0,
+                        "max" : 4000.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "m"
+                    },
+                    "geo" : {
+                        "id" : 2,
+                        "type" : "float",
+                        "min" : -500.0,
+                        "max" : 500.0,
+                        "permissions" : ["read", "notify"],
+                        "unit" : "m"
+                    }
+                }
+            },
+            "speed" : {
+                "id" : 4,
+                "ground_speed" : {
+                    "id" : 1,
+                    "type" : "float",
+                    "min" : -1.0,
+                    "max" : 300.0,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "m/s"
+                },
+                "cmg_speed" : {
+                    "id" : 2,
+                    "type" : "float",
+                    "min" : -1.0,
+                    "max" : 300.0,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "m/s"
+                }
+            },
+            "status" : {
+                "id" : 5,
+                "module_status" : {
+                    "id" : 1,
+                    "type" : "enum",
+                    "values" : {"unfixed" : 0, "fixed" : 1},
+                    "permissions" : ["read", "notify"]
+                },
+                "fixed_satellite" : {
+                    "id" : 2,
+                    "type" : "integer",
+                    "min" : -1,
+                    "max" : 24,
+                    "permissions" : ["read", "notify"],
+                    "unit" : "#"
+                }
             }
         }
     }

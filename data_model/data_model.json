@@ -1439,5 +1439,26 @@
                 }
             }
         }
+    },
+    "telemetry" : {
+        "id" : 6,
+        "enable" : {
+            "id" : 1,
+            "type" : "bool",
+            "permissions" : ["read", "write"]
+        },
+        "period" : {
+            "id" : 2,
+            "type" : "integer",
+            "permissions" : ["read", "write"],
+            "min" : 1,
+            "max" : 100,
+            "unit" : "milliseconds"
+        },
+        "values" : {
+            "id" : 3,
+            "type" : "string",
+            "permissions" : ["read", "write"]
+        }
     }
 }

@@ -15,6 +15,22 @@ from threading import Thread
 from xbox import XBoxController
 from logger import UdpLogger
 
+HIDDEN_RESOURCES = [
+    "control.position",
+    "control.attitude.roll.position.kp",
+    "control.attitude.roll.position.ki",
+    "control.attitude.roll.position.kd",
+    "control.attitude.roll.position.kff",
+    "control.attitude.pitch.position",
+    "control.attitude.pitch.speed",
+    "control.attitude.yaw.position",
+    "control.attitude.yaw.speed",
+    "control.attitude.height.position",
+    "control.attitude.height.speed",
+    "sensors",
+    "telemetry"
+]
+
 class FloatSlider(QSlider):
 
     # create our our signal that we can connect to if necessary
@@ -181,56 +197,57 @@ class MainWindow(QMainWindow):
     def load_model(self, data_model, container_layout, current_key = ''):
         for key, content in data_model.items():
             new_key = current_key + key
-            if isinstance(content, dict):
-                if 'type' in content:
-                    if content['type'] == 'integer':
-                        if 'min' in content:
-                            minimum = content['min']
-                        else:
-                            minimum = 0
-                        if 'max' in content:
-                            maximum = content['max']
-                        else:
-                            maximum = 1
-                        widget = IntegerRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+            if new_key not in HIDDEN_RESOURCES:
+                if isinstance(content, dict):
+                    if 'type' in content:
+                        if content['type'] == 'integer':
+                            if 'min' in content:
+                                minimum = content['min']
+                            else:
+                                minimum = 0
+                            if 'max' in content:
+                                maximum = content['max']
+                            else:
+                                maximum = 1
+                            widget = IntegerRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                                                            content['unit'], minimum, maximum)
+                        elif content['type'] == 'float':
+                            if 'min' in content:
+                                minimum = content['min']
+                            else:
+                                minimum = 0.0
+                            if 'max' in content:
+                                maximum = content['max']
+                            else:
+                                maximum = 1.0
+                            widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
                                                         content['unit'], minimum, maximum)
-                    elif content['type'] == 'float':
-                        if 'min' in content:
-                            minimum = content['min']
+                        elif content['type'] == 'double':
+                            if 'min' in content:
+                                minimum = content['min']
+                            else:
+                                minimum = 0.0
+                            if 'max' in content:
+                                maximum = content['max']
+                            else:
+                                maximum = 1.0
+                            widget = DoubleRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                                                        content['unit'], minimum, maximum)
+                        elif content['type'] == 'bool':
+                            widget = BoolRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])
+                        elif content['type'] == 'enum':
+                            widget = EnumRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
+                                                        content['values'])
                         else:
-                            minimum = 0.0
-                        if 'max' in content:
-                            maximum = content['max']
-                        else:
-                            maximum = 1.0
-                        widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
-                                                    content['unit'], minimum, maximum)
-                    elif content['type'] == 'double':
-                        if 'min' in content:
-                            minimum = content['min']
-                        else:
-                            minimum = 0.0
-                        if 'max' in content:
-                            maximum = content['max']
-                        else:
-                            maximum = 1.0
-                        widget = DoubleRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
-                                                    content['unit'], minimum, maximum)
-                    elif content['type'] == 'bool':
-                        widget = BoolRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])
-                    elif content['type'] == 'enum':
-                        widget = EnumRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
-                                                    content['values'])
+                            raise Exception("Invalid ressource type")
+                        self.widgets[new_key] = widget
+                        container_layout.addWidget(widget)
                     else:
-                        raise Exception("Invalid ressource type")
-                    self.widgets[new_key] = widget
-                    container_layout.addWidget(widget)
-                else:
-                    vbox = QVBoxLayout()
-                    self.load_model(data_model[key], vbox, new_key + '.')
-                    widget = QGroupBox(key)
-                    widget.setLayout(vbox)
-                    container_layout.addWidget(widget)
+                        vbox = QVBoxLayout()
+                        self.load_model(data_model[key], vbox, new_key + '.')
+                        widget = QGroupBox(key)
+                        widget.setLayout(vbox)
+                        container_layout.addWidget(widget)
 
     def setup_ui(self):
         self.centralWidget = QWidget()

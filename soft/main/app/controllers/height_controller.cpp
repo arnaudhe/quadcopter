@@ -4,6 +4,8 @@
 #include <os/task.h>
 #include <esp_attr.h>
 
+#define GRAVITATIONAL_ACCELERATION      9.80665
+
 HeightController::HeightController(float period, DataRessourcesRegistry * registry, Marg * marg, Barometer * baro, UltrasoundSensor * ultrasound, AttitudeController * attitude_controller, RateController * rate_controller):
     PeriodicTask("height_ctlr", Task::Priority::HIGH, (int)(period * 1000), false)
 {
@@ -44,7 +46,7 @@ void IRAM_ATTR HeightController::run(void)
 
     /* Estimate the attitude */
     _attitude_controller->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
-    _observer->update((az_r - 0.948) * 10.0, barometer, ultrasound);
+    _observer->update((az_r - 1.0) * GRAVITATIONAL_ACCELERATION, barometer, ultrasound);
 
     /* Run the controllers */
     if (_registry->internal_get<string>("control.mode") == "attitude")

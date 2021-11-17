@@ -27,8 +27,7 @@ HIDDEN_RESOURCES = [
     "control.attitude.yaw.speed",
     "control.attitude.height.position",
     "control.attitude.height.speed",
-    "sensors",
-    "telemetry"
+    "sensors"
 ]
 
 class FloatSlider(QSlider):
@@ -87,16 +86,12 @@ class DataRessourceWidget(QWidget):
         self.layout.addWidget(self.button)
         self.setLayout(self.layout)
         self.read_pending = False
-        if 'read' in permissions:
-            self.on_button_clicked()
 
     def on_button_clicked(self):
         status, value = self.read_callback(self.key)
         if status == True:
             self.read_pending = True
             self.set_value(value)
-            self.setVisible(False)
-            self.setVisible(True)       # Force widget layout update
             self.read_pending = False
 
 
@@ -109,6 +104,8 @@ class IntegerRessourceWidget(DataRessourceWidget):
         self.value_widget.setMinimum(minimum)
         self.value_widget.setMaximum(maximum)
         self.value_widget.valueChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_value_changed(self, value):
         if self.read_pending == False:
@@ -127,6 +124,8 @@ class FloatRessourceWidget(DataRessourceWidget):
         self.value_widget.setMinimum(minimum)
         self.value_widget.setMaximum(maximum)
         self.value_widget.floatValueChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_value_changed(self, value):
         if self.read_pending == False:
@@ -145,6 +144,8 @@ class DoubleRessourceWidget(DataRessourceWidget):
         self.value_widget.setMinimum(minimum)
         self.value_widget.setMaximum(maximum)
         self.value_widget.floatValueChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_value_changed(self, value):
         if self.read_pending == False:
@@ -160,6 +161,8 @@ class BoolRessourceWidget(DataRessourceWidget):
         super().__init__(QCheckBox(), read_callback, key, permissions)
         self.write_callback = write_callback
         self.value_widget.stateChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_value_changed(self, value):
         if self.read_pending == False:
@@ -177,6 +180,8 @@ class EnumRessourceWidget(DataRessourceWidget):
         self.values = values
         self.value_widget.addItems(values.keys())
         self.value_widget.currentIndexChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
 
     def on_value_changed(self, index):
         if self.read_pending == False:

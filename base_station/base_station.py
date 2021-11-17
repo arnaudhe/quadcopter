@@ -435,7 +435,7 @@ class QuadcopterUdpController(QuadcopterController):
             if response['status'][key] == 'success':
                 print('[UDP CTRL] Success')
             else:
-                print('[UDP CTRL] Write status {}'.format(response['status'][key]))
+                print('[UDP CTRL] Error status {}'.format(response['status'][key]))
         else:
             print('[UDP CTRL] Not matching response. Drop it.')
 
@@ -454,15 +454,17 @@ class QuadcopterUdpController(QuadcopterController):
             response = json.loads(data)
         except:
             print(f'[UDP CTRL] Invalid response')
-            return
+            return False, None
         if (response['command'] == "read" and response['sequence'] == self.sequence and response['direction'] == 'response'):
             if response['status'][key] == 'success':
                 print(response['ressources'][key])
                 return True, response['ressources'][key]
             else:
-                print('[UDP CTRL] Read status {}'.format(response['status'][key]))
+                print('[UDP CTRL] Error status {}'.format(response['status'][key]))
+                return False, None
         else:
             print('[UDP CTRL] Not matching response. Drop it.')
+            return False, None
 
 class QuadcopterRadioController(QuadcopterController):
 

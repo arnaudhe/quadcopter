@@ -172,6 +172,23 @@ class BoolRessourceWidget(DataRessourceWidget):
         self.value_widget.setChecked(value)
 
 
+class StringRessourceWidget(DataRessourceWidget):
+
+    def __init__(self, write_callback, read_callback, key, permissions):
+        super().__init__(QLineEdit(), read_callback, key, permissions)
+        self.write_callback = write_callback
+        self.value_widget.textChanged.connect(self.on_value_changed)
+        if 'read' in permissions:
+            self.on_button_clicked()
+
+    def on_value_changed(self, value):
+        if self.read_pending == False:
+            self.write_callback(self.key, str(value))
+
+    def set_value(self, value):
+        self.value_widget.setText(value)
+
+
 class EnumRessourceWidget(DataRessourceWidget):
 
     def __init__(self, write_callback, read_callback, key, permissions, values):
@@ -243,8 +260,10 @@ class MainWindow(QMainWindow):
                         elif content['type'] == 'enum':
                             widget = EnumRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
                                                         content['values'])
+                        elif content['type'] == 'string':
+                            widget = StringRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])
                         else:
-                            raise Exception("Invalid ressource type")
+                            raise Exception(f"Invalid ressource type {content['type']}")
                         self.widgets[new_key] = widget
                         container_layout.addWidget(widget)
                     else:

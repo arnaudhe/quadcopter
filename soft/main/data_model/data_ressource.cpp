@@ -46,6 +46,13 @@ DataRessource::DataRessource(EnumRessource value):
     _type = DataRessource::ENUM;
 }
 
+DataRessource::DataRessource(string value):
+    DataRessource()
+{
+    _value_string = value;
+    _type = DataRessource::STRING;
+}
+
 void DataRessource::set_permissions(bool read, bool write, bool notify)
 {
     _permission_read   = read;

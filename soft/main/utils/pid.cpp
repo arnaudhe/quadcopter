@@ -4,9 +4,8 @@
 
 #define PID_LOWPASS_CUTOFF_FREQUENCY    10.0
 #define PID_INTEGRATE_LIMIT             0.1f
-#define PID_DEBUG_PERIOD                20
 
-Pid::Pid(float period, float kp, float ki, float kd, float kff, bool debug_enable)
+Pid::Pid(float period, float kp, float ki, float kd, float kff)
 {
     _setpoint           = 0.0f;
     _previous           = 0.0f;
@@ -17,8 +16,6 @@ Pid::Pid(float period, float kp, float ki, float kd, float kff, bool debug_enabl
     _kd                 = kd;
     _kff                = kff;
     _dterm_filter       = new PT3Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
-    _debug_ticks        = 0;
-    _debug_enable       = debug_enable;
 
     _dterm_filter->init();
 }
@@ -44,12 +41,6 @@ float IRAM_ATTR Pid::update(float input)
                    _ki  * _integrate +
                    _kd  * derivate_filter +
                    _kff * _setpoint;
-
-    if ((_debug_enable) && ((xTaskGetTickCount() - _debug_ticks) >= PID_DEBUG_PERIOD))
-    {
-        _debug_ticks = xTaskGetTickCount();
-        LOG_DEBUG("%f;%f;%f;%f;%f;%f", _setpoint, input, _kp * error, _ki * _integrate, _kd * derivate_filter, _kff * _setpoint);
-    }
 
     _previous = error;
 

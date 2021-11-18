@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <utils/filter.h>
-#include <freertos/FreeRTOS.h>
 
 using namespace std;
 
@@ -22,15 +21,13 @@ class Pid
     float      _previous;           ///< previous input, for derivate
     float      _integrate;          ///< accumalator, for integrate
     float      _period;             ///< time period
-    TickType_t _debug_ticks;        ///< tick count for debug display
-    bool       _debug_enable;       ///< do we need to display debug
     Filter   * _dterm_filter;       ///< low-pass filter to reduce d-term noise
 
   public:
 
     /* Constructors */
 
-    Pid(float _period, float kp, float ki, float kd, float kff = 0.0f, bool debug_enable = false);
+    Pid(float _period, float kp, float ki, float kd, float kff = 0.0f);
 
     /* Accessors*/
 

@@ -29,9 +29,13 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
         if ( err == ESP_FAIL )
         {
             LOG_ERROR("Failed to mount or format filesystem.");
-        } else if ( err == ESP_ERR_NOT_FOUND ) {
+        } 
+        else if ( err == ESP_ERR_NOT_FOUND )
+        {
             LOG_ERROR("Failed to find SPIFFS partition.");
-        } else {
+        }
+        else
+        {
             LOG_ERROR("Failed to initialize SPIFFS (%s).", esp_err_to_name(err));
         }
         aborted = true;
@@ -45,7 +49,9 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
         {
             LOG_ERROR("Failed to get SPIFFS partition information (%s).", esp_err_to_name(err));
             aborted = true;
-        } else {
+        }
+        else
+        {
             LOG_INFO("Partition size: total: %d, used: %d", total, used);
         }
     }
@@ -69,7 +75,9 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
         fclose(file);
         load_data_model(&data_model_json);
         LOG_INFO("Data ressourecs registry initialized using data model file.");
-    } else {
+    }
+    else
+    {
         LOG_ERROR("Data ressourecs registry initialization aborted.");
     }
     
@@ -132,6 +140,10 @@ void DataRessourcesRegistry::load_data_model(json * node, string current_key)
                     EnumRessource e(0, it.value().at("values").get<map<string, int>>());
                     _map[new_key] = new DataRessource(e);
                 }
+                else if (it.value().at("type").get<string>() == "string")
+                {
+                    _map[new_key] = new DataRessource(string(""));
+                }
                 else
                 {
                     LOG_ERROR("Invalid type of ressource %s", new_key.c_str());
@@ -181,7 +193,7 @@ DataRessource::Type DataRessourcesRegistry::type(string key)
     }
     else 
     {
-        return DataRessource::INTEGER;
+        return DataRessource::UNKNOWN;
     }
 }
 

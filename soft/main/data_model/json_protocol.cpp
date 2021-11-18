@@ -71,7 +71,7 @@ void JsonDataProtocol::on_received_packet(string request, string &response)
                         ressources_values[key] = value;
                     }
                 }
-                else if (_registry->type(key) == DataRessource::ENUM)
+                else if ((_registry->type(key) == DataRessource::ENUM) || (_registry->type(key) == DataRessource::STRING))
                 {
                     string value = "";
                     DataRessourceRegistryStatus st = _registry->get<string>(key, value);
@@ -109,7 +109,8 @@ void JsonDataProtocol::on_received_packet(string request, string &response)
                         LOG_ERROR("Write error, data type mismatch for key:%s", it.key().c_str());
                     }
                 }
-                else if (it.value().type() == json::value_t::number_integer)
+                else if ((it.value().type() == json::value_t::number_integer) ||
+                         (it.value().type() == json::value_t::number_unsigned))
                 {
                     json_status[it.key()] = _registry->set(it.key(), it.value().get<int>()).get();
                 }

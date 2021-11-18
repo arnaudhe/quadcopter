@@ -53,7 +53,9 @@ class DataRessource
         FLOAT,
         DOUBLE,
         BOOL,
-        ENUM
+        ENUM,
+        STRING,
+        UNKNOWN
     };
 
   private:
@@ -65,6 +67,7 @@ class DataRessource
     double        _value_double;
     bool          _value_bool;
     EnumRessource _value_enum;
+    string        _value_string;
 
     bool          _permission_read;
     bool          _permission_write;
@@ -94,6 +97,7 @@ class DataRessource
     DataRessource(double value);
     DataRessource(bool value);
     DataRessource(EnumRessource value);
+    DataRessource(string value);
 
     void set_permissions(bool read, bool write, bool notify);
 
@@ -215,7 +219,7 @@ inline bool DataRessource::check_type<bool>()
 template <>
 inline bool DataRessource::check_type<string>()
 {
-    if (_type == DataRessource::ENUM)
+    if ((_type == DataRessource::ENUM) || (_type == DataRessource::STRING))
     {
         return true;
     }
@@ -285,7 +289,14 @@ inline bool DataRessource::check_value<bool>(bool value)
 template <>
 inline bool DataRessource::check_value<string>(string value)
 {
-    return _value_enum.check_value(value);
+    if (_type == DataRessource::ENUM)
+    {
+        return _value_enum.check_value(value);
+    }
+    else
+    {
+        return true;
+    }
 }
 
 template <>
@@ -322,7 +333,14 @@ inline void DataRessource::internal_set<bool>(bool value)
 template <>
 inline void DataRessource::internal_set<string>(string value)
 {
-    _value_enum.set(value);
+    if (_type == DataRessource::ENUM)
+    {
+        _value_enum.set(value);
+    }
+    else
+    {
+        _value_string = value;
+    }
 }
 
 template <>
@@ -359,7 +377,14 @@ inline bool DataRessource::internal_get<bool>()
 template <>
 inline string DataRessource::internal_get<string>()
 {
-    return _value_enum.get<string>();
+    if (_type == DataRessource::ENUM)
+    {
+        return _value_enum.get<string>();
+    }
+    else
+    {
+        return _value_string;
+    }
 }
 
 template <typename T>

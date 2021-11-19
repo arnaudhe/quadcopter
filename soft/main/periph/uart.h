@@ -108,8 +108,8 @@ class Uart : public Task
         void write(uint8_t * data, uint8_t len);
         int  get_data_available();
         int  read(uint8_t * data, uint32_t len, uint32_t timeout);
-        void start_uart_event();
-        void stop_uart_event();
+        void start_event_loop();
+        void stop_event_loop();
         void register_data_in_callback(std::function<void(int)> callback);
         void register_pattern_detected_callback(std::function<void(int, std::string)> callback);
         void enable_pattern_detect(uart_pattern_t pattern);

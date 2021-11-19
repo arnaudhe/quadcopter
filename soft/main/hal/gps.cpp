@@ -161,10 +161,10 @@ void Gps::run()
                 }
             }
             _new_sequence = false;
-        }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        } 
+        Task::delay_ms(10);
     }
-    LOG_INFO("Stoppinng worker task");
+    LOG_INFO("Stopping worker task");
     vTaskDelete(NULL);
 }
 
@@ -179,8 +179,7 @@ void Gps::start()
     };
 
     _uart->enable_pattern_detect(pattern_config);
-    _uart->register_pattern_detected_callback(NULL);
-    _uart->start_uart_event();
     _uart->register_pattern_detected_callback(std::bind(&Gps::parse, this, std::placeholders::_1, std::placeholders::_2));
+    _uart->start_event_loop();
     Task::start();
 }

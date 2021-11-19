@@ -96,11 +96,15 @@ Uart::Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_p
         if ( _uart_queue_handle != NULL )
         {
             _uart_event_queue = new Queue<uart_event_t>(_uart_queue_handle);
-        } else {
+        }
+        else
+        {
             LOG_ERROR("Failed to create UART event queue on port %d.", _port);
         }
         LOG_VERBOSE("UART port %d opened.", _port);
-    } else {
+    }
+    else
+    {
         LOG_ERROR("Unable to open UART port %d.", _port);
     }
 }
@@ -145,20 +149,20 @@ int Uart::get_data_available()
 
 int Uart::read(uint8_t * data, uint32_t len, uint32_t timeout)
 {
-    int readed_data_len = uart_read_bytes(_port, data, len, timeout / portTICK_RATE_MS);
-    _data_available -= readed_data_len;
-    return readed_data_len;  // The number of bytes read from UART FIFO
+    int read_data_len = uart_read_bytes(_port, data, len, timeout / portTICK_RATE_MS);
+    _data_available -= read_data_len;
+    return read_data_len; // The number of bytes read from UART FIFO
 }
 
 
-void Uart::start_uart_event()
+void Uart::start_event_loop()
 {
     _event_enable = true;
     start();
 }
 
 
-void Uart::stop_uart_event()
+void Uart::stop_event_loop()
 {
     _event_enable = false;
 }
@@ -189,7 +193,9 @@ void Uart::enable_pattern_detect(uart_pattern_t pattern)
         if ( err == ESP_OK )
         {
             uart_pattern_queue_reset(_port, QUEUE_SIZE/2);
-        } else {
+        }
+        else
+        {
             LOG_ERROR("Unable to configure pattern detection on UART port %d.", _port);
         }
     }
@@ -214,8 +220,10 @@ void Uart::run()
     LOG_VERBOSE("Start event worker task on UART port %d.", _port);
 
     uart_event_t * event = new uart_event_t();
-    size_t buffered_size;
-    uint8_t * buffer = (uint8_t *) malloc(RX_BUF_SIZE);
+    size_t         buffered_size;
+    uint8_t      * buffer = (uint8_t *) malloc(RX_BUF_SIZE);
+    uint8_t        dummy;
+
     while ( _event_enable )
     {
         if ( _uart_event_queue->pop(*event) )
@@ -231,8 +239,8 @@ void Uart::run()
                     }
                     break;
                 case UART_BREAK:
-                  LOG_DEBUG("UART break signal detected on port %d.", _port);
-                  break;
+                    LOG_VERBOSE("UART break signal detected on port %d.", _port);
+                    break;
                 case UART_BUFFER_FULL:
                     LOG_WARNING("Full buffer detected. Flushing UART port %d.", _port);
                     uart_flush_input(_port);
@@ -250,24 +258,28 @@ void Uart::run()
                     LOG_WARNING("UART parity check error detected on port %d.", _port);
                     break;
                 case UART_DATA_BREAK:
-                    LOG_DEBUG("UART TX data and break event detected on port %d.", _port);
+                    LOG_VERBOSE("UART TX data and break event detected on port %d.", _port);
                     break;
                 case UART_PATTERN_DET:
                 {
-                    LOG_DEBUG("UART pattern event detected on port %d.", _port);
+                    LOG_VERBOSE("UART pattern event detected on port %d.", _port);
                     uart_get_buffered_data_len(_port, &buffered_size);
                     int pos = uart_pattern_pop_pos(_port);
                     if ( pos == -1 )
                     {
                         LOG_WARNING("Full pattern position queue detected. Flushing UART port %d.", _port);
                         uart_flush_input(_port);
-                    } else {
+                    }
+                    else
+                    {
                         uart_read_bytes(_port, buffer, pos, 100 / portTICK_PERIOD_MS);
                         uart_flush_input(_port);
                         if ( _pattern_callback != NULL )
                         {
                             _pattern_callback(buffered_size, std::string(reinterpret_cast<char*>(buffer)));
-                        } else {
+                        }
+                        else
+                        {
                             LOG_WARNING("No callback provided for pattern detection on port %d.", _port);
                         }
                     }

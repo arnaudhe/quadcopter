@@ -273,7 +273,7 @@ void Uart::run()
                     else
                     {
                         uart_read_bytes(_port, buffer, pos, 100 / portTICK_PERIOD_MS);
-                        uart_flush_input(_port);
+                        uart_read_bytes(_port, &dummy, 1,   100 / portTICK_PERIOD_MS);  // Read to pattern character to dummy
                         if ( _pattern_callback != NULL )
                         {
                             _pattern_callback(buffered_size, std::string(reinterpret_cast<char*>(buffer)));

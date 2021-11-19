@@ -67,7 +67,7 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
     {
         json data_model_json = json::parse(file);
         fclose(file);
-        load_data_model(data_model_json);
+        load_data_model(&data_model_json);
         LOG_INFO("Data ressourecs registry initialized using data model file.");
     } else {
         LOG_ERROR("Data ressourecs registry initialization aborted.");
@@ -77,9 +77,9 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
 
 }
 
-void DataRessourcesRegistry::load_data_model(json node, string current_key)
+void DataRessourcesRegistry::load_data_model(json * node, string current_key)
 {
-    for (json::iterator it = node.begin(); it != node.end(); ++it) 
+    for (json::iterator it = node->begin(); it != node->end(); ++it) 
     {
         string new_key = current_key + it.key();
         if (it.value().is_object())
@@ -167,7 +167,7 @@ void DataRessourcesRegistry::load_data_model(json node, string current_key)
             }
             else
             {
-                load_data_model(it.value(), new_key + '.');
+                load_data_model(&it.value(), new_key + '.');
             }
         }
     }

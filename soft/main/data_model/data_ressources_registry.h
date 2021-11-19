@@ -85,7 +85,7 @@ class DataRessourcesRegistry
     template <typename T>
     T internal_get(string key);
 
-    void load_data_model(json node, string current_key = "");
+    void load_data_model(json * node, string current_key = "");
 
     void register_callback(function<void(string, DataRessource *)>);
 

@@ -2,13 +2,17 @@
 
 #include <hal/log.h>
 #include <utils/string_utils.h>
+#include <sstream>
+
+#define TELEMETRY_DEST_PORT 5003
 
 using namespace std;
 
-Telemetry::Telemetry(DataRessourcesRegistry * registry, int period) :
+Telemetry::Telemetry(DataRessourcesRegistry * registry, int period, UdpServer * udp) :
     Task("telemetry", Task::Priority::VERY_LOW, 4096, false)
 {
     _registry = registry;
+    _udp = udp;
 
     _registry->internal_set<int>("telemetry.period", period);
     _registry->internal_set<bool>("telemetry.enable", false);
@@ -20,6 +24,7 @@ void Telemetry::run(void)
     bool enable = false;
     int  period = 100;
     vector<string> keys;
+    stringstream telemetry_data;
 
     while(1)
     {
@@ -33,6 +38,9 @@ void Telemetry::run(void)
                 enable = true;
             }
 
+            /* Clear the stringstream content */
+            telemetry_data.str(string());
+
             for (const string & key : keys)
             {
                 if (key.length())
@@ -40,31 +48,40 @@ void Telemetry::run(void)
                     switch (_registry->type(key))
                     {
                         case DataRessource::BOOL:
-                            LOG_INFO("%s %d", key.c_str(), _registry->internal_get<bool>(key));
+                            telemetry_data << _registry->internal_get<bool>(key);
                             break;
 
                         case DataRessource::INTEGER:
-                            LOG_INFO("%s %d", key.c_str(), _registry->internal_get<int>(key));
+                            telemetry_data << _registry->internal_get<int>(key);
                             break;
 
                         case DataRessource::FLOAT:
-                            LOG_INFO("%s %f", key.c_str(), _registry->internal_get<float>(key));
+                            telemetry_data << _registry->internal_get<float>(key);
                             break;
 
                         case DataRessource::DOUBLE:
-                            LOG_INFO("%s %f", key.c_str(), _registry->internal_get<double>(key));
+                            telemetry_data << _registry->internal_get<double>(key);
                             break;
 
                         case DataRessource::ENUM:
                         case DataRessource::STRING:
-                            LOG_INFO("%s %s", key.c_str(), _registry->internal_get<string>(key).c_str());
+                            telemetry_data << _registry->internal_get<string>(key).c_str();
                             break;
 
                         default:
                             break;
                     }
                 }
+
+                telemetry_data << ";";
             }
+
+            /* Remove last separator */
+            telemetry_data.seekp(-1, std::ios_base::end);
+            telemetry_data << '\0';
+
+            /* Send telemetry data through udp */
+            _udp->send_broadcast(telemetry_data.str(), TELEMETRY_DEST_PORT);
         }
         else
         {

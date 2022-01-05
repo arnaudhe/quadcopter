@@ -5,7 +5,7 @@ import sys
 import socket
 import time
 import argparse
-import signal
+import pygame
 
 from datetime import datetime
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QMainWindow, QTextEdit, QVBoxLayout, QHBoxLayout, QSlider, QLabel, QPushButton, QCheckBox, QComboBox, QGroupBox, QScrollArea
@@ -14,6 +14,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QRect
 from threading import Thread
 from xbox import XBoxController
 from logger import UdpLogger
+from scope.scope import DataReaderUdp, Oscilloscope
 
 HIDDEN_RESOURCES = [
     "control.position",
@@ -506,6 +507,35 @@ class QuadcopterRadioController(QuadcopterController):
         # TODO
         return False, None
 
+def start_scope(config_file, controller):
+    with open(config_file, 'r') as f:
+        config = json.loads(f.read())
+
+    data_source_params = config['source']['params']
+
+    if ('regex' in config['source']):
+        data_source_regex = config['source']['regex']
+    else:
+        data_source_regex = "(.+)"
+
+    channels_len       = len(config['channels'])
+    scope_x_depth      = config['scope']['x_depth']
+    scope_width        = config['scope']['width']
+    scope_height       = config['scope']['height']
+    scope_y_min        = config['scope']['y_min']
+    scope_y_max        = config['scope']['y_max']
+    channels_desc      = ['{} ({})'.format(channel, config['channels'][channel]['unit']) for channel in config['channels']]
+
+    controller.write('telemetry.values', ';'.join(config['channels'].keys()))
+    controller.write('telemetry.period', 50)
+    controller.write('telemetry.enable', True)
+
+    data_reader = DataReaderUdp(data_source_params['port'], channels_len, data_source_regex, scope_x_depth)
+    osc = Oscilloscope(data_reader, channels_len, scope_width, scope_height, scope_x_depth, scope_y_min, scope_y_max, channels_desc)
+    osc.start()
+
+    controller.write('telemetry.enable', False)
+
 
 if __name__ == '__main__':
 
@@ -516,7 +546,12 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--logger', action='store_true', help='Enable logging')
     parser.add_argument('-g', '--gui',    action='store_true', help='Enable gui')
     parser.add_argument('-r', '--remote', action='store_true', help='Enable xbox remote controller')
+    parser.add_argument('-s', '--scope',  help='start a scope with provided configuration file', dest='scope_config')
     args = parser.parse_args()
+
+    if args.gui and args.scope_config:
+        print('Cannot run gui and scope at the same time')
+        sys.exit(1)
 
     controller = QuadcopterUdpController(data_model = data_model)
 
@@ -532,6 +567,9 @@ if __name__ == '__main__':
         app = QApplication([])
         w = MainWindow(controller)
         app.exec_()
+    elif args.scope_config:
+        pygame.init()
+        start_scope(args.scope_config, controller)
 
     if args.remote:
         xbox.stop()

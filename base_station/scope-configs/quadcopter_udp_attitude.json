@@ -1,0 +1,23 @@
+{
+    "source": {
+        "type": "udp",
+        "params": {
+            "port": 5003
+        }
+    },
+    "channels": {
+        "control.attitude.roll.position.current": {
+            "unit": "rad"
+        },
+        "control.attitude.pitch.position.current": {
+            "unit": "rad"
+        }
+    },
+    "scope": {
+        "width": 1280,
+        "height": 800,
+        "x_depth": 800,
+        "y_min": -0.8,
+        "y_max": 0.8
+    }
+}

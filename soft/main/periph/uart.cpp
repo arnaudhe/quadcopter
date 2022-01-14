@@ -65,9 +65,10 @@ Change Activity:
     Defines
 ****************************************************************************************************************************/
 
-#define RX_BUF_SIZE (1024)
-#define TX_BUF_SIZE (1024)
-#define QUEUE_SIZE  (20)
+#define RX_BUF_SIZE         (512)
+#define TX_BUF_SIZE         (512)
+#define EVENTS_QUEUE_SIZE   (16)
+#define PATTERN_QUEUE_SIZE  (16)
 
 
 /****************************************************************************************************************************
@@ -89,7 +90,7 @@ Uart::Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_p
 
     uart_param_config(_port, &_uart_config);
     uart_set_pin(_port, _uart_pin_config.tx, _uart_pin_config.rx, _uart_pin_config.cts, _uart_pin_config.rts);
-    esp_err_t err = uart_driver_install(_port, RX_BUF_SIZE * 2, TX_BUF_SIZE * 2, QUEUE_SIZE, &_uart_queue_handle, 0);
+    esp_err_t err = uart_driver_install(_port, RX_BUF_SIZE, TX_BUF_SIZE, EVENTS_QUEUE_SIZE, &_uart_queue_handle, 0);
     if ( err == ESP_OK )
     {
         _open = true;
@@ -192,7 +193,8 @@ void Uart::enable_pattern_detect(uart_pattern_t pattern)
                                                           pattern.pre_idle);
         if ( err == ESP_OK )
         {
-            uart_pattern_queue_reset(_port, QUEUE_SIZE/2);
+            uart_flush_input(_port);
+            uart_pattern_queue_reset(_port, PATTERN_QUEUE_SIZE);
         }
         else
         {
@@ -273,10 +275,10 @@ void Uart::run()
                     else
                     {
                         uart_read_bytes(_port, buffer, pos, 100 / portTICK_PERIOD_MS);
-                        uart_read_bytes(_port, &dummy, 1,   100 / portTICK_PERIOD_MS);  // Read to pattern character to dummy
+                        uart_read_bytes(_port, &dummy, 1,   100 / portTICK_PERIOD_MS);  // Read pattern character to dummy
                         if ( _pattern_callback != NULL )
                         {
-                            _pattern_callback(buffered_size, std::string(reinterpret_cast<char*>(buffer)));
+                            _pattern_callback(pos, std::string(reinterpret_cast<char*>(buffer)));
                         }
                         else
                         {

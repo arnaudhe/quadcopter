@@ -70,8 +70,8 @@ void IRAM_ATTR AttitudeController::run(void)
     float  roll, pitch, yaw;
 
     /* Read the sensors */
-    _rate_controller->get_rates(&gx, &gy, &gz); // Get the filtered rates from rate_controller
-    _marg->read_acc(&ax, &ay, &az);
+    _rate_controller->get_rates(&gx, &gy, &gz); // Get the filtered rates from rate controller
+    _rate_controller->get_acc(&ax, &ay, &az); // Get the filtered acc from the rate controller
     _marg->read_mag(&mx, &my, &mz);
 
     /* Estimate the attitude */

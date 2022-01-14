@@ -41,9 +41,12 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-    _roll_low_pass_filter  = new PT3Filter(period, 20.0);
-    _pitch_low_pass_filter = new PT3Filter(period, 20.0);
-    _yaw_low_pass_filter   = new PT3Filter(period, 20.0);
+    _roll_low_pass_filter  = new PT2Filter(period, 40.0);
+    _pitch_low_pass_filter = new PT2Filter(period, 40.0);
+    _yaw_low_pass_filter   = new PT2Filter(period, 40.0);
+    _accx_low_pass_filter  = new PT3Filter(period, 10.0);
+    _accy_low_pass_filter  = new PT3Filter(period, 10.0);
+    _accz_low_pass_filter  = new PT3Filter(period, 10.0);
 
     _roll_notch_filter->init();
     _pitch_notch_filter->init();
@@ -51,6 +54,9 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _roll_low_pass_filter->init();
     _pitch_low_pass_filter->init();
     _yaw_low_pass_filter->init();
+    _accx_low_pass_filter->init();
+    _accy_low_pass_filter->init();
+    _accz_low_pass_filter->init();
 
     _roll_target  = 0.0;
     _pitch_target = 0.0;
@@ -97,10 +103,11 @@ void IRAM_ATTR RateController::run(void)
     float roll_command;
     float pitch_command;
     float yaw_command;
+    float ax, ay, az;   // accelero in drone frame (sensor data)
     float height_command;
 
     /* Read the sensors */
-    _marg->read_gyro(&gx, &gy, &gz);
+    _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
 
     /* Remove calibration offset */
     gx -= _roll_calib;
@@ -116,6 +123,16 @@ void IRAM_ATTR RateController::run(void)
         gy = _pitch_low_pass_filter->apply(_pitch_notch_filter->apply(gy));
         gz = _yaw_low_pass_filter->apply(_yaw_notch_filter->apply(gz));
     }
+    else
+    {
+        gx = _roll_low_pass_filter->apply(gx);
+        gy = _pitch_low_pass_filter->apply(gy);
+        gz = _yaw_low_pass_filter->apply(gz);
+    }
+
+    _acc_x = _accx_low_pass_filter->apply(ax);
+    _acc_y = _accy_low_pass_filter->apply(ay);
+    _acc_z = _accz_low_pass_filter->apply(az);
 
     /* Update rate attributes */
     _roll_rate  = gx;
@@ -177,32 +194,44 @@ void IRAM_ATTR RateController::get_rates(float * roll, float * pitch, float * ya
     _mutex->unlock();
 }
 
-void IRAM_ATTR RateController::set_roll_pid(float kp, float ki, float kd, float kff)
+void IRAM_ATTR RateController::get_acc(float * roll, float * pitch, float * yaw)
+{
+    _mutex->lock();
+    *roll  = _acc_x;
+    *pitch = _acc_y;
+    *yaw   = _acc_z;
+    _mutex->unlock();
+}
+
+void IRAM_ATTR RateController::set_roll_pid(float kp, float ki, float kd, float kff, float kt)
 {
     _mutex->lock();
     _roll_controller->set_kp(kp);
     _roll_controller->set_ki(ki);
     _roll_controller->set_kd(kd);
     _roll_controller->set_kff(kff);
+    _roll_controller->set_kt(kt);
     _mutex->unlock();
 }
 
-void IRAM_ATTR RateController::set_pitch_pid(float kp, float ki, float kd, float kff)
+void IRAM_ATTR RateController::set_pitch_pid(float kp, float ki, float kd, float kff, float kt)
 {
     _mutex->lock();
     _pitch_controller->set_kp(kp);
     _pitch_controller->set_ki(ki);
     _pitch_controller->set_kd(kd);
     _pitch_controller->set_kff(kff);
+    _pitch_controller->set_kt(kt);
     _mutex->unlock();
 }
 
-void IRAM_ATTR RateController::set_yaw_pid(float kp, float ki, float kd, float kff)
+void IRAM_ATTR RateController::set_yaw_pid(float kp, float ki, float kd, float kff, float kt)
 {
     _mutex->lock();
     _yaw_controller->set_kp(kp);
     _yaw_controller->set_ki(ki);
     _yaw_controller->set_kd(kd);
     _yaw_controller->set_kff(kff);
+    _yaw_controller->set_kt(kt);
     _mutex->unlock();
 }

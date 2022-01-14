@@ -34,6 +34,9 @@ private:
     PTFilter                * _roll_low_pass_filter;
     PTFilter                * _pitch_low_pass_filter;
     PTFilter                * _yaw_low_pass_filter;
+    PTFilter                * _accx_low_pass_filter;
+    PTFilter                * _accy_low_pass_filter;
+    PTFilter                * _accz_low_pass_filter;
     float                     _period;
 
     float _roll_target;
@@ -54,6 +57,10 @@ private:
     bool _pitch_enable;
     bool _yaw_enable;
 
+    float _acc_x;
+    float _acc_y;
+    float _acc_z;
+
     void run(void);
 
 public:
@@ -68,9 +75,10 @@ public:
 
     void set_throttle(float throttle);
 
-    void set_roll_pid(float kp, float ki, float kd, float kff);
-    void set_pitch_pid(float kp, float ki, float kd, float kff);
-    void set_yaw_pid(float kp, float ki, float kd, float kff);
+    void set_roll_pid(float kp, float ki, float kd, float kff, float kt);
+    void set_pitch_pid(float kp, float ki, float kd, float kff, float kt);
+    void set_yaw_pid(float kp, float ki, float kd, float kff, float kt);
 
     void get_rates(float * roll, float * pitch, float * yaw);
+    void get_acc(float * x, float * y, float * z);
 };

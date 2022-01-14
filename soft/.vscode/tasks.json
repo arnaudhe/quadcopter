@@ -19,8 +19,7 @@
             "problemMatcher": {
                 "base": "$gcc",
                 "fileLocation": [
-                    "relative",
-                    "${workspaceFolder}/esp-idf"
+                    "absolute"
                 ],
             },
             "group": {

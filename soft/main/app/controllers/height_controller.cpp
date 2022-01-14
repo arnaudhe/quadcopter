@@ -78,7 +78,7 @@ void IRAM_ATTR HeightController::run(void)
         }
         else
         {
-            height_command = _registry->internal_get<float>("control.attitude.manual.throttle");
+            height_command = _registry->internal_get<float>("control.attitude.height.manual.throttle");
         }
 
         _rate_controller->set_throttle(height_command);

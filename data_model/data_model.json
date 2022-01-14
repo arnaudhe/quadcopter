@@ -1191,59 +1191,29 @@
         "id" : 5,
         "gyroscope" : {
             "id" : 1,
-            "raw" : {
+            "x" : {
                 "id" : 1,
-                "x" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                },
-                "y" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                },
-                "z" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                }
+                "type" : "float",
+                "unit" : "rad/s",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
             },
-            "filtered" : {
+            "y" : {
                 "id" : 2,
-                "x" : {
-                    "id" : 1,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                },
-                "y" : {
-                    "id" : 2,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                },
-                "z" : {
-                    "id" : 3,
-                    "type" : "float",
-                    "unit" : "rad/s",
-                    "min" : -10.0,
-                    "max" : 10.0,
-                    "permissions" : ["read", "notify"]
-                }
+                "type" : "float",
+                "unit" : "rad/s",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
+            },
+            "z" : {
+                "id" : 3,
+                "type" : "float",
+                "unit" : "rad/s",
+                "min" : -10.0,
+                "max" : 10.0,
+                "permissions" : ["read", "notify"]
             }
         },
         "accelerometer" : {

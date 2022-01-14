@@ -86,7 +86,7 @@ Gps::Gps(DataRessourcesRegistry * registry, uart_port_t uart_port, int rx_pin, i
     };
 
     _registry = registry;
-    _new_sequence = false;
+    _queue = new Queue<char *>(5);
     _worker_enable = true;
     _uart = new Uart(uart_port, uart_config, uart_pin_config);
 
@@ -101,26 +101,30 @@ Gps::~Gps()
 }
 
 
-void Gps::parse(int len, std::string str)
+void Gps::parse(int len, string str)
 {
-    _nmea_sequence = str;
-    _new_sequence = true;
+    char * c_str = strdup(str.c_str());
+    _queue->push(c_str);
 }
 
 void Gps::run()
 {
+    char * c_nmea_sequence;
+    string nmea_sequence;
     NMEAParser::ParsedSentence sentence;
 
     LOG_INFO("Worker task started");
 
-    while (_worker_enable )
+    while(_worker_enable)
     {
-        if ( _new_sequence )
+        if (_queue->pop(c_nmea_sequence))
         {
-            LOG_VERBOSE("New sequence to parse");
-            if (NMEAParser::parse(_nmea_sequence, &sentence))
+            nmea_sequence = string(c_nmea_sequence);
+            LOG_VERBOSE("New sequence to parse : %s", nmea_sequence.c_str());
+            free(c_nmea_sequence);
+            if (NMEAParser::parse(nmea_sequence, &sentence))
             {
-                LOG_DEBUG("Sequence parsed : %s", _nmea_sequence.c_str());
+                LOG_DEBUG("Sequence parsed : %s", nmea_sequence.c_str());
                 switch (sentence.type)
                 {
                     case NMEAParser::GGA:
@@ -160,12 +164,9 @@ void Gps::run()
                         break;
                 }
             }
-            _new_sequence = false;
-        } 
-        Task::delay_ms(10);
+        }
     }
     LOG_INFO("Stopping worker task");
-    vTaskDelete(NULL);
 }
 
 void Gps::start()
@@ -179,7 +180,7 @@ void Gps::start()
     };
 
     _uart->enable_pattern_detect(pattern_config);
-    _uart->register_pattern_detected_callback(std::bind(&Gps::parse, this, std::placeholders::_1, std::placeholders::_2));
+    _uart->register_pattern_detected_callback(bind(&Gps::parse, this, placeholders::_1, placeholders::_2));
     _uart->start_event_loop();
     Task::start();
 }

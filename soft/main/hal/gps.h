@@ -51,9 +51,11 @@ Change Activity:
 #include <stdlib.h>
 #include <string>
 #include <periph/uart.h>
+#include <os/queue.h>
 
 #include <data_model/data_ressources_registry.h>
 
+using namespace std;
 
 /****************************************************************************************************************************
     Defines
@@ -70,8 +72,7 @@ class Gps : public Task
 {
     private:
         DataRessourcesRegistry *    _registry;
-        std::string                 _nmea_sequence;
-        bool                        _new_sequence;
+        Queue<char *>          *    _queue;
         bool                        _worker_enable;
         Uart                   *    _uart;
 

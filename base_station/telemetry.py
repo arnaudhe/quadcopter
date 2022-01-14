@@ -9,25 +9,36 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 class TelemetryReader(Thread, QObject):
 
+    DEFAULT_REGEX = r'(.+)'
+
     stop_thread = Event()
     data_ready_signal = pyqtSignal()
 
-    def __init__(self, dimension = 1, regex = r'(.+)', depth = 1000):
+    def from_config(config : dict, channels_num : int = 1, data_depth : int = 100):
+        regex = config['regex'] if 'regex' in config else TelemetryReader.DEFAULT_REGEX
+        if config['type'] == 'udp':
+            return TelemetryReaderUdp(config['params']['port'], channels_num=channels_num, regex=regex, depth=data_depth)
+        elif config['type'] == 'serial':
+            return TelemetryReaderSerial(config['params']['port'], config['params']['baudrate'], channels_num=channels_num, regex=regex, depth=data_depth)
+        else:
+            raise Exception("Unknown telemetry type")
+
+    def __init__(self, channels_num = 1, regex = DEFAULT_REGEX, depth = 1000):
         Thread.__init__(self)
         QObject.__init__(self)
-        self.data_buff_size = depth     # Buffer size
-        self.dimension = dimension
+        self.data_buff_size = depth  # Buffer size
+        self.channels_num = channels_num
         self.regex = regex
-        self.data = np.zeros((self.data_buff_size, self.dimension))   # Telemetry buffer
+        self.data = np.zeros((self.data_buff_size, self.channels_num))  # Telemetry buffer
 
     def run(self):
         while not self.stop_thread.isSet() :
-            data = self.read()                          # Read incoming data
+            data = self.read()  # Read incoming data
             if len(data):
                 if re.match(self.regex, data) != None:
                     try:
                         values = re.match(self.regex, data).group(1).split(';')
-                        if (len(values) == self.dimension):
+                        if len(values) == self.channels_num:
                             values = [float(i) for i in values]
                         else:
                             raise Exception("Bad input length")
@@ -97,9 +108,9 @@ if __name__ == '__main__':
 
     app = QApplication([])
     if args.medium == 'udp':
-        reader = TelemetryReaderUdp(args.port, dimension=args.channels_num, depth=1)
+        reader = TelemetryReaderUdp(args.port, channels_num=args.channels_num, depth=1)
     else:
-        reader = TelemetryReaderSerial(args.port, args.baudrate, dimension=args.channels_num, depth=1)
+        reader = TelemetryReaderSerial(args.port, args.baudrate, channels_num=args.channels_num, depth=1)
 
     reader.data_ready_signal.connect(data_ready_event)
 

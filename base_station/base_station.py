@@ -7,28 +7,21 @@ import time
 import argparse
 
 from datetime import datetime
-from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QMainWindow, QTextEdit, QVBoxLayout, QHBoxLayout, QSlider, QLabel, QPushButton, QCheckBox, QComboBox, QGroupBox, QScrollArea
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QMainWindow, QVBoxLayout, QHBoxLayout, QSlider, QLabel, QPushButton, QCheckBox, QComboBox, QGroupBox, QScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal, QRect
 from threading import Thread
 from xbox import XBoxController
 from logger import UdpLogger
 from scope import Scope
-from telemetry import TelemetryReaderUdp
 
 HIDDEN_RESOURCES = [
     "control.position",
-    "control.attitude.roll.position.kp",
-    "control.attitude.roll.position.ki",
-    "control.attitude.roll.position.kd",
-    "control.attitude.roll.position.kff",
-    "control.attitude.pitch.position",
-    "control.attitude.pitch.speed",
-    "control.attitude.yaw.position",
-    "control.attitude.yaw.speed",
+    "control.attitude.pitch",
+    "control.attitude.yaw",
     "control.attitude.height.position",
     "control.attitude.height.speed",
-    "sensors"
+    "sensors",
+    "camera"
 ]
 
 class FloatSlider(QSlider):
@@ -232,7 +225,7 @@ class MainWindow(QMainWindow):
                                 maximum = content['max']
                             else:
                                 maximum = 1
-                            widget = IntegerRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                            widget = IntegerRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
                                                             content['unit'], minimum, maximum)
                         elif content['type'] == 'float':
                             if 'min' in content:
@@ -243,7 +236,7 @@ class MainWindow(QMainWindow):
                                 maximum = content['max']
                             else:
                                 maximum = 1.0
-                            widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                            widget = FloatRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
                                                         content['unit'], minimum, maximum)
                         elif content['type'] == 'double':
                             if 'min' in content:
@@ -254,7 +247,7 @@ class MainWindow(QMainWindow):
                                 maximum = content['max']
                             else:
                                 maximum = 1.0
-                            widget = DoubleRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'], 
+                            widget = DoubleRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'],
                                                         content['unit'], minimum, maximum)
                         elif content['type'] == 'bool':
                             widget = BoolRessourceWidget(self.on_write_request, self.on_read_request, new_key, content['permissions'])
@@ -282,7 +275,7 @@ class MainWindow(QMainWindow):
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 970, 3500))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        layout = QVBoxLayout(self.scrollAreaWidgetContents)     
+        layout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.setCentralWidget(self.centralWidget)
         self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; border: 1px solid rgb(100, 100, 100); }")
         self.setWindowTitle('Quadcopter base station')
@@ -435,11 +428,22 @@ class QuadcopterUdpController(QuadcopterController):
                 break
         udp_detector.close()
         return result
-    
+
+    def flush(self):
+        self.udp_client.setblocking(False)
+        try:
+            while len(self.udp_client.recv(1024)):
+                pass
+        except:
+            pass
+        self.udp_client.setblocking(True)
+        self.udp_client.settimeout(1.0)
+
     def write(self, key, value):
         print(f'[UDP CTRL] write {key} {value}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'write', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : {key : value}}
+        self.flush()
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
@@ -457,14 +461,14 @@ class QuadcopterUdpController(QuadcopterController):
             else:
                 print('[UDP CTRL] Error status {}'.format(response['status'][key]))
         else:
-            print('[UDP CTRL] Not matching response. Drop it.')
+            print('[UDP CTRL] Not matching response {}. Drop it.'.format(response['sequence']))
 
     def read(self, key):
         print(f'[UDP CTRL] read {key}')
         self.sequence = (self.sequence + 1) % 256
         command = {'command' : 'read', 'sequence' : self.sequence, 'direction' : 'request', 'ressources' : [key]}
+        self.flush()
         self.udp_client.sendto(json.dumps(command).encode('utf-8'), (self.quadcopter_address, 5000))
-        self.udp_client.settimeout(1.0)
         try:
             data = self.udp_client.recv(1024).decode("utf-8")
         except socket.timeout:
@@ -483,7 +487,7 @@ class QuadcopterUdpController(QuadcopterController):
                 print('[UDP CTRL] Error status {}'.format(response['status'][key]))
                 return False, None
         else:
-            print('[UDP CTRL] Not matching response. Drop it.')
+            print('[UDP CTRL] Not matching response {} vs {}. Drop it.'.format(response['sequence'], self.sequence))
             return False, None
 
 class QuadcopterRadioController(QuadcopterController):
@@ -507,37 +511,15 @@ class QuadcopterRadioController(QuadcopterController):
         # TODO
         return False, None
 
-def init_scope(config_file):
-    with open(config_file, 'r') as f:
-        config = json.loads(f.read())
-
-    data_source_params = config['source']['params']
-
-    if ('regex' in config['source']):
-        data_source_regex = config['source']['regex']
-    else:
-        data_source_regex = "(.+)"
-
-    channels_len       = len(config['channels'])
-    scope_x_depth      = config['scope']['x_depth']
-    scope_width        = config['scope']['width']
-    scope_height       = config['scope']['height']
-    scope_y_min        = config['scope']['y_min']
-    scope_y_max        = config['scope']['y_max']
-    channels_desc      = list(config['channels'].keys())
-
-    data_reader = TelemetryReaderUdp(data_source_params['port'], dimension = channels_len, regex = data_source_regex, depth = scope_x_depth)
-    return Scope(data_reader, channels_len, scope_width, scope_height, scope_x_depth, scope_y_min, scope_y_max, channels_desc)
-
-def start_telemetry(controller, channels):
-    controller.write('telemetry.values', ';'.join(channels))
-    controller.write('telemetry.period', 50)
-    controller.write('telemetry.enable', True)
-
-def stop_telemetry(controller):
-    controller.write('telemetry.enable', False)
-
 if __name__ == '__main__':
+
+    def start_telemetry(controller, channels):
+        controller.write('telemetry.values', ';'.join(channels))
+        controller.write('telemetry.period', 50)
+        controller.write('telemetry.enable', True)
+
+    def stop_telemetry(controller):
+        controller.write('telemetry.enable', False)
 
     with open('../data_model/data_model.json') as json_file:
         data_model = json.load(json_file)
@@ -563,9 +545,9 @@ if __name__ == '__main__':
         app = QApplication([])
         w = MainWindow(controller)
         if args.scope_config:
-            scope = init_scope(args.scope_config)
+            scope = Scope.from_config(args.scope_config)
             scope.start()
-            start_telemetry(controller, scope.chan_desc)
+            start_telemetry(controller, scope.channels)
         app.exec_()
         if args.scope_config:
             scope.stop()

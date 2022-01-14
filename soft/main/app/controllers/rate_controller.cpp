@@ -7,19 +7,38 @@
 #define GYRO_CALIBRATION_LOOPS          (100)
 #define RPM_FILTER_THURST_THRESHOLD     (0.1f)
 
-RateController::RateController(float period, Marg * marg, Mixer * mixer):
+RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRessourcesRegistry * registry):
     PeriodicTask("rate_ctlr", Task::Priority::VERY_HIGH, (int)(period * 1000), false)
 {
     float gx, gy, gz;
 
-    _period = period;
-    _marg   = marg;
-    _mixer  = mixer;
-    _mutex  = new Mutex();
+    _period   = period;
+    _marg     = marg;
+    _mixer    = mixer;
+    _registry = registry;
+    _mutex    = new Mutex();
 
-    _roll_controller   = new Pid(period, RATE_PID_ROLL_KP, RATE_PID_ROLL_KI, RATE_PID_ROLL_KD, RATE_PID_ROLL_FF);
-    _pitch_controller  = new Pid(period, RATE_PID_PITCH_KP, RATE_PID_PITCH_KI, RATE_PID_PITCH_KD, RATE_PID_PITCH_FF);
-    _yaw_controller    = new Pid(period, RATE_PID_YAW_KP, RATE_PID_YAW_KI, RATE_PID_YAW_KD, RATE_PID_YAW_FF);
+    _roll_controller   = new Pid(period, RATE_PID_ROLL_KP, RATE_PID_ROLL_KI, RATE_PID_ROLL_KD, RATE_PID_ROLL_FF, RATE_PID_ROLL_AW);
+    _pitch_controller  = new Pid(period, RATE_PID_PITCH_KP, RATE_PID_PITCH_KI, RATE_PID_PITCH_KD, RATE_PID_PITCH_FF, RATE_PID_PITCH_AW);
+    _yaw_controller    = new Pid(period, RATE_PID_YAW_KP, RATE_PID_YAW_KI, RATE_PID_YAW_KD, RATE_PID_YAW_FF, RATE_PID_YAW_AW);
+
+    _registry->internal_set<float>("control.attitude.roll.speed.kp", RATE_PID_ROLL_KP);
+    _registry->internal_set<float>("control.attitude.roll.speed.ki", RATE_PID_ROLL_KI);
+    _registry->internal_set<float>("control.attitude.roll.speed.kd", RATE_PID_ROLL_KD);
+    _registry->internal_set<float>("control.attitude.roll.speed.kff", RATE_PID_ROLL_FF);
+    _registry->internal_set<float>("control.attitude.roll.speed.kt", RATE_PID_ROLL_AW);
+
+    _registry->internal_set<float>("control.attitude.pitch.speed.kp", RATE_PID_PITCH_KP);
+    _registry->internal_set<float>("control.attitude.pitch.speed.ki", RATE_PID_PITCH_KI);
+    _registry->internal_set<float>("control.attitude.pitch.speed.kd", RATE_PID_PITCH_KD);
+    _registry->internal_set<float>("control.attitude.pitch.speed.kff", RATE_PID_PITCH_FF);
+    _registry->internal_set<float>("control.attitude.pitch.speed.kt", RATE_PID_PITCH_AW);
+
+    _registry->internal_set<float>("control.attitude.yaw.speed.kp", RATE_PID_YAW_KP);
+    _registry->internal_set<float>("control.attitude.yaw.speed.ki", RATE_PID_YAW_KI);
+    _registry->internal_set<float>("control.attitude.yaw.speed.kd", RATE_PID_YAW_KD);
+    _registry->internal_set<float>("control.attitude.yaw.speed.kff", RATE_PID_YAW_FF);
+    _registry->internal_set<float>("control.attitude.yaw.speed.kt", RATE_PID_YAW_AW);
 
     _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);

@@ -24,6 +24,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.roll.position.ki", ATTITUDE_PID_ROLL_POSITION_KI);
     _registry->internal_set<float>("control.attitude.roll.position.kd", ATTITUDE_PID_ROLL_POSITION_KD);
     _registry->internal_set<float>("control.attitude.roll.position.kff", ATTITUDE_PID_ROLL_POSITION_FF);
+    _registry->internal_set<float>("control.attitude.roll.position.kt", ATTITUDE_PID_ROLL_POSITION_AW);
 
     _registry->internal_set<string>("control.attitude.pitch.mode", "position");
     _registry->internal_set<float>("control.attitude.pitch.position.current", 0.0f);
@@ -35,6 +36,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.pitch.position.ki", ATTITUDE_PID_PITCH_POSITION_KI);
     _registry->internal_set<float>("control.attitude.pitch.position.kd", ATTITUDE_PID_PITCH_POSITION_KD);
     _registry->internal_set<float>("control.attitude.pitch.position.kff", ATTITUDE_PID_PITCH_POSITION_FF);
+    _registry->internal_set<float>("control.attitude.pitch.position.kt", ATTITUDE_PID_PITCH_POSITION_AW);
 
     _registry->internal_set<string>("control.attitude.yaw.mode", "speed");
     _registry->internal_set<float>("control.attitude.yaw.position.current", 0.0f);
@@ -46,10 +48,14 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.yaw.position.ki", ATTITUDE_PID_YAW_POSITION_KI);
     _registry->internal_set<float>("control.attitude.yaw.position.kd", ATTITUDE_PID_YAW_POSITION_KD);
     _registry->internal_set<float>("control.attitude.yaw.position.kff", ATTITUDE_PID_YAW_POSITION_FF);
+    _registry->internal_set<float>("control.attitude.yaw.position.kt", ATTITUDE_PID_YAW_POSITION_AW);
 
-    _roll_controller  = new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD, ATTITUDE_PID_ROLL_POSITION_FF);
-    _pitch_controller = new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD, ATTITUDE_PID_PITCH_POSITION_FF);
-    _yaw_controller   = new Pid(period, ATTITUDE_PID_YAW_POSITION_KP, ATTITUDE_PID_YAW_POSITION_KI, ATTITUDE_PID_YAW_POSITION_KD, ATTITUDE_PID_YAW_POSITION_FF);
+    _roll_controller  = new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD,
+                                        ATTITUDE_PID_ROLL_POSITION_FF, ATTITUDE_PID_ROLL_POSITION_AW);
+    _pitch_controller = new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD,
+                                        ATTITUDE_PID_PITCH_POSITION_FF, ATTITUDE_PID_PITCH_POSITION_AW);
+    _yaw_controller   = new Pid(period, ATTITUDE_PID_YAW_POSITION_KP, ATTITUDE_PID_YAW_POSITION_KI, ATTITUDE_PID_YAW_POSITION_KD,
+                                        ATTITUDE_PID_YAW_POSITION_FF, ATTITUDE_PID_YAW_POSITION_AW);
 
     LOG_INFO("Init done");
 }
@@ -87,16 +93,7 @@ void IRAM_ATTR AttitudeController::run(void)
         _roll_controller->set_ki(_registry->internal_get<float>("control.attitude.roll.position.ki"));
         _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.position.kd"));
         _roll_controller->set_kff(_registry->internal_get<float>("control.attitude.roll.position.kff"));
-
-        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kp"));
-        _pitch_controller->set_ki(_registry->internal_get<float>("control.attitude.pitch.position.ki"));
-        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kd"));
-        _pitch_controller->set_kff(_registry->internal_get<float>("control.attitude.pitch.position.kff"));
-
-        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kp"));
-        _yaw_controller->set_ki(_registry->internal_get<float>("control.attitude.yaw.position.ki"));
-        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kd"));
-        _yaw_controller->set_kff(_registry->internal_get<float>("control.attitude.yaw.position.kff"));
+        _roll_controller->set_kt(_registry->internal_get<float>("control.attitude.roll.position.kt"));
 
         if (_registry->internal_get<string>("control.attitude.roll.mode") == "position")
         {
@@ -116,6 +113,12 @@ void IRAM_ATTR AttitudeController::run(void)
             roll_rate_setpoint = 0.0f;
         }
 
+        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kp"));
+        _pitch_controller->set_ki(_registry->internal_get<float>("control.attitude.pitch.position.ki"));
+        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kd"));
+        _pitch_controller->set_kff(_registry->internal_get<float>("control.attitude.pitch.position.kff"));
+        _pitch_controller->set_kt(_registry->internal_get<float>("control.attitude.pitch.position.kt"));
+
         if (_registry->internal_get<string>("control.attitude.pitch.mode") == "position")
         {
             _pitch_controller->set_setpoint(_registry->internal_get<float>("control.attitude.pitch.position.target"));
@@ -133,6 +136,12 @@ void IRAM_ATTR AttitudeController::run(void)
             pitch_enable        = false;
             pitch_rate_setpoint = 0.0f;
         }
+
+        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kp"));
+        _yaw_controller->set_ki(_registry->internal_get<float>("control.attitude.yaw.position.ki"));
+        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kd"));
+        _yaw_controller->set_kff(_registry->internal_get<float>("control.attitude.yaw.position.kff"));
+        _yaw_controller->set_kt(_registry->internal_get<float>("control.attitude.yaw.position.kt"));
 
         if (_registry->internal_get<string>("control.attitude.yaw.mode") == "position")
         {

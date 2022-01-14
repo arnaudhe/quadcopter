@@ -7,13 +7,16 @@
 #define RATE_PID_ROLL_KI        (0.002f)
 #define RATE_PID_ROLL_KD        (0.003f)
 #define RATE_PID_ROLL_FF        (0.015f)
+#define RATE_PID_ROLL_AW        (0.001f)
 
 #define RATE_PID_PITCH_KP       (0.025f)
 #define RATE_PID_PITCH_KI       (0.002f)
 #define RATE_PID_PITCH_KD       (0.003f)
 #define RATE_PID_PITCH_FF       (0.015f)
+#define RATE_PID_PITCH_AW       (0.001f)
 
 #define RATE_PID_YAW_KP         (0.5f)
 #define RATE_PID_YAW_KI         (0.08f)
 #define RATE_PID_YAW_KD         (0.0f)
 #define RATE_PID_YAW_FF         (0.08f)
+#define RATE_PID_YAW_AW         (0.008f)

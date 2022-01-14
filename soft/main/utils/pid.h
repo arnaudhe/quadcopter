@@ -17,17 +17,22 @@ class Pid
     float      _ki;                 ///< integrate coeff
     float      _kd;                 ///< derivative coeff
     float      _kff;                ///< feed-forward coeff
+    float      _kt;                 ///< anti-windup coeff
     float      _setpoint;           ///< current regulator setpoint
     float      _previous;           ///< previous input, for derivate
     float      _integrate;          ///< accumalator, for integrate
+    float      _windup;             ///< integrate windup accumulation
     float      _period;             ///< time period
     Filter   * _dterm_filter;       ///< low-pass filter to reduce d-term noise
+    float      _min_command;        ///< output command low saturation
+    float      _max_command;        ///< output command heigh saturation
 
   public:
 
     /* Constructors */
 
-    Pid(float _period, float kp, float ki, float kd, float kff = 0.0f);
+    Pid(float period, float kp, float ki, float kd, float kff = 0.0f, float kt = 0.0f,
+        float min_command = -0.5f, float max_command = 0.5f);
 
     /* Accessors*/
 
@@ -35,12 +40,14 @@ class Pid
     void set_ki(float ki);
     void set_kd(float kd);
     void set_kff(float kff);
+    void set_kt(float kt);
     void set_setpoint(float setpoint);
 
     float kp() const;
     float ki() const;
     float kd() const;
     float kff() const;
+    float kt() const;
     float setpoint() const;
 
     /* Other methods */

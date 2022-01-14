@@ -103,7 +103,7 @@ extern "C" void app_main(void)
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
     motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
-    rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer);
+    rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer, registry);
     attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
     position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);

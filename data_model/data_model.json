@@ -92,7 +92,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -103,7 +103,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -114,7 +114,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -123,6 +123,17 @@
                     },
                     "kff": {
                         "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
                         "type": "float",
                         "min": 0.0,
                         "max": 10.0,
@@ -160,7 +171,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -171,7 +182,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -182,7 +193,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -193,7 +204,18 @@
                         "id": 6,
                         "type": "float",
                         "min": 0.0,
-                        "max": 10.0,
+                        "max": 0.1,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -244,7 +266,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -255,7 +277,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -266,7 +288,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 10.0,
                         "permissions": [
                             "read",
                             "write"
@@ -275,6 +297,17 @@
                     },
                     "kff": {
                         "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
                         "type": "float",
                         "min": 0.0,
                         "max": 10.0,
@@ -312,7 +345,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -323,7 +356,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -334,7 +367,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -345,7 +378,18 @@
                         "id": 6,
                         "type": "float",
                         "min": 0.0,
-                        "max": 10.0,
+                        "max": 0.1,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 0.1,
                         "permissions": [
                             "read",
                             "write"
@@ -396,7 +440,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 2.0,
                         "permissions": [
                             "read",
                             "write"
@@ -407,7 +451,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 2.0,
                         "permissions": [
                             "read",
                             "write"
@@ -418,7 +462,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 2.0,
                         "permissions": [
                             "read",
                             "write"
@@ -429,7 +473,18 @@
                         "id": 6,
                         "type": "float",
                         "min": 0.0,
-                        "max": 10.0,
+                        "max": 2.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 2.0,
                         "permissions": [
                             "read",
                             "write"
@@ -464,7 +519,7 @@
                         "id": 3,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 1.0,
                         "permissions": [
                             "read",
                             "write"
@@ -475,7 +530,7 @@
                         "id": 4,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 1.0,
                         "permissions": [
                             "read",
                             "write"
@@ -486,7 +541,7 @@
                         "id": 5,
                         "type": "float",
                         "min": 0.0,
-                        "max": 20.0,
+                        "max": 1.0,
                         "permissions": [
                             "read",
                             "write"
@@ -497,7 +552,18 @@
                         "id": 6,
                         "type": "float",
                         "min": 0.0,
-                        "max": 10.0,
+                        "max": 1.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 1.0,
                         "permissions": [
                             "read",
                             "write"
@@ -601,6 +667,17 @@
                             "write"
                         ],
                         "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
                     }
                 },
                 "speed": {
@@ -661,6 +738,17 @@
                     },
                     "kff": {
                         "id": 6,
+                        "type": "float",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "permissions": [
+                            "read",
+                            "write"
+                        ],
+                        "unit": ""
+                    },
+                    "kt": {
+                        "id": 7,
                         "type": "float",
                         "min": 0.0,
                         "max": 10.0,

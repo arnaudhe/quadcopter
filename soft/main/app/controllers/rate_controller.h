@@ -21,6 +21,7 @@ class RateController : public PeriodicTask
 
 private:
 
+    DataRessourcesRegistry  * _registry;
     Marg                    * _marg;
     Pid                     * _roll_controller;
     Pid                     * _pitch_controller;
@@ -57,7 +58,7 @@ private:
 
 public:
 
-    RateController(float period, Marg * marg, Mixer * mixer);
+    RateController(float period, Marg * marg, Mixer * mixer, DataRessourcesRegistry * registry);
 
     void set_rate_targets(float roll, float pitch, float yaw);
 

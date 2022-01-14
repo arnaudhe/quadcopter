@@ -3,18 +3,21 @@
 #include <hal/log.h>
 
 #define PID_LOWPASS_CUTOFF_FREQUENCY    10.0
-#define PID_INTEGRATE_LIMIT             0.1f
 
-Pid::Pid(float period, float kp, float ki, float kd, float kff)
+Pid::Pid(float period, float kp, float ki, float kd, float kff, float kt, float min_command, float max_command)
 {
     _setpoint           = 0.0f;
     _previous           = 0.0f;
     _integrate          = 0.0f;
+    _windup             = 0.0f;
     _period             = period;
     _kp                 = kp;
     _ki                 = ki;
     _kd                 = kd;
     _kff                = kff;
+    _kt                 = kt;
+    _min_command        = min_command;
+    _max_command        = max_command;
     _dterm_filter       = new PT3Filter(period, PID_LOWPASS_CUTOFF_FREQUENCY);
 
     _dterm_filter->init();
@@ -22,29 +25,49 @@ Pid::Pid(float period, float kp, float ki, float kd, float kff)
 
 float IRAM_ATTR Pid::update(float input)
 {
-    float error           = _setpoint - input;
-    float derivate        = (error - _previous) / (_period);
-    float derivate_filter = _dterm_filter->apply(derivate);
+    float output;
+    float output_sat;
+    float error;
+    float proportional;
+    float integrate;
+    float derivate;
+    float feed_forward;
 
-    _integrate = _integrate + (error * _period);
+    /* Compute error */
+    error = _setpoint - input;
 
-    if (_integrate > PID_INTEGRATE_LIMIT)
+    /* Compute PID terms */
+
+    /* Standard proportional */
+    proportional = _kp  * error;
+    /* Integrate with anti-windup */
+    integrate = _integrate + ((_ki * error) + (_kt * _windup)) * _period;
+    /* Derivate with low-pass filtering */
+    derivate = _kd * _dterm_filter->apply((error - _previous) / (_period));
+    /* Feed-forward */
+    feed_forward = _kff * _setpoint;
+
+    /* Compute output command */
+    output = proportional + integrate + derivate + feed_forward;
+
+    if (output > _max_command)
     {
-        _integrate = PID_INTEGRATE_LIMIT;
+        output_sat = _max_command;
     }
-    else if (_integrate < -PID_INTEGRATE_LIMIT)
+    else if (output < _min_command)
     {
-        _integrate = -PID_INTEGRATE_LIMIT;
+        output_sat = _min_command;
     }
-
-    float output = _kp  * error +
-                   _ki  * _integrate +
-                   _kd  * derivate_filter +
-                   _kff * _setpoint;
+    else
+    {
+        output_sat = output;
+    }
 
     _previous = error;
+    _integrate = integrate;
+    _windup = output_sat - output;
 
-    return output;
+    return output_sat;
 }
 
 void IRAM_ATTR Pid::set_kp(float kp)
@@ -65,6 +88,11 @@ void IRAM_ATTR Pid::set_kd(float kd)
 void IRAM_ATTR Pid::set_kff(float kff)
 {
     _kff = kff;
+}
+
+void IRAM_ATTR Pid::set_kt(float kt)
+{
+    _kt = kt;
 }
 
 void IRAM_ATTR Pid::set_setpoint(float setpoint)
@@ -90,6 +118,11 @@ float IRAM_ATTR Pid::kd() const
 float IRAM_ATTR Pid::kff() const
 {
     return _kff;
+}
+
+float IRAM_ATTR Pid::kt() const
+{
+    return _kt;
 }
 
 float IRAM_ATTR Pid::setpoint() const

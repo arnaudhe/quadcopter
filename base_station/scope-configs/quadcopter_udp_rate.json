@@ -6,13 +6,22 @@
         }
     },
     "channels": {
-        "control.attitude.roll.position.current": {
+        "sensors.gyroscope.x": {
             "unit": "rad"
         },
-        "control.attitude.pitch.position.current": {
+        "control.attitude.roll.speed.current": {
             "unit": "rad"
         },
-        "control.attitude.yaw.position.current": {
+        "sensors.gyroscope.y": {
+            "unit": "rad"
+        },
+        "control.attitude.pitch.speed.current": {
+            "unit": "rad"
+        },
+        "sensors.gyroscope.z": {
+            "unit": "rad"
+        },
+        "control.attitude.yaw.speed.current": {
             "unit": "rad"
         }
     },
@@ -23,6 +32,6 @@
         "y_min": -0.8,
         "y_max": 0.8
     },
-    "period" : 0.05,
+    "period" : 0.01,
     "fft" : true
 }

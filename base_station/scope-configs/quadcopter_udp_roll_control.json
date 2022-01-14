@@ -6,14 +6,20 @@
         }
     },
     "channels": {
+        "control.attitude.roll.position.target": {
+            "unit": ""
+        },
         "control.attitude.roll.position.current": {
-            "unit": "rad"
+            "unit": ""
         },
-        "control.attitude.pitch.position.current": {
-            "unit": "rad"
+        "control.attitude.roll.position.command": {
+            "unit": ""
         },
-        "control.attitude.yaw.position.current": {
-            "unit": "rad"
+        "control.attitude.roll.speed.current": {
+            "unit": ""
+        },
+        "control.attitude.roll.speed.command": {
+            "unit": ""
         }
     },
     "scope": {

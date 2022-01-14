@@ -43,6 +43,10 @@ private:
     float _pitch_target;
     float _yaw_target;
 
+    float _roll_command;
+    float _pitch_command;
+    float _yaw_command;
+
     float _roll_calib;
     float _pitch_calib;
     float _yaw_calib;
@@ -81,4 +85,5 @@ public:
 
     void get_rates(float * roll, float * pitch, float * yaw);
     void get_acc(float * x, float * y, float * z);
+    void get_commands(float * roll, float * pitch, float * yaw);
 };

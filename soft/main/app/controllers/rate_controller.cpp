@@ -62,6 +62,10 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _pitch_target = 0.0;
     _yaw_target   = 0.0;
 
+    _roll_command  = 0.0;
+    _pitch_command = 0.0;
+    _yaw_command   = 0.0;
+
     _roll_calib   = 0.0;
     _pitch_calib  = 0.0;
     _yaw_calib    = 0.0;
@@ -100,9 +104,6 @@ void IRAM_ATTR RateController::calibrate_gyro(void)
 void IRAM_ATTR RateController::run(void)
 {
     float gx, gy, gz;   // gyro in drone frame (sensor data)
-    float roll_command;
-    float pitch_command;
-    float yaw_command;
     float ax, ay, az;   // accelero in drone frame (sensor data)
     float height_command;
 
@@ -140,17 +141,17 @@ void IRAM_ATTR RateController::run(void)
     _yaw_rate   = gz;
 
     /* Run PIDs */
-    roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
-    pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
-    yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
-    height_command = _throttle;
+    _roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
+    _pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
+    _yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
+    height_command  = _throttle;
 
     _mutex->unlock();
 
     /* Update motors outputs */
     if ((_roll_enable || _pitch_enable || _yaw_enable) && (height_command > 0.01))
     {
-        _mixer->update(height_command, roll_command, pitch_command, yaw_command);
+        _mixer->update(height_command, _roll_command, _pitch_command, _yaw_command);
     }
 }
 
@@ -200,6 +201,15 @@ void IRAM_ATTR RateController::get_acc(float * roll, float * pitch, float * yaw)
     *roll  = _acc_x;
     *pitch = _acc_y;
     *yaw   = _acc_z;
+    _mutex->unlock();
+}
+
+void IRAM_ATTR RateController::get_commands(float * roll, float * pitch, float * yaw)
+{
+    _mutex->lock();
+    *roll  = _roll_command;
+    *pitch = _pitch_command;
+    *yaw   = _yaw_command;
     _mutex->unlock();
 }
 

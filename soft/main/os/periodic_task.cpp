@@ -44,5 +44,13 @@ void IRAM_ATTR PeriodicTask::start()
     TaskHandle_t task;
 
     xTimerStart(this->_timer, 0);
-    xTaskCreatePinnedToCore(PeriodicTask::task_function, this->_name.c_str(), 1024 * 16, (void*)this, this->_priority, &task, 0);
+
+    if (this->_priority <= Task::MEDIUM)
+    {
+        xTaskCreatePinnedToCore(PeriodicTask::task_function, this->_name.c_str(), 1024 * 16, (void*)this, this->_priority, &task, 1);
+    }
+    else
+    {
+        xTaskCreatePinnedToCore(PeriodicTask::task_function, this->_name.c_str(), 1024 * 16, (void*)this, this->_priority, &task, 0);
+    }
 }

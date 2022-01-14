@@ -4,7 +4,14 @@
 Task::Task(string name, Task::Priority priority, int stack_size, bool auto_start):
     _auto_start(auto_start)
 {
-    xTaskCreate(Task::run_static, name.c_str(), stack_size, this, (UBaseType_t)priority, &_handle);
+    if (priority <= Task::MEDIUM)
+    {
+        xTaskCreatePinnedToCore(Task::run_static, name.c_str(), stack_size, this, (UBaseType_t)priority, &_handle, 1);
+    }
+    else
+    {
+        xTaskCreatePinnedToCore(Task::run_static, name.c_str(), stack_size, this, (UBaseType_t)priority, &_handle, 0);
+    }
 }
 
 void Task::run_static(void * pvParameters)

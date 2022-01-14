@@ -117,7 +117,7 @@ extern "C" void app_main(void)
 
 #endif
 
-    Task::delay_ms(1500);
+    rate_controller->calibrate_gyro();
 
 #ifdef DATA_RECORDING
     data_recorder->start();

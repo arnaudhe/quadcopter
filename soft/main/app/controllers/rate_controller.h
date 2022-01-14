@@ -60,6 +60,8 @@ public:
 
     RateController(float period, Marg * marg, Mixer * mixer, DataRessourcesRegistry * registry);
 
+    void calibrate_gyro(void);
+
     void set_rate_targets(float roll, float pitch, float yaw);
 
     void set_enables(float roll, float pitch, float yaw);

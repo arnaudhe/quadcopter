@@ -4,14 +4,12 @@
 #include <os/task.h>
 #include <esp_attr.h>
 
-#define GYRO_CALIBRATION_LOOPS          (100)
+#define GYRO_CALIBRATION_LOOPS          (1500)
 #define RPM_FILTER_THURST_THRESHOLD     (0.1f)
 
 RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRessourcesRegistry * registry):
     PeriodicTask("rate_ctlr", Task::Priority::VERY_HIGH, (int)(period * 1000), false)
 {
-    float gx, gy, gz;
-
     _period   = period;
     _marg     = marg;
     _mixer    = mixer;
@@ -62,12 +60,28 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _pitch_calib  = 0.0;
     _yaw_calib    = 0.0;
 
+    _roll_enable  = false;
+    _pitch_enable = false;
+    _yaw_enable   = false;
+
+    LOG_INFO("Init done");
+}
+
+void IRAM_ATTR RateController::calibrate_gyro(void)
+{
+    float gx, gy, gz;
+
+    _roll_calib  = 0.0;
+    _pitch_calib = 0.0;
+    _yaw_calib   = 0.0;
+
     for (int i = 0; i < GYRO_CALIBRATION_LOOPS; i++)
     {
         _marg->read_gyro(&gx, &gy, &gz);
         _roll_calib  += gx;
         _pitch_calib += gy;
         _yaw_calib   += gz;
+        Task::delay_ms(1);
     }
 
     _roll_calib  /= (float)GYRO_CALIBRATION_LOOPS;
@@ -75,12 +89,6 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _yaw_calib   /= (float)GYRO_CALIBRATION_LOOPS;
 
     LOG_INFO("Gyro calibration done : %f %f %f", _roll_calib, _pitch_calib, _yaw_calib);
-
-    _roll_enable  = false;
-    _pitch_enable = false;
-    _yaw_enable   = false;
-
-    LOG_INFO("Init done");
 }
 
 void IRAM_ATTR RateController::run(void)

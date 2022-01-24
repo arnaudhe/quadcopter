@@ -3,8 +3,10 @@
 #include <hal/log.h>
 #include <utils/string_utils.h>
 #include <sstream>
+#include <esp_attr.h>
 
-#define TELEMETRY_DEST_PORT 5003
+#define TELEMETRY_DEST_PORT     5003
+#define TELEMETRY_SEND_PERIOD   50
 
 using namespace std;
 
@@ -25,6 +27,12 @@ void IRAM_ATTR Telemetry::run(void)
     int  period = 100;
     vector<string> keys;
     stringstream telemetry_data;
+    TickType_t tick;
+
+    tick = xTaskGetTickCount();
+
+    /* Clear the stringstream content */
+    telemetry_data.str(string());
 
     while(1)
     {
@@ -37,9 +45,6 @@ void IRAM_ATTR Telemetry::run(void)
                 period = _registry->internal_get<int>("telemetry.period");
                 enable = true;
             }
-
-            /* Clear the stringstream content */
-            telemetry_data.str(string());
 
             for (const string & key : keys)
             {
@@ -78,15 +83,23 @@ void IRAM_ATTR Telemetry::run(void)
 
             /* Remove last separator */
             telemetry_data.seekp(-1, std::ios_base::end);
-            telemetry_data << '\0';
+            telemetry_data << '\n';
 
-            /* Send telemetry data through udp */
-            _udp->send_broadcast(telemetry_data.str(), TELEMETRY_DEST_PORT);
+            if ((unsigned int)(xTaskGetTickCount() - tick) > TELEMETRY_SEND_PERIOD)
+            {
+                /* Send telemetry data through udp */
+                _udp->send_broadcast(telemetry_data.str(), TELEMETRY_DEST_PORT);
+                tick = xTaskGetTickCount();
+                telemetry_data.str(string());
+            }
+
+            Task::delay_ms(period);
         }
         else
         {
             enable = false;
+
+            Task::delay_ms(100);
         }
-        Task::delay_ms(period);
     }
 }

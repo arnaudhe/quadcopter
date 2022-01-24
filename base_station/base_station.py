@@ -513,9 +513,9 @@ class QuadcopterRadioController(QuadcopterController):
 
 if __name__ == '__main__':
 
-    def start_telemetry(controller, channels):
+    def start_telemetry(controller, period, channels):
         controller.write('telemetry.values', ';'.join(channels))
-        controller.write('telemetry.period', 50)
+        controller.write('telemetry.period', (int)(period * 1000))
         controller.write('telemetry.enable', True)
 
     def stop_telemetry(controller):
@@ -547,7 +547,7 @@ if __name__ == '__main__':
         if args.scope_config:
             scope = Scope.from_config(args.scope_config)
             scope.start()
-            start_telemetry(controller, scope.channels)
+            start_telemetry(controller, scope.period, scope.channels)
         app.exec_()
         if args.scope_config:
             scope.stop()

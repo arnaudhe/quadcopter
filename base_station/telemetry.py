@@ -34,22 +34,23 @@ class TelemetryReader(Thread, QObject):
     def run(self):
         while not self.stop_thread.isSet() :
             data = self.read()  # Read incoming data
-            if len(data):
-                if re.match(self.regex, data) != None:
-                    try:
-                        values = re.match(self.regex, data).group(1).split(';')
-                        if len(values) == self.channels_num:
-                            values = [float(i) for i in values]
+            for line in data.split('\n'):
+                if len(line):
+                    if re.match(self.regex, line) != None:
+                        try:
+                            values = re.match(self.regex, line).group(1).split(';')
+                            if len(values) == self.channels_num:
+                                values = [float(i) for i in values]
+                            else:
+                                raise Exception("Bad input length")
+                        except Exception as e:
+                            print(f'Input error : {e}')
                         else:
-                            raise Exception("Bad input length")
-                    except Exception as e:
-                        print(f'Input error : {e}')
+                            self.data = np.roll(self.data, -1, axis=0)
+                            self.data[-1, :] = np.array(values).T
+                            self.data_ready_signal.emit()
                     else:
-                        self.data = np.roll(self.data, -1, axis=0)
-                        self.data[-1, :] = np.array(values).T
-                        self.data_ready_signal.emit()
-                else:
-                    print('Data input does not match regex')
+                        print('Data input does not match regex')
         self.close()
 
     def stop(self):

@@ -97,7 +97,7 @@ void IRAM_ATTR AttitudeController::run(void)
                                        _registry->internal_get<float>("control.attitude.roll.speed.kff"),
                                        _registry->internal_get<float>("control.attitude.roll.speed.kt"));
 
-        _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.position.kp"));
+        _roll_controller->set_kp(_registry->internal_get<float>("control.attitude.roll.position.kp"));
         _roll_controller->set_ki(_registry->internal_get<float>("control.attitude.roll.position.ki"));
         _roll_controller->set_kd(_registry->internal_get<float>("control.attitude.roll.position.kd"));
         _roll_controller->set_kff(_registry->internal_get<float>("control.attitude.roll.position.kff"));
@@ -127,7 +127,7 @@ void IRAM_ATTR AttitudeController::run(void)
                                         _registry->internal_get<float>("control.attitude.pitch.speed.kff"),
                                         _registry->internal_get<float>("control.attitude.pitch.speed.kt"));
 
-        _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kp"));
+        _pitch_controller->set_kp(_registry->internal_get<float>("control.attitude.pitch.position.kp"));
         _pitch_controller->set_ki(_registry->internal_get<float>("control.attitude.pitch.position.ki"));
         _pitch_controller->set_kd(_registry->internal_get<float>("control.attitude.pitch.position.kd"));
         _pitch_controller->set_kff(_registry->internal_get<float>("control.attitude.pitch.position.kff"));
@@ -157,7 +157,7 @@ void IRAM_ATTR AttitudeController::run(void)
                                       _registry->internal_get<float>("control.attitude.yaw.speed.kff"),
                                       _registry->internal_get<float>("control.attitude.yaw.speed.kt"));
 
-        _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kp"));
+        _yaw_controller->set_kp(_registry->internal_get<float>("control.attitude.yaw.position.kp"));
         _yaw_controller->set_ki(_registry->internal_get<float>("control.attitude.yaw.position.ki"));
         _yaw_controller->set_kd(_registry->internal_get<float>("control.attitude.yaw.position.kd"));
         _yaw_controller->set_kff(_registry->internal_get<float>("control.attitude.yaw.position.kff"));

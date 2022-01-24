@@ -32,7 +32,7 @@ class Pid
     /* Constructors */
 
     Pid(float period, float kp, float ki, float kd, float kff = 0.0f, float kt = 0.0f,
-        float min_command = -0.5f, float max_command = 0.5f);
+        float min_command = -0.2f, float max_command = 0.2f);
 
     /* Accessors*/
 

@@ -57,11 +57,11 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _registry->internal_set<float>("control.attitude.yaw.position.kt", ATTITUDE_PID_YAW_POSITION_AW);
 
     _roll_controller  = new Pid(period, ATTITUDE_PID_ROLL_POSITION_KP, ATTITUDE_PID_ROLL_POSITION_KI, ATTITUDE_PID_ROLL_POSITION_KD,
-                                        ATTITUDE_PID_ROLL_POSITION_FF, ATTITUDE_PID_ROLL_POSITION_AW);
+                                        ATTITUDE_PID_ROLL_POSITION_FF, ATTITUDE_PID_ROLL_POSITION_AW, -ATTITUDE_MAX_RATE_COMMAND, ATTITUDE_MAX_RATE_COMMAND);
     _pitch_controller = new Pid(period, ATTITUDE_PID_PITCH_POSITION_KP, ATTITUDE_PID_PITCH_POSITION_KI, ATTITUDE_PID_PITCH_POSITION_KD,
-                                        ATTITUDE_PID_PITCH_POSITION_FF, ATTITUDE_PID_PITCH_POSITION_AW);
+                                        ATTITUDE_PID_PITCH_POSITION_FF, ATTITUDE_PID_PITCH_POSITION_AW, -ATTITUDE_MAX_RATE_COMMAND, ATTITUDE_MAX_RATE_COMMAND);
     _yaw_controller   = new Pid(period, ATTITUDE_PID_YAW_POSITION_KP, ATTITUDE_PID_YAW_POSITION_KI, ATTITUDE_PID_YAW_POSITION_KD,
-                                        ATTITUDE_PID_YAW_POSITION_FF, ATTITUDE_PID_YAW_POSITION_AW);
+                                        ATTITUDE_PID_YAW_POSITION_FF, ATTITUDE_PID_YAW_POSITION_AW, -ATTITUDE_MAX_RATE_COMMAND, ATTITUDE_MAX_RATE_COMMAND);
 
     LOG_INFO("Init done");
 }

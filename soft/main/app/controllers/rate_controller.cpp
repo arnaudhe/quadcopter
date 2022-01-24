@@ -38,6 +38,22 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _registry->internal_set<float>("control.attitude.yaw.speed.kff", RATE_PID_YAW_FF);
     _registry->internal_set<float>("control.attitude.yaw.speed.kt", RATE_PID_YAW_AW);
 
+    _roll_rate_registry_handle  = _registry->get_handle<float>("control.attitude.roll.speed.current");
+    _pitch_rate_registry_handle = _registry->get_handle<float>("control.attitude.pitch.speed.current");
+    _yaw_rate_registry_handle   = _registry->get_handle<float>("control.attitude.yaw.speed.current");
+
+    _roll_command_registry_handle  = _registry->get_handle<float>("control.attitude.roll.speed.command");
+    _pitch_command_registry_handle = _registry->get_handle<float>("control.attitude.pitch.speed.command");
+    _yaw_command_registry_handle   = _registry->get_handle<float>("control.attitude.yaw.speed.command");
+
+    _gyro_x_registry_handle = _registry->get_handle<float>("sensors.gyroscope.x");
+    _gyro_y_registry_handle = _registry->get_handle<float>("sensors.gyroscope.y");
+    _gyro_z_registry_handle = _registry->get_handle<float>("sensors.gyroscope.z");
+
+    _acc_x_registry_handle = _registry->get_handle<float>("sensors.accelerometer.x");
+    _acc_y_registry_handle = _registry->get_handle<float>("sensors.accelerometer.y");
+    _acc_z_registry_handle = _registry->get_handle<float>("sensors.accelerometer.z");
+
     _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
@@ -140,6 +156,18 @@ void IRAM_ATTR RateController::run(void)
     _pitch_rate = gy;
     _yaw_rate   = gz;
 
+    _registry->internal_set_fast<float>(_acc_x_registry_handle, ax);
+    _registry->internal_set_fast<float>(_acc_y_registry_handle, ay);
+    _registry->internal_set_fast<float>(_acc_z_registry_handle, az);
+
+    _registry->internal_set_fast<float>(_gyro_x_registry_handle, gx);
+    _registry->internal_set_fast<float>(_gyro_y_registry_handle, gy);
+    _registry->internal_set_fast<float>(_gyro_z_registry_handle, gz);
+
+    _registry->internal_set_fast<float>(_roll_rate_registry_handle, _roll_rate);
+    _registry->internal_set_fast<float>(_pitch_rate_registry_handle, _pitch_rate);
+    _registry->internal_set_fast<float>(_yaw_rate_registry_handle, _yaw_rate);
+
     /* Run PIDs */
     _roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
     _pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
@@ -147,6 +175,10 @@ void IRAM_ATTR RateController::run(void)
     height_command  = _throttle;
 
     _mutex->unlock();
+
+    _registry->internal_set_fast<float>(_roll_command_registry_handle, _roll_command);
+    _registry->internal_set_fast<float>(_pitch_command_registry_handle, _pitch_command);
+    _registry->internal_set_fast<float>(_yaw_command_registry_handle, _yaw_command);
 
     /* Update motors outputs */
     if ((_roll_enable || _pitch_enable || _yaw_enable) && (height_command > 0.01))
@@ -201,15 +233,6 @@ void IRAM_ATTR RateController::get_acc(float * roll, float * pitch, float * yaw)
     *roll  = _acc_x;
     *pitch = _acc_y;
     *yaw   = _acc_z;
-    _mutex->unlock();
-}
-
-void IRAM_ATTR RateController::get_commands(float * roll, float * pitch, float * yaw)
-{
-    _mutex->lock();
-    *roll  = _roll_command;
-    *pitch = _pitch_command;
-    *yaw   = _yaw_command;
     _mutex->unlock();
 }
 

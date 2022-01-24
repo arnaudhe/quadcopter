@@ -74,7 +74,6 @@ void IRAM_ATTR AttitudeController::run(void)
     float  roll_rate_setpoint = 0.0f, pitch_rate_setpoint = 0.0f, yaw_rate_setpoint = 0.0f;
     bool   roll_enable, pitch_enable, yaw_enable;
     float  roll, pitch, yaw;
-    float  command_roll, command_pitch, command_yaw;
 
     /* Read the sensors */
     _rate_controller->get_rates(&gx, &gy, &gz); // Get the filtered rates from rate controller
@@ -191,22 +190,14 @@ void IRAM_ATTR AttitudeController::run(void)
         _rate_controller->set_enables(false, false, false);
     }
 
-    _rate_controller->get_commands(&command_roll, &command_pitch, &command_yaw);
-
     _registry->internal_set<float>("control.attitude.roll.position.current", roll);
     _registry->internal_set<float>("control.attitude.roll.position.command", roll_rate_setpoint);
-    _registry->internal_set<float>("control.attitude.roll.speed.current", gx);
-    _registry->internal_set<float>("control.attitude.roll.speed.command", command_roll);
 
     _registry->internal_set<float>("control.attitude.pitch.position.current", pitch);
     _registry->internal_set<float>("control.attitude.pitch.position.command", pitch_rate_setpoint);
-    _registry->internal_set<float>("control.attitude.pitch.speed.current", gy);
-    _registry->internal_set<float>("control.attitude.pitch.speed.command", command_pitch);
 
     _registry->internal_set<float>("control.attitude.yaw.position.current", yaw);
     _registry->internal_set<float>("control.attitude.yaw.position.command", yaw_rate_setpoint);
-    _registry->internal_set<float>("control.attitude.yaw.speed.current", gz);
-    _registry->internal_set<float>("control.attitude.yaw.speed.command", command_yaw);
 }
 
 void AttitudeController::rotate(float x, float y, float z, float * x_r, float * y_r, float * z_r)

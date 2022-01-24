@@ -65,6 +65,22 @@ private:
     float _acc_y;
     float _acc_z;
 
+    float * _roll_rate_registry_handle;
+    float * _pitch_rate_registry_handle;
+    float * _yaw_rate_registry_handle;
+
+    float * _roll_command_registry_handle;
+    float * _pitch_command_registry_handle;
+    float * _yaw_command_registry_handle;
+
+    float * _gyro_x_registry_handle;
+    float * _gyro_y_registry_handle;
+    float * _gyro_z_registry_handle;
+
+    float * _acc_x_registry_handle;
+    float * _acc_y_registry_handle;
+    float * _acc_z_registry_handle;
+
     void run(void);
 
 public:

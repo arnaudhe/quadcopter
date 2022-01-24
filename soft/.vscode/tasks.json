@@ -53,9 +53,7 @@
             "args": [
                 "${workspaceFolder}/esp-idf/tools/idf.py",
                 "-p",
-                "/dev/tty.SLAB_USBtoUART",
-                "-b",
-                "921600",
+                "${config:idf.port}",
                 "flash"
             ],
             "options": {
@@ -82,9 +80,7 @@
             "args": [
                 "${workspaceFolder}/esp-idf/tools/idf.py",
                 "-p",
-                "/dev/tty.SLAB_USBtoUART",
-                "-b",
-                "921600",
+                "${config:idf.port}",
                 "monitor"
             ],
             "options": {

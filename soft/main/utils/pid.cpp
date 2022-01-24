@@ -43,7 +43,7 @@ float IRAM_ATTR Pid::update(float input)
     /* Integrate with anti-windup */
     integrate = _integrate + ((_ki * error) + (_kt * _windup)) * _period;
     /* Derivate with low-pass filtering */
-    derivate = _kd * _dterm_filter->apply((error - _previous) / (_period));
+    derivate = _kd * _dterm_filter->apply((_previous - input) / (_period));
     /* Feed-forward */
     feed_forward = _kff * _setpoint;
 
@@ -63,7 +63,7 @@ float IRAM_ATTR Pid::update(float input)
         output_sat = output;
     }
 
-    _previous = error;
+    _previous = input;
     _integrate = integrate;
     _windup = output_sat - output;
 

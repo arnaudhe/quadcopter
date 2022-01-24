@@ -85,6 +85,12 @@ class DataRessourcesRegistry
     template <typename T>
     T internal_get(string key);
 
+    template <typename T>
+    T * get_handle(string key);
+
+    template <typename T>
+    void internal_set_fast(T * handle, T value);
+
     void load_data_model(json * node, string current_key = "");
 
     void register_callback(function<void(string, DataRessource *)>);
@@ -137,4 +143,22 @@ inline T DataRessourcesRegistry::internal_get(string key)
     ret = _map[key]->internal_get<T>();
     _mutex.unlock();
     return ret;
+}
+
+template <typename T>
+inline T * DataRessourcesRegistry::get_handle(string key)
+{
+    T * handle;
+    _mutex.lock();
+    handle = _map[key]->get_handle<T>();
+    _mutex.unlock();
+    return handle;
+}
+
+template <typename T>
+inline void DataRessourcesRegistry::internal_set_fast(T * handle, T value)
+{
+    _mutex.lock();
+    *handle = value;
+    _mutex.unlock();
 }

@@ -119,6 +119,9 @@ class DataRessource
     template <typename T>
     T internal_get();
 
+    template <typename T>
+    T * get_handle();
+
     DataRessource::Type type();
 };
 
@@ -426,4 +429,28 @@ inline DataRessourceStatus DataRessource::get(T &value)
     value = internal_get<T>();
 
     return DataRessourceStatus(DataRessourceStatus::SUCCESS);
+}
+
+template <>
+inline float * DataRessource::get_handle<float>()
+{
+    return &_value_float;
+}
+
+template <>
+inline double * DataRessource::get_handle<double>()
+{
+    return &_value_double;
+}
+
+template <>
+inline int * DataRessource::get_handle<int>()
+{
+    return &_value_integer;
+}
+
+template <>
+inline bool * DataRessource::get_handle<bool>()
+{
+    return &_value_bool;
 }

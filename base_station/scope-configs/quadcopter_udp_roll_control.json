@@ -18,6 +18,9 @@
         "control.attitude.roll.speed.current": {
             "unit": ""
         },
+        "sensors.gyroscope.x": {
+            "unit": ""
+        },
         "control.attitude.roll.speed.command": {
             "unit": ""
         }
@@ -25,10 +28,10 @@
     "scope": {
         "width": 1280,
         "height": 800,
-        "x_depth": 200,
+        "x_depth": 2000,
         "y_min": -0.8,
         "y_max": 0.8
     },
-    "period" : 0.05,
-    "fft" : true
+    "period" : 0.005,
+    "fft" : false
 }

@@ -3,14 +3,14 @@
 #define RATE_GYRO_FILTER_FREQ_SLOPE   (250.0f)
 #define RATE_GYRO_FILTER_FREQ_CUTOFF  (12.0f)
 
-#define RATE_PID_ROLL_KP        (0.025f)
-#define RATE_PID_ROLL_KI        (0.002f)
+#define RATE_PID_ROLL_KP        (0.1f)
+#define RATE_PID_ROLL_KI        (0.06f)
 #define RATE_PID_ROLL_KD        (0.003f)
 #define RATE_PID_ROLL_FF        (0.015f)
 #define RATE_PID_ROLL_AW        (0.001f)
 
-#define RATE_PID_PITCH_KP       (0.025f)
-#define RATE_PID_PITCH_KI       (0.002f)
+#define RATE_PID_PITCH_KP       (0.1f)
+#define RATE_PID_PITCH_KI       (0.06f)
 #define RATE_PID_PITCH_KD       (0.003f)
 #define RATE_PID_PITCH_FF       (0.015f)
 #define RATE_PID_PITCH_AW       (0.001f)

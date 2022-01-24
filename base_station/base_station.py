@@ -16,8 +16,10 @@ from scope import Scope
 
 HIDDEN_RESOURCES = [
     "control.position",
-    "control.attitude.pitch",
-    "control.attitude.yaw",
+    "control.attitude.pitch.speed",
+    "control.attitude.pitch.position",
+    "control.attitude.yaw.speed",
+    "control.attitude.yaw.position",
     "control.attitude.height.position",
     "control.attitude.height.speed",
     "sensors",

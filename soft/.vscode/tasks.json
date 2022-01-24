@@ -4,6 +4,25 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "clean",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "clean"
+            ],
+            "options": {
+                "env": {
+                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build",
             "type": "shell",
             "command": "python",

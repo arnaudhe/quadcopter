@@ -32,7 +32,7 @@ HeightController::HeightController(float period, DataRessourcesRegistry * regist
     LOG_INFO("Init done");
 }
 
-void IRAM_ATTR HeightController::run(void)
+void HeightController::run(void)
 {
     float ax, ay, az;           /* accelero in drone frame (sensor data) */
     float ax_r, ay_r, az_r;     /* accelero in earth frame */

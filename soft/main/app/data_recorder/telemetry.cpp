@@ -19,7 +19,7 @@ Telemetry::Telemetry(DataRessourcesRegistry * registry, int period, UdpServer * 
     _registry->internal_set<string>("telemetry.values", "");
 }
 
-void Telemetry::run(void)
+void IRAM_ATTR Telemetry::run(void)
 {
     bool enable = false;
     int  period = 100;

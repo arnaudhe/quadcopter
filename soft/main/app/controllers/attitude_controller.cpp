@@ -66,7 +66,7 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     LOG_INFO("Init done");
 }
 
-void AttitudeController::run(void)
+void IRAM_ATTR AttitudeController::run(void)
 {
     float  gx, gy, gz;     /* gyro in drone frame (sensor data) */
     float  ax, ay, az;     /* accelero in drone frame (sensor data) */

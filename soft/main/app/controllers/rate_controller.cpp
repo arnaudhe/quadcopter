@@ -77,7 +77,7 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     LOG_INFO("Init done");
 }
 
-void IRAM_ATTR RateController::calibrate_gyro(void)
+void RateController::calibrate_gyro(void)
 {
     float gx, gy, gz;
 

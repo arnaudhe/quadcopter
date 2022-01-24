@@ -18,7 +18,7 @@ MotorsController::MotorsController(float period, DataRessourcesRegistry * regist
     LOG_INFO("Init done");
 }
 
-void IRAM_ATTR MotorsController::run(void)
+void MotorsController::run(void)
 {
     /* Run the controllers */
     if (_registry->internal_get<string>("control.mode") == "motors")

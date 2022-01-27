@@ -3,7 +3,7 @@ import numpy as np
 import pyqtgraph as pg
 import os
 
-from telemetry import TelemetryReader, TelemetryReaderUdp, TelemetryReaderSerial
+from telemetry import TelemetryReader
 
 class ScopeConfig:
 
@@ -19,9 +19,9 @@ class ScopeConfig:
             self.data_depth       = config['scope']['x_depth']
             self.window_size      = (config['scope']['width'], config['scope']['height'])
             self.y_range          = (config['scope']['y_min'], config['scope']['y_max'])
-            self.fft              = config['fft'] if 'fft' in config else False
             self.period           = config['period'] if 'period' in config else 1.0
             self.channels         = list(config['channels'].keys())
+            self.fft_channels     = [channel for channel in config['channels'] if ('fft' in config['channels'][channel]) and (config['channels'][channel]['fft'])]
         except:
             raise Exception('Invalid config file')
 
@@ -50,18 +50,18 @@ class Scope:
     def from_config(config_file):
         config = ScopeConfig(config_file)
         telemetry = TelemetryReader.from_config(config.telemetry_config, config.channels_num, config.data_depth)
-        return Scope(telemetry, config.data_depth, config.window_size, config.y_range, config.channels, config.fft, config.period)
+        return Scope(telemetry, config.data_depth, config.window_size, config.y_range, config.channels, config.fft_channels, config.period)
 
-    def __init__(self, telemetry, data_depth, window_size, y_range, channels, enable_fft = False, period = 1.0):
-        self.data_depth  = data_depth
-        self.telemetry   = telemetry
-        self.channels    = channels
-        self.time_plots  = []
-        self.fft_plots   = []
-        self.enable_fft  = enable_fft
-        self.period      = period
+    def __init__(self, telemetry, data_depth, window_size, y_range, channels, fft_channels = [], period = 1.0):
+        self.data_depth   = data_depth
+        self.telemetry    = telemetry
+        self.channels     = channels
+        self.fft_channels = fft_channels
+        self.time_plots   = []
+        self.fft_plots    = []
+        self.period       = period
         self.generate_time_ui(window_size, y_range)
-        if self.enable_fft:
+        if len(self.fft_channels):
             self.generate_fft_ui(window_size)
 
     def start(self):
@@ -91,7 +91,8 @@ class Scope:
         self.fft_graph.showGrid(True, True)
         self.fft_graph.addLegend(labelTextSize='11pt')
         for i in range(len(self.channels)):
-            self.fft_plots.append(self.fft_graph.plot(np.zeros(shape=self.data_depth), pen=Scope.PENS[Scope.CHANNELS_PENS[i]], name=self.channels[i]))
+            if self.channels[i] in self.fft_channels:
+                self.fft_plots.append(self.fft_graph.plot(np.zeros(shape=self.data_depth), pen=Scope.PENS[Scope.CHANNELS_PENS[i]], name=self.channels[i]))
 
     def update_channel(self, channel_num):
         # x = np.arange(self.data_depth)
@@ -99,17 +100,19 @@ class Scope:
         # print(y)
         self.time_plots[channel_num].setData(y)
 
-    def update_fft(self, channel_num):
+    def update_fft(self, channel_num, fft_index):
         rate = (1 / self.period)  # sampling rate
         z = 20 * np.log10(np.abs(np.fft.rfft(self.telemetry.data[:, channel_num]))) #rfft trims imag and leaves real values
         f = np.linspace(0, rate/2, len(z))
-        self.fft_plots[channel_num].setData(f, z)
+        self.fft_plots[fft_index].setData(f, z)
 
     def data_ready_slot(self):
+        fft_index = 0
         for i in range(len(self.time_plots)):
             self.update_channel(i)
-            if self.enable_fft:
-                self.update_fft(i)
+            if self.channels[i] in self.fft_channels:
+                self.update_fft(i, fft_index)
+                fft_index = fft_index + 1
 
 
 if __name__ == '__main__':

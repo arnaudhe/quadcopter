@@ -95,12 +95,12 @@ class SlewFilter : public Filter
 private:
 
     float _slew_limit;
-    float _threshold;
+    float _period;
     float _state;
 
 public:
 
-    SlewFilter(float slew_limit, float threshold) : Filter(), _slew_limit(slew_limit), _threshold(threshold), _state(0.0f) {}
+    SlewFilter(float slew_limit, float period) : Filter(), _slew_limit(slew_limit), _period(period), _state(0.0f) {}
 
     void init(void) {}
 

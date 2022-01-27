@@ -84,19 +84,13 @@ float IRAM_ATTR PT3Filter::apply(float input)
 
 float IRAM_ATTR SlewFilter::apply(float input)
 {
-    if (this->_state >= this->_threshold)
+    if (((input - this->_state) / this->_period) > this->_slew_limit)
     {
-        if (input >= this->_state - this->_slew_limit)
-        {
-            this->_state = input;
-        }
+        this->_state += this->_slew_limit * this->_period;
     }
-    else if (this->_state <= -this->_threshold)
+    else if (((input - this->_state) / this->_period) < -this->_slew_limit)
     {
-        if (input <= this->_state + this->_slew_limit)
-        {
-            this->_state = input;
-        }
+        this->_state -= this->_slew_limit * this->_period;
     }
     else
     {

@@ -9,3 +9,5 @@ echo "      IDF_PATH : ${IDF_PATH}"
 
 source ${PYTHON_ENV}/bin/activate
 source ${IDF_PATH}/export.sh
+
+export PATH="$(pwd)/../base_station:$PATH"

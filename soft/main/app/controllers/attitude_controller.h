@@ -2,6 +2,7 @@
 
 #include <utils/mixer.h>
 #include <utils/pid.h>
+#include <utils/filter.h>
 
 #include <hal/marg.h>
 #include <hal/barometer.h>
@@ -34,6 +35,9 @@ private:
     Pid                     * _yaw_controller;
     Mixer                   * _mixer;
     Mutex                   * _mutex;
+    SlewFilter              * _roll_command_filter;
+    SlewFilter              * _pitch_command_filter;
+    SlewFilter              * _yaw_command_filter;
     float                     _period;
 
     void run(void);

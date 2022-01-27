@@ -19,3 +19,4 @@
 #define ATTITUDE_PID_YAW_POSITION_AW                (0.01f)
 
 #define ATTITUDE_MAX_RATE_COMMAND                   (5.0f)
+#define ATTITUDE_MAX_SLEW_COMMAND                   (4.0f)

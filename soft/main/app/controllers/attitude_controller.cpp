@@ -14,6 +14,14 @@ AttitudeController::AttitudeController(float period, DataRessourcesRegistry * re
     _mutex           = new Mutex();
     _observer        = new EulerObserver(period);
 
+    _roll_command_filter  = new SlewFilter(ATTITUDE_MAX_SLEW_COMMAND, period);
+    _pitch_command_filter = new SlewFilter(ATTITUDE_MAX_SLEW_COMMAND, period);
+    _yaw_command_filter   = new SlewFilter(ATTITUDE_MAX_SLEW_COMMAND, period);
+
+    _roll_command_filter->init();
+    _pitch_command_filter->init();
+    _yaw_command_filter->init();
+
     _registry->internal_set<string>("control.attitude.roll.mode", "position");
     _registry->internal_set<float>("control.attitude.roll.position.current", 0.0f);
     _registry->internal_set<float>("control.attitude.roll.position.target", 0.0f);
@@ -108,7 +116,7 @@ void IRAM_ATTR AttitudeController::run(void)
             _roll_controller->set_setpoint(_registry->internal_get<float>("control.attitude.roll.position.target"));
 
             roll_enable        = true;
-            roll_rate_setpoint = _roll_controller->update(roll);
+            roll_rate_setpoint = _roll_command_filter->apply(_roll_controller->update(roll));
         }
         else if (_registry->internal_get<string>("control.attitude.roll.mode") == "speed")
         {
@@ -138,7 +146,7 @@ void IRAM_ATTR AttitudeController::run(void)
             _pitch_controller->set_setpoint(_registry->internal_get<float>("control.attitude.pitch.position.target"));
 
             pitch_enable        = true;
-            pitch_rate_setpoint = _pitch_controller->update(pitch);
+            pitch_rate_setpoint = _pitch_command_filter->apply(_pitch_controller->update(pitch));
         }
         else if (_registry->internal_get<string>("control.attitude.pitch.mode") == "speed")
         {
@@ -168,7 +176,7 @@ void IRAM_ATTR AttitudeController::run(void)
             _yaw_controller->set_setpoint(_registry->internal_get<float>("control.attitude.yaw.position.target"));
 
             yaw_enable        = true;
-            yaw_rate_setpoint = _yaw_controller->update(yaw);
+            yaw_rate_setpoint = _yaw_command_filter->apply(_yaw_controller->update(yaw));
         }
         else if (_registry->internal_get<string>("control.attitude.yaw.mode") == "speed")
         {

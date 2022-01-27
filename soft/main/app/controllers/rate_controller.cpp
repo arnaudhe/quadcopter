@@ -54,12 +54,12 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _acc_y_registry_handle = _registry->get_handle<float>("sensors.accelerometer.y");
     _acc_z_registry_handle = _registry->get_handle<float>("sensors.accelerometer.z");
 
-    _roll_notch_filter  = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-    _pitch_notch_filter = new BiQuadraticNotchFilter(period, 100.0, 80.0);
-    _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 100.0, 80.0);
     _roll_low_pass_filter  = new PT2Filter(period, 40.0);
     _pitch_low_pass_filter = new PT2Filter(period, 40.0);
     _yaw_low_pass_filter   = new PT2Filter(period, 40.0);
+    _roll_notch_filter  = new BiQuadraticNotchFilter(period, 90.0, 70.0);
+    _pitch_notch_filter = new BiQuadraticNotchFilter(period, 90.0, 70.0);
+    _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 90.0, 70.0);
     _accx_low_pass_filter  = new PT3Filter(period, 10.0);
     _accy_low_pass_filter  = new PT3Filter(period, 10.0);
     _accz_low_pass_filter  = new PT3Filter(period, 10.0);
@@ -133,19 +133,10 @@ void IRAM_ATTR RateController::run(void)
 
     _mutex->lock();
 
-    /* Apply filter */
-    if (_throttle >= RPM_FILTER_THURST_THRESHOLD)
-    {
-        gx = _roll_low_pass_filter->apply(_roll_notch_filter->apply(gx));
-        gy = _pitch_low_pass_filter->apply(_pitch_notch_filter->apply(gy));
-        gz = _yaw_low_pass_filter->apply(_yaw_notch_filter->apply(gz));
-    }
-    else
-    {
-        gx = _roll_low_pass_filter->apply(gx);
-        gy = _pitch_low_pass_filter->apply(gy);
-        gz = _yaw_low_pass_filter->apply(gz);
-    }
+    /* Apply filters */
+    gx = _roll_low_pass_filter->apply(_roll_notch_filter->apply(gx));
+    gy = _pitch_low_pass_filter->apply(_pitch_notch_filter->apply(gy));
+    gz = _yaw_low_pass_filter->apply(_yaw_notch_filter->apply(gz));
 
     _acc_x = _accx_low_pass_filter->apply(ax);
     _acc_y = _accy_low_pass_filter->apply(ay);
@@ -207,14 +198,14 @@ void IRAM_ATTR RateController::set_enables(float roll, float pitch, float yaw)
 
 void IRAM_ATTR RateController::set_throttle(float throttle)
 {
-    float center_frequency = RATE_GYRO_FILTER_FREQ_SLOPE * throttle + RATE_GYRO_FILTER_FREQ_CUTOFF;
-    float cutoff_frequency = center_frequency - 10.0;
+    // float center_frequency = RATE_GYRO_FILTER_FREQ_SLOPE * throttle + RATE_GYRO_FILTER_FREQ_CUTOFF;
+    // float cutoff_frequency = center_frequency - 10.0;
 
     _mutex->lock();
     _throttle = throttle;
-    _roll_notch_filter->update(center_frequency, cutoff_frequency);
-    _pitch_notch_filter->update(center_frequency, cutoff_frequency);
-    _yaw_notch_filter->update(center_frequency, cutoff_frequency);
+    // _roll_notch_filter->update(center_frequency, cutoff_frequency);
+    // _pitch_notch_filter->update(center_frequency, cutoff_frequency);
+    // _yaw_notch_filter->update(center_frequency, cutoff_frequency);
     _mutex->unlock();
 }
 

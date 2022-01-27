@@ -7,7 +7,7 @@ soft/build
 # soft wifi_credentials
 soft/main/wifi_credentials.h
 
-# soft tests build 
+# soft tests build
 soft/main/tests/*/build
 
 # FreeCAD temp files
@@ -18,12 +18,11 @@ meca/CAD/*.fcstd1
 hardware/gerber
 hardware/quadcopter.xml
 
-#vscode
-soft/.vscode/ipch/
-soft/.vscode/settings.json
+# vscode
+soft/.vscode/ipch
 
 # python virtual env
-soft/.venv
+env/.venv
 
 # python cache
 __pycache__

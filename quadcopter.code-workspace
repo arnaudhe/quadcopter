@@ -1,0 +1,32 @@
+{
+    "folders": [
+        {
+            "path": "soft"
+        },
+        {
+            "path": "base_station"
+        },
+        {
+            "path": "env"
+        },
+        {
+            "path": "tests"
+        },
+        {
+            "path": "scope_configs"
+        },
+        {
+            "path": "data_model"
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "*.c" : "c",
+            "*.h" : "cpp",
+            "*.cpp" : "cpp",
+            "*.py" : "python"
+        },
+        "python.envFile": "${workspaceFolder}/env/.venv",
+        "python.pythonPath": "python3"
+    }
+}

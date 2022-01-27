@@ -22,7 +22,7 @@ fi
 
 git submodule update --init
 
-export IDF_PATH=$(pwd)/esp-idf
+export IDF_PATH=$(pwd)/../soft/esp-idf
 
 echo "Installing ESP-IDF tools"
 python3 ${IDF_PATH}/tools/idf_tools.py install
@@ -31,7 +31,7 @@ echo "Installing Python environment and packages"
 python3 -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip
-pip install -r esp-idf/requirements.txt
+pip install -r ../soft/esp-idf/requirements.txt
 pip install -r ../base_station/requirements.txt
 pip install -r ../tests/requirements.txt
 

@@ -8,12 +8,12 @@
             "type": "shell",
             "command": "python",
             "args": [
-                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "${workspaceFolder:soft}/esp-idf/tools/idf.py",
                 "clean"
             ],
             "options": {
                 "env": {
-                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                    "IDF_PATH": "${workspaceFolder:soft}/esp-idf"
                 }
             },
             "problemMatcher": [],
@@ -27,12 +27,12 @@
             "type": "shell",
             "command": "python",
             "args": [
-                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "${workspaceFolder:soft}/esp-idf/tools/idf.py",
                 "build"
             ],
             "options": {
                 "env": {
-                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                    "IDF_PATH": "${workspaceFolder:soft}/esp-idf"
                 }
             },
             "problemMatcher": {
@@ -51,14 +51,14 @@
             "type": "shell",
             "command": "python",
             "args": [
-                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "${workspaceFolder:soft}/esp-idf/tools/idf.py",
                 "-p",
                 "${config:idf.port}",
                 "flash"
             ],
             "options": {
                 "env": {
-                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                    "IDF_PATH": "${workspaceFolder:soft}/esp-idf"
                 }
             },
             "problemMatcher": {
@@ -78,21 +78,21 @@
             "type": "shell",
             "command": "python",
             "args": [
-                "${workspaceFolder}/esp-idf/tools/idf.py",
+                "${workspaceFolder:soft}/esp-idf/tools/idf.py",
                 "-p",
                 "${config:idf.port}",
                 "monitor"
             ],
             "options": {
                 "env": {
-                    "IDF_PATH": "${workspaceFolder}/esp-idf"
+                    "IDF_PATH": "${workspaceFolder:soft}/esp-idf"
                 }
             },
             "problemMatcher": {
                 "base": "$gcc",
                 "fileLocation": [
                     "relative",
-                    "${workspaceFolder}/esp-idf"
+                    "${workspaceFolder:soft}/esp-idf"
                 ],
             },
             "group": {

@@ -1,5 +1,5 @@
 export IDF_TOOLS_PATH=${HOME}/.espressif
-export IDF_PATH=$(pwd)/esp-idf
+export IDF_PATH=$(pwd)/../soft/esp-idf
 
 PYTHON_ENV=.venv
 

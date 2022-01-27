@@ -1,2 +1,6 @@
 pyqt5
 pyserial
+pyusb
+numpy
+pyqtgraph
+construct

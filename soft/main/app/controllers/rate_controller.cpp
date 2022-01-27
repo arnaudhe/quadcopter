@@ -129,7 +129,7 @@ void IRAM_ATTR RateController::run(void)
     /* Remove calibration offset */
     gx -= _roll_calib;
     gy -= _pitch_calib;
-    gx -= _yaw_calib;
+    gz -= _yaw_calib;
 
     _mutex->lock();
 

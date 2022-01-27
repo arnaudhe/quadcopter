@@ -51,9 +51,11 @@ class Scope:
     BACKGOURND_DARK_COLOR  = (20, 20, 20)
 
     @staticmethod
-    def from_config(config_file):
+    def from_config(config_file, output_file = False):
         config = ScopeConfig(config_file)
         telemetry = TelemetryReader.from_config(config.telemetry_config, config.channels_num, config.data_depth)
+        if output_file:
+            telemetry.output(config.channels)
         return Scope(telemetry, config.data_depth, config.window_size, config.y_range, config.channels, config.fft_channels, config.period)
 
     def __init__(self, telemetry, data_depth, window_size, y_range, channels, fft_channels = [], period = 1.0):

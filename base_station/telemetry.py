@@ -1,15 +1,17 @@
 
-from PyQt5.QtWidgets import QApplication
 import serial
 import socket
-import numpy as np
 import re
+import numpy as np
 from threading import Thread, Event
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import pyqtSignal, QObject
 
 class TelemetryReader(Thread, QObject):
 
     DEFAULT_REGEX = r'(.+)'
+
+    OUTPUT_FILE = 'telemetry.csv'
 
     stop_thread = Event()
     data_ready_signal = pyqtSignal()
@@ -30,6 +32,12 @@ class TelemetryReader(Thread, QObject):
         self.channels_num = channels_num
         self.regex = regex
         self.data = np.zeros((self.data_buff_size, self.channels_num))  # Telemetry buffer
+        self.output_file = None
+
+    def output(self, channels):
+        print('[TELEMETRY] output data to ' + TelemetryReader.OUTPUT_FILE)
+        self.output_file = open(TelemetryReader.OUTPUT_FILE, 'w')
+        self.output_file.write(';'.join(channels) + '\n')
 
     def run(self):
         while not self.stop_thread.isSet() :
@@ -43,6 +51,8 @@ class TelemetryReader(Thread, QObject):
                                 values = [float(i) for i in values]
                             else:
                                 raise Exception("Bad input length")
+                            if self.output_file:
+                                self.output_file.write(line + '\n')
                         except Exception as e:
                             print(f'Input error : {e}')
                         else:
@@ -56,6 +66,9 @@ class TelemetryReader(Thread, QObject):
     def stop(self):
         self.stop_thread.set()
         self.join()
+        if self.output_file:
+            self.output_file.close()
+            print('[TELEMETRY] ' + TelemetryReader.OUTPUT_FILE + ' closed')
 
 class TelemetryReaderUdp(TelemetryReader):
 
@@ -64,7 +77,7 @@ class TelemetryReaderUdp(TelemetryReader):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', port))
         self.sock.settimeout(1.0)
-        print('Socket bound on port {}'.format(port))
+        print('[TELEMETRY] Socket bound on port {}'.format(port))
 
     def read(self):
         try:
@@ -74,7 +87,7 @@ class TelemetryReaderUdp(TelemetryReader):
         return data
 
     def close(self):
-        print('Socket closed')
+        print('[TELEMETRY] Socket closed')
         self.sock.close()
 
 class TelemetryReaderSerial(TelemetryReader):
@@ -82,13 +95,13 @@ class TelemetryReaderSerial(TelemetryReader):
     def __init__(self, port, baudrate = 115200, **kwargs):
         super(TelemetryReaderSerial, self).__init__(**kwargs)
         self.ser = serial.Serial(port, baudrate, timeout=1.0)  # open serial port
-        print('Serial port {} opened'.format(port))
+        print('[TELEMETRY]  Serial port {} opened'.format(port))
 
     def read(self):
         return self.ser.readline()
 
     def close(self):
-        print('Serial closed')
+        print('[TELEMETRY] Serial closed')
         self.ser.close()
 
 if __name__ == '__main__':

@@ -78,10 +78,6 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _pitch_target = 0.0;
     _yaw_target   = 0.0;
 
-    _roll_command  = 0.0;
-    _pitch_command = 0.0;
-    _yaw_command   = 0.0;
-
     _roll_calib   = 0.0;
     _pitch_calib  = 0.0;
     _yaw_calib    = 0.0;
@@ -138,16 +134,25 @@ void IRAM_ATTR RateController::run(void)
     float gx, gy, gz;   // gyro in drone frame (sensor data)
     float ax, ay, az;   // accelero in drone frame (sensor data)
     float height_command;
+    bool  enable;
+    float roll_command, pitch_command, yaw_command;
 
     /* Read the sensors */
     _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
+
+    _registry->internal_set_fast<float>(_gyro_x_registry_handle, gx);
+    _registry->internal_set_fast<float>(_gyro_y_registry_handle, gy);
+    _registry->internal_set_fast<float>(_gyro_z_registry_handle, gz);
+
+    _registry->internal_set_fast<float>(_acc_x_registry_handle, ax);
+    _registry->internal_set_fast<float>(_acc_y_registry_handle, ay);
+    _registry->internal_set_fast<float>(_acc_z_registry_handle, az);
 
     /* Remove calibration offset */
     gx -= _roll_calib;
     gy -= _pitch_calib;
     gz -= _yaw_calib;
 
-    _mutex->lock();
     ax -= RATE_ACC_X_CALIB;
     ay -= RATE_ACC_Y_CALIB;
     az -= RATE_ACC_Z_CALIB;
@@ -157,43 +162,46 @@ void IRAM_ATTR RateController::run(void)
     gy = _pitch_low_pass_filter->apply(_pitch_notch_filter->apply(gy));
     gz = _yaw_low_pass_filter->apply(_yaw_notch_filter->apply(gz));
 
-    _acc_x = _accx_low_pass_filter->apply(ax);
-    _acc_y = _accy_low_pass_filter->apply(ay);
-    _acc_z = _accz_low_pass_filter->apply(az);
+    ax = _accx_low_pass_filter->apply(ax);
+    ay = _accy_low_pass_filter->apply(ay);
+    az = _accz_low_pass_filter->apply(az);
+
+    /* Update filtered rates in registry */
+    _registry->internal_set_fast<float>(_roll_rate_registry_handle, gx);
+    _registry->internal_set_fast<float>(_pitch_rate_registry_handle, gy);
+    _registry->internal_set_fast<float>(_yaw_rate_registry_handle, gz);
+
+    _mutex->lock();
+
+    /* Update accel attributes */
+    _acc_x = ax;
+    _acc_y = ay;
+    _acc_z = az;
 
     /* Update rate attributes */
     _roll_rate  = gx;
     _pitch_rate = gy;
     _yaw_rate   = gz;
 
-    _registry->internal_set_fast<float>(_acc_x_registry_handle, ax);
-    _registry->internal_set_fast<float>(_acc_y_registry_handle, ay);
-    _registry->internal_set_fast<float>(_acc_z_registry_handle, az);
-
-    _registry->internal_set_fast<float>(_gyro_x_registry_handle, gx);
-    _registry->internal_set_fast<float>(_gyro_y_registry_handle, gy);
-    _registry->internal_set_fast<float>(_gyro_z_registry_handle, gz);
-
-    _registry->internal_set_fast<float>(_roll_rate_registry_handle, _roll_rate);
-    _registry->internal_set_fast<float>(_pitch_rate_registry_handle, _pitch_rate);
-    _registry->internal_set_fast<float>(_yaw_rate_registry_handle, _yaw_rate);
-
     /* Run PIDs */
-    _roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
-    _pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
-    _yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
-    height_command  = _throttle;
+    roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
+    pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
+    yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
+    height_command = _throttle;
+
+    /* Store enable status in non concurrent-accessed local variable */
+    enable = ((_roll_enable || _pitch_enable || _yaw_enable) && (height_command > 0.01));
 
     _mutex->unlock();
 
-    _registry->internal_set_fast<float>(_roll_command_registry_handle, _roll_command);
-    _registry->internal_set_fast<float>(_pitch_command_registry_handle, _pitch_command);
-    _registry->internal_set_fast<float>(_yaw_command_registry_handle, _yaw_command);
+    _registry->internal_set_fast<float>(_roll_command_registry_handle, roll_command);
+    _registry->internal_set_fast<float>(_pitch_command_registry_handle, pitch_command);
+    _registry->internal_set_fast<float>(_yaw_command_registry_handle, yaw_command);
 
     /* Update motors outputs */
-    if ((_roll_enable || _pitch_enable || _yaw_enable) && (height_command > 0.01))
+    if (enable)
     {
-        _mixer->update(height_command, _roll_command, _pitch_command, _yaw_command);
+        _mixer->update(height_command, roll_command, pitch_command, yaw_command);
     }
 }
 

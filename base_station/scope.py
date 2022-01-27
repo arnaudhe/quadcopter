@@ -33,13 +33,17 @@ class ScopeConfig:
 class Scope:
 
     PENS = {
-        'RED': (229, 32,  57),
+        'RED': (229, 32, 57),
         'ORANGE': (255, 154, 4),
-        'BLUE': (0,   162, 232),
-        'GREEN': (102, 177, 33)
+        'BLUE': (0, 162, 232),
+        'GREEN': (102, 177, 33),
+        'DARK_BLUE': (0, 0, 255),
+        'PURPLE': (0xa3, 0x2c, 0xc4),
+        'BROWN': (0x65, 0x2a, 0x0e),
+        'YELLOW': (255, 221, 0)
     }
 
-    CHANNELS_PENS = ['RED', 'BLUE', 'ORANGE', 'GREEN', 'RED', 'BLUE', 'ORANGE', 'GREEN', 'RED', 'BLUE', 'ORANGE', 'GREEN']
+    CHANNELS_PENS = ['RED', 'BLUE', 'ORANGE', 'GREEN', 'YELLOW', 'PURPLE', 'BROWN', 'DARK_BLUE', 'RED', 'BLUE', 'ORANGE', 'GREEN']
 
     FONT_COLOR             = (200, 200, 200)
     GRID_COLOR             = (150, 150, 150)

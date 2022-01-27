@@ -1,4 +1,3 @@
-from struct import pack
 import usb
 import construct
 import math

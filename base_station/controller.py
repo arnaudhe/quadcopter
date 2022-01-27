@@ -9,7 +9,8 @@ class QuadcopterController:
 
     ROLL_PITCH_TRIM_STEP   = 0.005
     YAW_THROTTLE_TRIM_STEP = 0.005
-    STICK_SCALE = 500000
+    THURST_YAW_STICK_SCALE = 400000
+    ROLL_PITCH_STICK_SCALE = 200000
 
     def __init__(self, data_model):
         self.sequence = 0
@@ -95,10 +96,10 @@ class QuadcopterController:
                         self.write('control.mode', 'attitude')
                     else:
                         self.write('control.mode', 'off')
-                roll_stick     = state['right_stick']['horizontal'] / QuadcopterController.STICK_SCALE
-                pitch_stick    = state['right_stick']['vertical']   / QuadcopterController.STICK_SCALE
-                yaw_stick      = state['left_stick']['horizontal']  / QuadcopterController.STICK_SCALE
-                throttle_stick = state['left_stick']['vertical']    / QuadcopterController.STICK_SCALE
+                roll_stick     = state['right_stick']['horizontal'] / QuadcopterController.ROLL_PITCH_STICK_SCALE
+                pitch_stick    = state['right_stick']['vertical']   / QuadcopterController.ROLL_PITCH_STICK_SCALE
+                yaw_stick      = state['left_stick']['horizontal']  / QuadcopterController.THURST_YAW_STICK_SCALE
+                throttle_stick = state['left_stick']['vertical']    / QuadcopterController.THURST_YAW_STICK_SCALE
                 if roll_trim + roll_stick != roll:
                     roll = roll_trim + roll_stick
                     self.write('control.attitude.roll.position.target', roll)

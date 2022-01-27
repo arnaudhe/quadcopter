@@ -16,15 +16,10 @@
             "unit": ""
         },
         "control.attitude.roll.speed.current": {
-            "unit": "",
-            "fft": true
+            "unit": ""
         },
         "control.attitude.roll.speed.command": {
             "unit": ""
-        },
-        "sensors.gyroscope.x": {
-            "unit": "",
-            "fft": true
         }
     },
     "scope": {

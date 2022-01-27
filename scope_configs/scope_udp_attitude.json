@@ -9,20 +9,22 @@
         "control.attitude.roll.position.current": {
             "unit": "rad"
         },
+        "control.attitude.roll.speed.current": {
+            "unit": "rad"
+        },
         "control.attitude.pitch.position.current": {
             "unit": "rad"
         },
-        "control.attitude.yaw.position.current": {
+        "control.attitude.pitch.speed.current": {
             "unit": "rad"
         }
     },
     "scope": {
         "width": 1280,
         "height": 800,
-        "x_depth": 200,
+        "x_depth": 2000,
         "y_min": -0.8,
         "y_max": 0.8
     },
-    "period" : 0.05,
-    "fft" : true
+    "period" : 0.01
 }

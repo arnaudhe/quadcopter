@@ -20,3 +20,7 @@
 #define RATE_PID_YAW_KD         (0.0f)
 #define RATE_PID_YAW_FF         (0.08f)
 #define RATE_PID_YAW_AW         (0.008f)
+
+#define RATE_ACC_X_CALIB        (0.016308)
+#define RATE_ACC_Y_CALIB        (0.018719)
+#define RATE_ACC_Z_CALIB        (-0.080354)

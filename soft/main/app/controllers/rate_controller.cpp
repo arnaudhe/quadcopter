@@ -95,25 +95,41 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
 
 void RateController::calibrate_gyro(void)
 {
+    float ax, ay, az;
     float gx, gy, gz;
+
+    float ax_calib, ay_calib, az_calib;
 
     _roll_calib  = 0.0;
     _pitch_calib = 0.0;
     _yaw_calib   = 0.0;
 
+    ax_calib = 0.0;
+    ay_calib = 0.0;
+    az_calib = 0.0;
+
     for (int i = 0; i < GYRO_CALIBRATION_LOOPS; i++)
     {
-        _marg->read_gyro(&gx, &gy, &gz);
+        _marg->read_acc_gyro(&ax, &ay, &az, &gx, &gy, &gz);
+        ax_calib     += ax;
+        ay_calib     += ay;
+        az_calib     += az;
         _roll_calib  += gx;
         _pitch_calib += gy;
         _yaw_calib   += gz;
+
         Task::delay_ms(1);
     }
+
+    ax_calib /= (float)GYRO_CALIBRATION_LOOPS;
+    ay_calib /= (float)GYRO_CALIBRATION_LOOPS;
+    az_calib /= (float)GYRO_CALIBRATION_LOOPS;
 
     _roll_calib  /= (float)GYRO_CALIBRATION_LOOPS;
     _pitch_calib /= (float)GYRO_CALIBRATION_LOOPS;
     _yaw_calib   /= (float)GYRO_CALIBRATION_LOOPS;
 
+    LOG_INFO("Accelero calibration done : %f %f %f", ax_calib, ay_calib, az_calib);
     LOG_INFO("Gyro calibration done : %f %f %f", _roll_calib, _pitch_calib, _yaw_calib);
 }
 
@@ -132,6 +148,9 @@ void IRAM_ATTR RateController::run(void)
     gz -= _yaw_calib;
 
     _mutex->lock();
+    ax -= RATE_ACC_X_CALIB;
+    ay -= RATE_ACC_Y_CALIB;
+    az -= RATE_ACC_Z_CALIB;
 
     /* Apply filters */
     gx = _roll_low_pass_filter->apply(_roll_notch_filter->apply(gx));

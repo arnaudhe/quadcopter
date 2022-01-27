@@ -48,6 +48,8 @@ void HeightController::run(void)
     _attitude_controller->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
     _observer->update((az_r - 1.0) * GRAVITATIONAL_ACCELERATION, barometer, ultrasound);
 
+    _registry->internal_set<float>("sensors.ultrasound.height", ultrasound);
+    _registry->internal_set<float>("sensors.barometer.height", barometer);
     _registry->internal_set<float>("control.attitude.height.position.current", _observer->height());
     _registry->internal_set<float>("control.attitude.height.speed.current", _observer->vertical_speed());
 

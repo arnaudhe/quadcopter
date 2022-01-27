@@ -2,19 +2,26 @@
     "source": {
         "type": "udp",
         "params": {
-            "port": 5002
+            "port": 5003
         }
     },
     "channels": {
-        "height": {
+        "sensors.ultrasound.height": {
+            "unit": "m"
+        },
+        "sensors.barometer.height": {
+            "unit": "m"
+        },
+        "control.attitude.height.position.current": {
             "unit": "m"
         }
     },
     "scope": {
         "width": 1280,
         "height": 800,
-        "x_depth": 800,
-        "y_min": -0.1,
-        "y_max": 2.0
-    }
+        "x_depth": 500,
+        "y_min": -0.8,
+        "y_max": 0.8
+    },
+    "period": 0.025
 }

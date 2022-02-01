@@ -54,9 +54,9 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _acc_y_registry_handle = _registry->get_handle<float>("sensors.accelerometer.y");
     _acc_z_registry_handle = _registry->get_handle<float>("sensors.accelerometer.z");
 
-    _roll_notch_filter  = new BiQuadraticNotchFilter(period, 90.0, 70.0);
-    _pitch_notch_filter = new BiQuadraticNotchFilter(period, 90.0, 70.0);
-    _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 90.0, 70.0);
+    _roll_notch_filter  = new BiQuadraticNotchFilter(period, 70.0, 60.0);
+    _pitch_notch_filter = new BiQuadraticNotchFilter(period, 70.0, 60.0);
+    _yaw_notch_filter   = new BiQuadraticNotchFilter(period, 70.0, 60.0);
     _roll_low_pass_filter  = new PT3Filter(period, 20.0);
     _pitch_low_pass_filter = new PT3Filter(period, 20.0);
     _yaw_low_pass_filter   = new PT3Filter(period, 20.0);

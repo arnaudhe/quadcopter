@@ -88,7 +88,7 @@ void HeightController::run(void)
         }
         else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
         {
-            height_command =  HEIGHT_THURST_OFFSET + _position_controller->update(_observer->height());
+            height_command =  HEIGHT_THURST_OFFSET + _position_controller->update(ultrasound);
             _position_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.position.target"));
             _registry->internal_set<float>("control.attitude.height.position.command", height_command);
             _speed_controller->reset();

@@ -4,13 +4,14 @@ import sys
 import socket
 import time
 import json
+import struct
 
 class QuadcopterController:
 
-    ROLL_PITCH_TRIM_STEP   = 0.005
+    ROLL_PITCH_TRIM_STEP   = 0.01
     YAW_THROTTLE_TRIM_STEP = 0.005
     THURST_YAW_STICK_SCALE = 400000
-    ROLL_PITCH_STICK_SCALE = 200000
+    ROLL_PITCH_STICK_SCALE = 500000
 
     def __init__(self, data_model):
         self.sequence = 0
@@ -60,6 +61,7 @@ class QuadcopterController:
     def run_xbox(self):
         print('[REMOTE] Started')
         armed = False
+        arming = False
         roll_trim = 0.0
         pitch_trim = 0.0
         yaw_trim = 0.0
@@ -72,13 +74,13 @@ class QuadcopterController:
             state = self.xbox_controller.get_state()
             if state:
                 if state['keys']['X']:
-                    roll_trim = roll_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
-                if state['keys']['B']:
                     roll_trim = roll_trim + QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['B']:
+                    roll_trim = roll_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
                 if state['keys']['A']:
-                    pitch_trim = pitch_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
-                if state['keys']['Y']:
                     pitch_trim = pitch_trim + QuadcopterController.ROLL_PITCH_TRIM_STEP
+                if state['keys']['Y']:
+                    pitch_trim = pitch_trim - QuadcopterController.ROLL_PITCH_TRIM_STEP
                 if state['keys']['left']:
                     yaw_trim = yaw_trim - QuadcopterController.YAW_THROTTLE_TRIM_STEP
                 if state['keys']['right']:
@@ -88,30 +90,21 @@ class QuadcopterController:
                 if state['keys']['up']:
                     throttle_trim = throttle_trim + QuadcopterController.YAW_THROTTLE_TRIM_STEP
                 if state['keys']['left_trigger'] and state['keys']['right_trigger']:
-                    armed = not armed
-                    if armed:
-                        self.write('control.attitude.roll.mode', 'position')
-                        self.write('control.attitude.pitch.mode', 'position')
-                        self.write('control.attitude.yaw.mode', 'speed')
-                        self.write('control.mode', 'attitude')
-                    else:
-                        self.write('control.mode', 'off')
-                roll_stick     = state['right_stick']['horizontal'] / QuadcopterController.ROLL_PITCH_STICK_SCALE
-                pitch_stick    = state['right_stick']['vertical']   / QuadcopterController.ROLL_PITCH_STICK_SCALE
-                yaw_stick      = state['left_stick']['horizontal']  / QuadcopterController.THURST_YAW_STICK_SCALE
-                throttle_stick = state['left_stick']['vertical']    / QuadcopterController.THURST_YAW_STICK_SCALE
-                if roll_trim + roll_stick != roll:
-                    roll = roll_trim + roll_stick
-                    self.write('control.attitude.roll.position.target', roll)
-                if pitch_trim + pitch_stick != pitch:
-                    pitch = pitch_trim + pitch_stick
-                    self.write('control.attitude.pitch.position.target', pitch)
-                if yaw_trim + yaw_stick != yaw:
-                    yaw = yaw_trim + yaw_stick
-                    self.write('control.attitude.yaw.speed.target', yaw)
-                if throttle_trim + throttle_stick != throttle:
-                    throttle = throttle_trim + throttle_stick
-                    self.write('control.attitude.height.manual.throttle', throttle)
+                    if not arming:
+                        arming = True
+                        armed = not armed
+                else:
+                    if arming:
+                        arming = False
+                roll_stick     = -state['right_stick']['horizontal'] / QuadcopterController.ROLL_PITCH_STICK_SCALE
+                pitch_stick    = -state['right_stick']['vertical']   / QuadcopterController.ROLL_PITCH_STICK_SCALE
+                yaw_stick      =  state['left_stick']['horizontal']  / QuadcopterController.THURST_YAW_STICK_SCALE
+                throttle_stick =  state['left_stick']['vertical']    / QuadcopterController.THURST_YAW_STICK_SCALE
+                roll     = roll_trim     + roll_stick
+                pitch    = pitch_trim    + pitch_stick
+                yaw      = yaw_trim      + yaw_stick
+                throttle = throttle_trim + throttle_stick
+                self.write_multi(armed, roll, pitch, yaw, throttle)
             time.sleep(0.1)
         print('[REMOTE] Stopped')
 
@@ -205,6 +198,13 @@ class QuadcopterUdpController(QuadcopterController):
         else:
             print('[UDP CTRL] Not matching response {} vs {}. Drop it.'.format(response['sequence'], self.sequence))
             return False, None
+
+    def write_multi(self, armed, roll, pitch, yaw, throttle):
+        data = bytes([int(armed)]) + struct.pack("ffff", roll, pitch, yaw, throttle)
+        try:
+            self.udp_client.sendto(data, (self.quadcopter_address, 5005))
+        except:
+            pass
 
 class QuadcopterRadioController(QuadcopterController):
 

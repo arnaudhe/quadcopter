@@ -26,6 +26,7 @@
 #include <hal/motor.h>
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
+#include <hal/radio_command.h>
 
 #include <os/task.h>
 
@@ -61,6 +62,7 @@ extern "C" void app_main(void)
     UltrasoundSensor        * ultrasound;
     Barometer               * barometer;
     Telemetry               * telemetry;
+    RadioCommand            * radio_command;
 #endif
 
     nvs_flash_init();
@@ -111,6 +113,7 @@ extern "C" void app_main(void)
     battery             = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
+    radio_command       = new RadioCommand(registry);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -123,6 +126,7 @@ extern "C" void app_main(void)
     data_recorder->start();
 #else
     wifi->connect();
+    radio_command->start();
     rate_controller->start();
     attitude_controller->start();
     height_controller->start();

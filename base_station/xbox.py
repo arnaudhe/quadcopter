@@ -6,7 +6,7 @@ import time
 
 class XBoxController:
 
-    STICK_DEAD_ZONE = 7000
+    STICK_DEAD_ZONE = 8000
 
     PACKET = construct.Struct(
         'type' / construct.Byte,

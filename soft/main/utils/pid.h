@@ -53,5 +53,6 @@ class Pid
     /* Other methods */
 
     float update(float input);
+    void reset(void);
 
 };

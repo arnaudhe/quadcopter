@@ -72,14 +72,18 @@ void HeightController::run(void)
         {
             _speed_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.speed.target"));
             height_command = HEIGHT_THURST_OFFSET + _speed_controller->update(_observer->vertical_speed());
+            _position_controller->reset();
         }
         else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
         {
             height_command =  HEIGHT_THURST_OFFSET + _position_controller->update(_observer->height());
             _position_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.position.target"));
+            _speed_controller->reset();
         }
         else
         {
+            _position_controller->reset();
+            _speed_controller->reset();
             height_command = _registry->internal_get<float>("control.attitude.height.manual.throttle");
         }
 
@@ -87,6 +91,8 @@ void HeightController::run(void)
     }
     else
     {
+        _position_controller->reset();
+        _speed_controller->reset();
         _rate_controller->set_throttle(0.0f);
     }
 }

@@ -70,6 +70,13 @@ float IRAM_ATTR Pid::update(float input)
     return output_sat;
 }
 
+void IRAM_ATTR Pid::reset(void)
+{
+    _previous  = 0.0f;
+    _integrate = 0.0f;
+    _windup    = 0.0f;
+}
+
 void IRAM_ATTR Pid::set_kp(float kp)
 {
     _kp = kp;

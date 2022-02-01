@@ -184,9 +184,36 @@ void IRAM_ATTR RateController::run(void)
     _yaw_rate   = gz;
 
     /* Run PIDs */
-    roll_command   = _roll_enable  ? _roll_controller->update(_roll_rate) : 0.0f;
-    pitch_command  = _pitch_enable ? _pitch_controller->update(_pitch_rate) : 0.0f;
-    yaw_command    = _yaw_enable   ? _yaw_controller->update(_yaw_rate) : 0.0f;
+    if (_roll_enable)
+    {
+        roll_command = _roll_controller->update(_roll_rate);
+    }
+    else
+    {
+        _roll_controller->reset();
+        roll_command = 0.0f;
+    }
+
+    if (_pitch_enable)
+    {
+        pitch_command = _pitch_controller->update(_pitch_rate);
+    }
+    else
+    {
+        _pitch_controller->reset();
+        pitch_command = 0.0f;
+    }
+
+    if (_yaw_enable)
+    {
+        yaw_command = _yaw_controller->update(_yaw_rate);
+    }
+    else
+    {
+        _yaw_controller->reset();
+        yaw_command = 0.0f;
+    }
+
     height_command = _throttle;
 
     /* Store enable status in non concurrent-accessed local variable */

@@ -122,11 +122,13 @@ void IRAM_ATTR AttitudeController::run(void)
         {
             roll_enable        = true;
             roll_rate_setpoint = _registry->internal_get<float>("control.attitude.roll.speed.target");
+            _roll_controller->reset();
         }
         else
         {
             roll_enable        = false;
             roll_rate_setpoint = 0.0f;
+            _roll_controller->reset();
         }
 
         _rate_controller->set_pitch_pid(_registry->internal_get<float>("control.attitude.pitch.speed.kp"),
@@ -152,11 +154,13 @@ void IRAM_ATTR AttitudeController::run(void)
         {
             pitch_enable        = true;
             pitch_rate_setpoint = _registry->internal_get<float>("control.attitude.pitch.speed.target");
+            _pitch_controller->reset();
         }
         else
         {
             pitch_enable        = false;
             pitch_rate_setpoint = 0.0f;
+            _pitch_controller->reset();
         }
 
         _rate_controller->set_yaw_pid(_registry->internal_get<float>("control.attitude.yaw.speed.kp"),
@@ -182,11 +186,13 @@ void IRAM_ATTR AttitudeController::run(void)
         {
             yaw_enable        = true;
             yaw_rate_setpoint = _registry->internal_get<float>("control.attitude.yaw.speed.target");
+            _yaw_controller->reset();
         }
         else
         {
             yaw_enable        = false;
             yaw_rate_setpoint = 0.0f;
+            _yaw_controller->reset();
         }
 
         /* Apply the controls to the motors */
@@ -195,6 +201,9 @@ void IRAM_ATTR AttitudeController::run(void)
     }
     else
     {
+        _roll_controller->reset();
+        _pitch_controller->reset();
+        _yaw_controller->reset();
         _rate_controller->set_enables(false, false, false);
     }
 

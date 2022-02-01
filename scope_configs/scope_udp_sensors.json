@@ -7,7 +7,8 @@
     },
     "channels": {
         "sensors.gyroscope.x": {
-            "unit": "rad"
+            "unit": "rad",
+            "fft": true
         },
         "sensors.gyroscope.y": {
             "unit": "rad"
@@ -22,7 +23,8 @@
             "unit": "rad"
         },
         "sensors.accelerometer.z": {
-            "unit": "rad"
+            "unit": "rad",
+            "fft": true
         }
     },
     "scope": {
@@ -32,6 +34,5 @@
         "y_min": -0.8,
         "y_max": 0.8
     },
-    "period" : 0.01,
-    "fft" : false
+    "period" : 0.004
 }

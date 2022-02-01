@@ -78,10 +78,6 @@ RateController::RateController(float period, Marg * marg, Mixer * mixer, DataRes
     _pitch_target = 0.0;
     _yaw_target   = 0.0;
 
-    _roll_calib   = 0.0;
-    _pitch_calib  = 0.0;
-    _yaw_calib    = 0.0;
-
     _roll_enable  = false;
     _pitch_enable = false;
     _yaw_enable   = false;
@@ -95,10 +91,11 @@ void RateController::calibrate_gyro(void)
     float gx, gy, gz;
 
     float ax_calib, ay_calib, az_calib;
+    float roll_calib, pitch_calib, yaw_calib;
 
-    _roll_calib  = 0.0;
-    _pitch_calib = 0.0;
-    _yaw_calib   = 0.0;
+    roll_calib  = 0.0;
+    pitch_calib = 0.0;
+    yaw_calib   = 0.0;
 
     ax_calib = 0.0;
     ay_calib = 0.0;
@@ -110,9 +107,9 @@ void RateController::calibrate_gyro(void)
         ax_calib     += ax;
         ay_calib     += ay;
         az_calib     += az;
-        _roll_calib  += gx;
-        _pitch_calib += gy;
-        _yaw_calib   += gz;
+        roll_calib  += gx;
+        pitch_calib += gy;
+        yaw_calib   += gz;
 
         Task::delay_ms(1);
     }
@@ -121,12 +118,12 @@ void RateController::calibrate_gyro(void)
     ay_calib /= (float)GYRO_CALIBRATION_LOOPS;
     az_calib /= (float)GYRO_CALIBRATION_LOOPS;
 
-    _roll_calib  /= (float)GYRO_CALIBRATION_LOOPS;
-    _pitch_calib /= (float)GYRO_CALIBRATION_LOOPS;
-    _yaw_calib   /= (float)GYRO_CALIBRATION_LOOPS;
+    roll_calib  /= (float)GYRO_CALIBRATION_LOOPS;
+    pitch_calib /= (float)GYRO_CALIBRATION_LOOPS;
+    yaw_calib   /= (float)GYRO_CALIBRATION_LOOPS;
 
     LOG_INFO("Accelero calibration done : %f %f %f", ax_calib, ay_calib, az_calib);
-    LOG_INFO("Gyro calibration done : %f %f %f", _roll_calib, _pitch_calib, _yaw_calib);
+    LOG_INFO("Gyro calibration done : %f %f %f", roll_calib, pitch_calib, yaw_calib);
 }
 
 void IRAM_ATTR RateController::run(void)
@@ -149,9 +146,9 @@ void IRAM_ATTR RateController::run(void)
     _registry->internal_set_fast<float>(_acc_z_registry_handle, az);
 
     /* Remove calibration offset */
-    gx -= _roll_calib;
-    gy -= _pitch_calib;
-    gz -= _yaw_calib;
+    gx -= RATE_GYRO_X_CALIB;
+    gy -= RATE_GYRO_Y_CALIB;
+    gz -= RATE_GYRO_Z_CALIB;
 
     ax -= RATE_ACC_X_CALIB;
     ay -= RATE_ACC_Y_CALIB;

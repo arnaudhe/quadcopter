@@ -24,3 +24,7 @@
 #define RATE_ACC_X_CALIB        (0.016308)
 #define RATE_ACC_Y_CALIB        (0.018719)
 #define RATE_ACC_Z_CALIB        (-0.080354)
+
+#define RATE_GYRO_X_CALIB       (-0.037643f)
+#define RATE_GYRO_Y_CALIB       (-0.009281f)
+#define RATE_GYRO_Z_CALIB       (-0.006195f)

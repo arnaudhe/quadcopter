@@ -43,10 +43,6 @@ private:
     float _pitch_target;
     float _yaw_target;
 
-    float _roll_calib;
-    float _pitch_calib;
-    float _yaw_calib;
-
     float _roll_rate;
     float _pitch_rate;
     float _yaw_rate;

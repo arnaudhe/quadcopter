@@ -1,0 +1,27 @@
+{
+    "source": {
+        "type": "udp",
+        "params": {
+            "port": 5003
+        }
+    },
+    "channels": {
+        "sensors.ultrasound.height": {
+            "unit": "m"
+        },
+        "control.attitude.height.position.target": {
+            "unit": "m"
+        },
+        "control.attitude.height.position.command": {
+            "unit": "m"
+        }
+    },
+    "scope": {
+        "width": 1280,
+        "height": 800,
+        "x_depth": 2000,
+        "y_min": -0.8,
+        "y_max": 0.8
+    },
+    "period": 0.01
+}

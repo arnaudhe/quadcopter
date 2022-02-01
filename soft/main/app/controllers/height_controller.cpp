@@ -20,13 +20,24 @@ HeightController::HeightController(float period, DataRessourcesRegistry * regist
     _observer = new HeightObserver(period);
 
     _registry->internal_set<string>("control.attitude.height.mode", "manual");
+
     _registry->internal_set<float>("control.attitude.height.manual.throttle", 0.4f);
-    _registry->internal_set<float>("control.attitude.height.speed.current", 0.0f);
-    _registry->internal_set<float>("control.attitude.height.speed.target", 0.0f);
+
     _registry->internal_set<float>("control.attitude.height.position.current", 0.0f);
     _registry->internal_set<float>("control.attitude.height.position.target", 0.2f);
+    _registry->internal_set<float>("control.attitude.height.position.kp", HEIGHT_PID_POSITION_KP);
+    _registry->internal_set<float>("control.attitude.height.position.ki", HEIGHT_PID_POSITION_KI);
+    _registry->internal_set<float>("control.attitude.height.position.kd", HEIGHT_PID_POSITION_KD);
+    _registry->internal_set<float>("control.attitude.height.position.kff", 0.0f);
 
-    _position_controller = new Pid(period, HEIGHT_PID_POSITION_KP, HEIGHT_PID_POSITION_KI, HEIGHT_PID_POSITION_KD, 0.0f, 0.0f, -0.2f, 0.2f);
+    _registry->internal_set<float>("control.attitude.height.speed.current", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.speed.target", 0.0f);
+    _registry->internal_set<float>("control.attitude.height.speed.kp", HEIGHT_PID_SPEED_KP);
+    _registry->internal_set<float>("control.attitude.height.speed.ki", HEIGHT_PID_SPEED_KI);
+    _registry->internal_set<float>("control.attitude.height.speed.kd", HEIGHT_PID_SPEED_KD);
+    _registry->internal_set<float>("control.attitude.height.speed.kff", 0.0f);
+
+    _position_controller = new Pid(period, HEIGHT_PID_POSITION_KP, HEIGHT_PID_POSITION_KI, HEIGHT_PID_POSITION_KD, 0.0f, 0.0f, -0.12f, 0.12f);
     _speed_controller    = new Pid(period, HEIGHT_PID_SPEED_KP, HEIGHT_PID_SPEED_KI, HEIGHT_PID_SPEED_KD, 0.0f, 0.0f, -0.2f, 0.2f);
 
     LOG_INFO("Init done");
@@ -72,12 +83,14 @@ void HeightController::run(void)
         {
             _speed_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.speed.target"));
             height_command = HEIGHT_THURST_OFFSET + _speed_controller->update(_observer->vertical_speed());
+            _registry->internal_set<float>("control.attitude.height.speed.command", height_command);
             _position_controller->reset();
         }
         else if (_registry->internal_get<string>("control.attitude.height.mode") == "position")
         {
             height_command =  HEIGHT_THURST_OFFSET + _position_controller->update(_observer->height());
             _position_controller->set_setpoint(_registry->internal_get<float>("control.attitude.height.position.target"));
+            _registry->internal_set<float>("control.attitude.height.position.command", height_command);
             _speed_controller->reset();
         }
         else

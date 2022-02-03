@@ -1,0 +1,7 @@
+#pragma once
+
+#define BMP280_OS_TEMP      (BMP280_OS_2X)
+#define BMP280_OS_PRES      (BMP280_OS_16X)
+#define BMP280_ODR          (BMP280_ODR_0_5_MS)
+#define BMP280_FILTER       (BMP280_FILTER_COEFF_8)
+#define BMP280_SPI3W_EN     (BMP280_SPI3_WIRE_DISABLE)

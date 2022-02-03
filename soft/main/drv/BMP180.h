@@ -47,15 +47,9 @@ class BMP180
     // Reads the last sampled and convert it to mbars
     // to get accurate results, temperature must be 
     // aften measured 
-    esp_err_t get_pressure(double &P, double temperature);
+    esp_err_t get_pressure(double * P, double temperature);
 
-    // Given a pressure P (mb) taken at a specific altitude (meters),
-    // return the equivalent pressure (mb) at sea level.
-    // This produces pressure readings that can be used for weather measurements.
-    double sea_level(double P, double A);
 
-    // Given a pressure measurement P (mb) and the pressure at a baseline P0 (mb),
-    // return altitude (meters) above baseline.
-    double altitude(double P, double P0);
+    esp_err_t read_temperature_pressure(double * temperature, double * pressure);
 
 };

@@ -1,5 +1,6 @@
 set(COMPONENT_SRCS
     drv/BMP180.cpp
+    drv/BMP280.cpp
     drv/MPU6050.cpp
     drv/HMC5883L.cpp
     drv/HCSR04.cpp

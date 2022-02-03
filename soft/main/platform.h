@@ -29,3 +29,5 @@
 #define PLATFORM_GPS_UART                     (UART_NUM_1)
 #define PLATFORM_GPS_RX_PIN                   (GPIO_NUM_22)
 #define PLATFORM_GPS_TX_PIN                   (GPIO_NUM_23)
+
+#define PLATFORM_BAROMETER_MODEL              BMP280

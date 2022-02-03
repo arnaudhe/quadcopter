@@ -1,8 +1,8 @@
 #include <drv/BMP180.h>
 #include <drv/BMP180_defs.h>
 #include <drv/BMP180_conf.h>
-#include <math.h>
 #include <hal/log.h>
+#include <math.h>
 
 BMP180::BMP180(I2cMaster * i2c)
 {
@@ -136,7 +136,7 @@ esp_err_t IRAM_ATTR BMP180::get_temperature(double &T)
     return ret;
 }
 
-esp_err_t IRAM_ATTR BMP180::get_pressure(double &P, double temperature)
+esp_err_t IRAM_ATTR BMP180::get_pressure(double * P, double temperature)
 {
     uint8_t       data[BMP180_PRESSURE_DATA_BYTES];
     esp_err_t     ret;
@@ -152,7 +152,7 @@ esp_err_t IRAM_ATTR BMP180::get_pressure(double &P, double temperature)
         x = (x2 * pow(s,2)) + (x1 * s) + x0;
         y = (y2 * pow(s,2)) + (y1 * s) + y0;
         z = (pu - x) / y;
-        P = (p2 * pow(z,2)) + (p1 * z) + p0;
+        *P = (p2 * pow(z,2)) + (p1 * z) + p0;
     }
     else
     {
@@ -162,12 +162,15 @@ esp_err_t IRAM_ATTR BMP180::get_pressure(double &P, double temperature)
     return ret;
 }
 
-double IRAM_ATTR BMP180::sea_level(double P, double A)
+esp_err_t IRAM_ATTR BMP180::read_temperature_pressure(double * temperature, double * pressure)
 {
-    return (P / pow(1 - (A / 44330.0), 5.255));
-}
+    this->start_temperature();
+    Task::delay_ms(5);
+    this->get_temperature(*temperature);
 
-double IRAM_ATTR BMP180::altitude(double P, double P0)
-{
-    return (44330.0 * (1.0 - pow(P / P0, 1.0 / 5.255)));
+    this->start_pressure();
+    Task::delay_ms(26);
+    this->get_pressure(pressure, *temperature);
+
+    return ESP_OK;
 }

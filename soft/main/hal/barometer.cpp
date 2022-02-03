@@ -1,17 +1,20 @@
 #include <hal/barometer.h>
 #include <hal/log.h>
+#include <math.h>
+#include <platform.h>
 
 Barometer::Barometer(I2cMaster * i2c) : 
     Task("barometer", Task::Priority::MEDIUM, 2048, false),
     _i2c(i2c),
     _mutex()
 {
-    _bmp = new BMP180(i2c);
+    _bmp = new PLATFORM_BAROMETER_MODEL(i2c);
 }
 
 void Barometer::init(void)
 {
     int i;
+    double temperature, pressure;
 
     _bmp->init();
 
@@ -21,25 +24,27 @@ void Barometer::init(void)
 
     for (i = 0; i < 20; i++)
     {
-        double tmp;
-
-        _bmp->start_temperature();
-        Task::delay_ms(5);
-        _bmp->get_temperature(_temperature);
-
-        _bmp->start_pressure();
-        Task::delay_ms(26);
-        _bmp->get_pressure(tmp, _temperature);
-
-        _initial_pressure += tmp;
+        _bmp->read_temperature_pressure(&temperature, &pressure);
+        _initial_pressure += pressure;
     }
 
     _initial_pressure = _initial_pressure / 20.0;
+    _temperature = temperature;
 
-    LOG_INFO("initial pressure %f", _initial_pressure);
-    LOG_INFO("initial temperature %f", _temperature);
+    LOG_INFO("Initial pressure %f", _initial_pressure);
+    LOG_INFO("Initial temperature %f", _temperature);
 
     start();
+}
+
+double Barometer::sea_level(double P, double A)
+{
+    return (P / pow(1 - (A / 44330.0), 5.255));
+}
+
+double Barometer::altitude(double P, double P0)
+{
+    return (44330.0 * (1.0 - pow(P / P0, 1.0 / 5.255)));
 }
 
 void Barometer::run()
@@ -48,16 +53,9 @@ void Barometer::run()
 
     while(1)
     {
-        _bmp->start_temperature();
-        Task::delay_ms(5);
-        _bmp->get_temperature(_temperature);
-
-        _bmp->start_pressure();
-        Task::delay_ms(26);
-        _bmp->get_pressure(pressure, _temperature);
-
+        _bmp->read_temperature_pressure(&_temperature, &pressure);
         _mutex.lock();
-        _height = _bmp->altitude(pressure, _initial_pressure);
+        _height = this->altitude(pressure, _initial_pressure);
         _mutex.unlock();
     }
 }

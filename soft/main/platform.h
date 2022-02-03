@@ -39,4 +39,4 @@
 
 #define PLATFORM_SI4432_CS_PIN                (32)
 #define PLATFORM_SI4432_SPI_FREQ              (1000000)
-#define PLATFORM_SI4432_SPI_MODE              (3)
+#define PLATFORM_SI4432_SPI_MODE              (0)

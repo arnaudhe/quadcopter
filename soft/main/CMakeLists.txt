@@ -5,6 +5,7 @@ set(COMPONENT_SRCS
     drv/HMC5883L.cpp
     drv/HCSR04.cpp
     drv/DShotRMT.cpp
+    drv/SI4432.cpp
     app/data_recorder/data_recorder.cpp
     app/data_recorder/telemetry.cpp
     app/controllers/position_controller.cpp

@@ -19,6 +19,7 @@
 
 #include <periph/i2c_master.h>
 #include <periph/uart.h>
+#include <periph/spi.h>
 
 #include <hal/gps.h>
 #include <hal/log.h>
@@ -27,6 +28,7 @@
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
 #include <hal/radio_command.h>
+#include <drv/SI4432.h>
 
 #include <os/task.h>
 
@@ -43,6 +45,8 @@ extern "C" void app_main(void)
     Motor                   * rear_right;
     I2cMaster               * sensors_i2c;
     Marg                    * marg;
+    SPIHost                 * spi;
+    Si4432                  * transceiver;
 #ifdef DATA_RECORDING
     DataRecorder            * data_recorder;
 #else
@@ -63,6 +67,7 @@ extern "C" void app_main(void)
     Barometer               * barometer;
     Telemetry               * telemetry;
     RadioCommand            * radio_command;
+
 #endif
 
     nvs_flash_init();
@@ -72,6 +77,9 @@ extern "C" void app_main(void)
 
     marg = new Marg(sensors_i2c);
     marg->init();
+
+    spi = new SPIHost(PLATFORM_SPI_NUM, PLATFORM_SPI_MOSI_PIN, PLATFORM_SPI_MISO_PIN, PLATFORM_SPI_CLK_PIN, 64);
+    transceiver = new Si4432(spi);
 
 #ifndef DATA_RECORDING
     barometer = new Barometer(sensors_i2c);
@@ -139,6 +147,7 @@ extern "C" void app_main(void)
     {
 #ifndef DATA_RECORDING
         udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);
+        transceiver->send_packet((uint8_t *)"hello world", 11);
 #endif
         Task::delay_ms(1000);
     }

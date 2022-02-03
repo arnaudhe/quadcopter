@@ -31,3 +31,12 @@
 #define PLATFORM_GPS_TX_PIN                   (GPIO_NUM_23)
 
 #define PLATFORM_BAROMETER_MODEL              BMP280
+
+#define PLATFORM_SPI_NUM                      (SPI2_HOST)
+#define PLATFORM_SPI_CLK_PIN                  (25)
+#define PLATFORM_SPI_MISO_PIN                 (26)
+#define PLATFORM_SPI_MOSI_PIN                 (27)
+
+#define PLATFORM_SI4432_CS_PIN                (32)
+#define PLATFORM_SI4432_SPI_FREQ              (1000000)
+#define PLATFORM_SI4432_SPI_MODE              (3)

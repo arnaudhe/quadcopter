@@ -36,11 +36,17 @@ if __name__ == '__main__':
         print('No frontend (gui, remote, logger, scope) attached to controller. Please check command-line arguments.')
         sys.exit(1)
 
+    if args.remote:
+        if XBoxController.detect():
+            xbox = XBoxController()
+            xbox.start()
+        else:
+            print('XBox remote not found.')
+            sys.exit(1)
+
     controller = QuadcopterUdpController(data_model = data_model)
 
     if args.remote:
-        xbox = XBoxController()
-        xbox.start()
         controller.attach_xbox_controller(xbox)
 
     if args.logger:

@@ -65,7 +65,7 @@ bool NMEAParser::_check_integrity(std::string *sequence_s)
 bool NMEAParser::_parse_int(std::string *line_s, int *data_i)
 {
     bool r = false;
-    if ( (*line_s).size() > 0 )
+    if ( line_s->size() > 0 )
     {
         *data_i = std::stoi((*line_s));
         r = true;
@@ -77,7 +77,7 @@ bool NMEAParser::_parse_int(std::string *line_s, int *data_i)
 bool NMEAParser::_parse_float(std::string *line_s, float *data_f)
 {
     bool r = false;
-    if ( (*line_s).size() > 0 )
+    if ( line_s->size() > 0 )
     {
         *data_f = std::stof((*line_s));
         r = true;
@@ -89,7 +89,7 @@ bool NMEAParser::_parse_float(std::string *line_s, float *data_f)
 bool NMEAParser::_parse_char(std::string *line_s, char *data_c)
 {
     bool r = false;
-    if ( (*line_s).size() > 0 )
+    if ( line_s->size() > 0 )
     {
         *data_c = (*line_s)[0];
         r = true;
@@ -101,16 +101,16 @@ bool NMEAParser::_parse_char(std::string *line_s, char *data_c)
 bool NMEAParser::_parse_time (std::string *line_s, int *utc_hour, int *utc_minute, int *utc_second, float *utc_millis)
 {
     bool r = false;
-    if ( (*line_s).size() >= 6 )
+    if ( line_s->size() >= 6 )
     {
-        *utc_hour = std::stoi((*line_s).substr(0,2));
-        *utc_minute = std::stoi((*line_s).substr(2,2));
-        *utc_second = std::stoi((*line_s).substr(4,2));
+        *utc_hour = std::stoi(line_s->substr(0,2));
+        *utc_minute = std::stoi(line_s->substr(2,2));
+        *utc_second = std::stoi(line_s->substr(4,2));
         r = true;
     }
-    if ( (*line_s).size() >= 8 )
+    if ( line_s->size() >= 8 )
     {
-        *utc_millis = std::stof((*line_s).substr(6));
+        *utc_millis = std::stof(line_s->substr(6));
     }
     return r;
 }
@@ -119,11 +119,11 @@ bool NMEAParser::_parse_time (std::string *line_s, int *utc_hour, int *utc_minut
 bool NMEAParser::_parse_date(std::string *line_s, int *utc_day, int *utc_month, int *utc_year)
 {
     bool r = false;
-    if ( (*line_s).size() == 6 )
+    if ( line_s->size() == 6 )
     {
-        *utc_day = std::stoi((*line_s).substr(0,2));
-        *utc_month = std::stoi((*line_s).substr(2,2));
-        *utc_year = std::stoi((*line_s).substr(4,2));
+        *utc_day = std::stoi(line_s->substr(0,2));
+        *utc_month = std::stoi(line_s->substr(2,2));
+        *utc_year = std::stoi(line_s->substr(4,2));
         r = true;
     }
     return r;
@@ -133,7 +133,7 @@ bool NMEAParser::_parse_date(std::string *line_s, int *utc_day, int *utc_month, 
 bool NMEAParser::_parse_coordinates(std::string *line_s, double *coordinates_deg, int *coordinates_min, float *coordinates_sec)
 {
     bool r = false;
-    if ( (*line_s).size() > 2 )
+    if ( line_s->size() > 2 )
     {
         double dfloat = std::stod((*line_s));
         (*coordinates_deg) = (int)(dfloat / 100);
@@ -150,13 +150,13 @@ bool NMEAParser::_parse_coordinates(std::string *line_s, double *coordinates_deg
 bool NMEAParser::_parse_latitude_cardinality(std::string *line_s, Cardinality *latitude_card, double *latitude_deg)
 {
     bool r = false;
-    char * latitude_c = new char('X');
-    if ( (*line_s).size() == 1 )
+    char latitude_c = 'X';
+    if ( line_s->size() == 1 )
     {
-        (*latitude_c) = (*line_s)[0];
+        latitude_c = (*line_s)[0];
     }
-    if ( (*latitude_c) == 'N' ) { *latitude_card = Cardinality::NORTH; r = true; }
-    if ( (*latitude_c) == 'S' ) { *latitude_card = Cardinality::SOUTH; r = true; (*latitude_deg) *= -1; }
+    if ( latitude_c == 'N' ) { *latitude_card = Cardinality::NORTH; r = true; }
+    if ( latitude_c == 'S' ) { *latitude_card = Cardinality::SOUTH; r = true; (*latitude_deg) *= -1; }
     return r;
 }
 
@@ -164,13 +164,13 @@ bool NMEAParser::_parse_latitude_cardinality(std::string *line_s, Cardinality *l
 bool NMEAParser::_parse_longitude_cardinality(std::string *line_s, Cardinality *longitude_card, double *longitude_deg)
 {
     bool r = false;
-    char * longitude_c = new char('X');
-    if ( (*line_s).size() == 1 )
+    char longitude_c = 'X';
+    if ( line_s->size() == 1 )
     {
-        (*longitude_c) = (*line_s)[0];
+        longitude_c = (*line_s)[0];
     }
-    if ( (*longitude_c) == 'E' ) { *longitude_card = Cardinality::EAST; r = true; }
-    if ( (*longitude_c) == 'W' ) { *longitude_card = Cardinality::WEST; r = true; (*longitude_deg) *= -1; }
+    if ( longitude_c == 'E' ) { *longitude_card = Cardinality::EAST; r = true; }
+    if ( longitude_c == 'W' ) { *longitude_card = Cardinality::WEST; r = true; (*longitude_deg) *= -1; }
     return r;
 }
 

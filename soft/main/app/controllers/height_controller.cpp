@@ -49,18 +49,25 @@ void HeightController::run(void)
     float ax_r, ay_r, az_r;     /* accelero in earth frame */
     float ultrasound = 0.0;
     float barometer  = 0.0;
+    float vertical_acceleration;
 
     /* Read the sensors */
-    _marg->read_acc(&ax, &ay, &az);
+    _rate_controller->get_acc(&ax, &ay, &az);
     barometer  = _baro->height();
     ultrasound = _ultrasound->height();
 
-    /* Estimate the attitude */
+    /* Rotate acceleration vector in drone frame to acceleration in earth frame */
     _attitude_controller->rotate(ax, ay, az, &ax_r, &ay_r, &az_r);
-    _observer->update((az_r - 1.0) * GRAVITATIONAL_ACCELERATION, barometer, ultrasound);
+
+    /* Compute the vertical acceleration by removing constant 1g gravity acceleration and convert to m.s^2 */
+    vertical_acceleration = (az_r - 1.0) * GRAVITATIONAL_ACCELERATION;
+
+    /* Update the Kalman filter to compute current estimated height */
+    _observer->update(vertical_acceleration, barometer, ultrasound);
 
     _registry->internal_set<float>("sensors.ultrasound.height", ultrasound);
     _registry->internal_set<float>("sensors.barometer.height", barometer);
+    _registry->internal_set<float>("sensors.accelerometer.vertical", vertical_acceleration);
     _registry->internal_set<float>("control.attitude.height.position.current", _observer->height());
     _registry->internal_set<float>("control.attitude.height.speed.current", _observer->vertical_speed());
 

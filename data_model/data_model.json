@@ -1321,6 +1321,17 @@
                 "min" : -10.0,
                 "max" : 10.0,
                 "permissions" : ["read", "notify"]
+            },
+            "vertical": {
+                "id": 4,
+                "type": "float",
+                "unit": "g",
+                "min": -10.0,
+                "max": 10.0,
+                "permissions": [
+                    "read",
+                    "notify"
+                ]
             }
         },
         "magnetometer" : {

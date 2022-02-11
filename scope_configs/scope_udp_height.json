@@ -12,6 +12,9 @@
         "sensors.barometer.height": {
             "unit": "m"
         },
+        "sensors.accelerometer.vertical": {
+            "unit": "g"
+        },
         "control.attitude.height.position.current": {
             "unit": "m"
         }

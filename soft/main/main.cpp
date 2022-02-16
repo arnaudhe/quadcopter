@@ -146,9 +146,17 @@ extern "C" void app_main(void)
     while (true)
     {
 #ifndef DATA_RECORDING
+        for (int i = 0; i < 20; i++)
+        {
+            uint8_t length;
+            uint8_t packet[16];
+            transceiver->receive_packet(packet, &length);
+            Task::delay_ms(50);
+        }
         udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);
         transceiver->send_packet((uint8_t *)"hello world", 11);
-#endif
+#else
         Task::delay_ms(1000);
+#endif
     }
 }

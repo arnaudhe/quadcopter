@@ -1,6 +1,7 @@
 #pragma once
 
 #include <periph/spi.h>
+#include <periph/gpio.h>
 #include <drv/SI4432_defs.h>
 
 class Si4432
@@ -9,6 +10,11 @@ class Si4432
 private:
 
     SPIDevice * _spi;
+    Gpio      * _irq_gpio;
+    bool        _tx_done;
+    bool        _rx_done;
+    bool        _valid_preamble;
+    bool        _valid_sync;
 
 public:
 
@@ -16,11 +22,17 @@ public:
 
     esp_err_t reset(void);
 
+    esp_err_t write_config(void);
+
     esp_err_t read_status(uint8_t * status);
 
     esp_err_t write_modem_config(void);
 
+    esp_err_t write_gpio_config(void);
+
     esp_err_t write_packet_handler_config(void);
+
+    esp_err_t write_irq_config(void);
 
     esp_err_t set_frequency(float freq);
 
@@ -34,9 +46,19 @@ public:
 
     esp_err_t send_packet(uint8_t * buf, uint8_t length);
 
+    esp_err_t receive_packet(uint8_t * packet, uint8_t * length);
+
     esp_err_t start_tx(void);
+
+    esp_err_t start_rx(void);
 
     esp_err_t clear_tx_fifo(void);
 
-    esp_err_t force_recalibrate(void);
+    esp_err_t clear_rx_fifo(void);
+
+    esp_err_t clear_both_fifo(void);
+
+    esp_err_t read_irq(void);
+
+    esp_err_t clear_irq(void);
 };

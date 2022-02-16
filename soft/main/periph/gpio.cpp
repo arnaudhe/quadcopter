@@ -11,7 +11,7 @@ Gpio::Gpio(int pin, Gpio::Direction direction, bool pull_up, bool pull_down)
     config.mode         = direction == Gpio::Direction::INPUT ? GPIO_MODE_INPUT : GPIO_MODE_OUTPUT;
     config.pull_up_en   = (gpio_pullup_t)pull_up;
     config.pull_down_en = (gpio_pulldown_t)pull_down;
-    config.pin_bit_mask = (1 << pin);
+    config.pin_bit_mask = (1ULL << pin);
 
     gpio_config(&config);
 }

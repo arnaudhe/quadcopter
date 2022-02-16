@@ -23,6 +23,7 @@ SPIHost::SPIHost(spi_host_device_t host, int mosi_io_num, int miso_io_num, int s
     config.quadhd_io_num   = -1;  // -1 not used
     config.max_transfer_sz = max_transfer_sz;
     config.flags           = SPICOMMON_BUSFLAG_MASTER | SPICOMMON_BUSFLAG_SCLK | SPICOMMON_BUSFLAG_MISO | SPICOMMON_BUSFLAG_MOSI;
+    config.intr_flags      = 0;
 
     spi_bus_initialize(host, &config, HSPI_HOST);  // 0 DMA not used
 }

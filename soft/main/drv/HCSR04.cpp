@@ -52,12 +52,9 @@ void HcSr04::run()
     {
         _sem_falling.wait();
         tmp = _echo_timer->get_time() / HCSR04_SCALE_FACTOR;
-        if (tmp < 1.0)
-        {
-            _mutex.lock();
-            _height = tmp;
-            _mutex.unlock();
-        }
+        _mutex.lock();
+        _height = tmp;
+        _mutex.unlock();
     }
 }
 

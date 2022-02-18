@@ -6,7 +6,10 @@
         }
     },
     "channels": {
-        "sensors.ultrasound.height": {
+        "control.attitude.height.position.current": {
+            "unit": "m"
+        },
+        "control.attitude.height.speed.current": {
             "unit": "m"
         },
         "control.attitude.height.position.target": {

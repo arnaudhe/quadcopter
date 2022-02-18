@@ -8,7 +8,7 @@ Kalman::Kalman(float period, int state_dim, int input_dim, int output_dim):
     _output_matrix(output_dim, state_dim),
     _process_noise_matrix(state_dim, state_dim),
     _measure_noise_matrix(output_dim, output_dim),
-    _state(state_dim, 1),
+    _state(state_dim, 1, 0.0f),
     _covariance(state_dim, state_dim)
 {
 }

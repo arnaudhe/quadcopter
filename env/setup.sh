@@ -34,6 +34,7 @@ pip install --upgrade pip
 pip install -r ../soft/esp-idf/requirements.txt
 pip install -r ../base_station/requirements.txt
 pip install -r ../tests/requirements.txt
+pip install -r ../tools/requirements.txt
 
 echo ""
 echo "All done! You can now run:"

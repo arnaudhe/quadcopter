@@ -1,10 +1,8 @@
 from construct import Struct, Enum, Int8ub, Const, RawCopy, Checksum, this
 from serial import Serial, STOPBITS_TWO
+from crc8 import crc8
 
-class crc8(object):
-
-    digest_size = 1
-    block_size = 1
+class SmartAudioCrc(crc8):
 
     _table = [ 0x00, 0xD5, 0x7F, 0xAA, 0xFE, 0x2B, 0x81, 0x54, 0x29, 0xFC, 0x56, 0x83, 0xD7, 0x02, 0xA8, 0x7D,
                0x52, 0x87, 0x2D, 0xF8, 0xAC, 0x79, 0xD3, 0x06, 0x7B, 0xAE, 0x04, 0xD1, 0x85, 0x50, 0xFA, 0x2F,
@@ -23,62 +21,8 @@ class crc8(object):
                0xD6, 0x03, 0xA9, 0x7C, 0x28, 0xFD, 0x57, 0x82, 0xFF, 0x2A, 0x80, 0x55, 0x01, 0xD4, 0x7E, 0xAB,
                0x84, 0x51, 0xFB, 0x2E, 0x7A, 0xAF, 0x05, 0xD0, 0xAD, 0x78, 0xD2, 0x07, 0x53, 0x86, 0x2C, 0xF9 ]
 
-    def __init__(self, initial_string=b'', initial_start=0x00):
-        """Create a new crc8 hash instance."""
-        self._sum = initial_start
-        self._update(initial_string)
-
-    def update(self, bytes_):
-        """Update the hash object with the string arg.
-
-        Repeated calls are equivalent to a single call with the concatenation
-        of all the arguments: m.update(a); m.update(b) is equivalent
-        to m.update(a+b).
-        """
-        self._update(bytes_)
-
-    def digest(self):
-        """Return the digest of the bytes passed to the update() method so far.
-
-        This is a string of digest_size bytes which may contain non-ASCII
-        characters, including null bytes.
-        """
-        return self._digest()
-
-    def hexdigest(self):
-        """Return digest() as hexadecimal string.
-
-        Like digest() except the digest is returned as a string of double
-        length, containing only hexadecimal digits. This may be used to
-        exchange the value safely in email or other non-binary environments.
-        """
-        return hex(self._sum)[2:].zfill(2)
-
-    def _update(self, bytes_):
-        if isinstance(bytes_, str):
-            raise TypeError("Unicode-objects must be encoded before"\
-                            " hashing")
-        elif not isinstance(bytes_, (bytes, bytearray)):
-            raise TypeError("object supporting the buffer API required")
-        table = self._table
-        _sum = self._sum
-        for byte in bytes_:
-            _sum = table[_sum ^ byte]
-        self._sum = _sum
-
-    def _digest(self):
-        return bytes([self._sum])
-
-    def copy(self):
-        """Return a copy ("clone") of the hash object.
-        
-        This can be used to efficiently compute the digests of strings that
-        share a common initial substring.
-        """
-        crc = crc8()
-        crc._sum = self._sum
-        return crc
-
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 class SmartAudioFrame(Struct):
     """
@@ -87,7 +31,7 @@ class SmartAudioFrame(Struct):
 
     @staticmethod
     def compute_crc(data):
-        return crc8(bytes([0xAA, 0x55]) + data).digest()[0]
+        return SmartAudioCrc(initial_string=bytes([0xAA, 0x55]) + data).digest()[0]
 
     @staticmethod
     def generic_command(command, params):

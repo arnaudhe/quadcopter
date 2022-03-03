@@ -21,7 +21,7 @@ float Battery::get_level(void)
     float measure_per_cell = measure / (float)_cells;
     float percent;
 
-    LOG_INFO("voltage %.1fV", measure);
+    LOG_DEBUG("Battery voltage %.3f V", measure);
 
     percent = (100.0 * (measure_per_cell - BATTERY_CELL_LOW_VOLTAGE)) / (BATTERY_CELL_HIGH_VOLTAGE - BATTERY_CELL_LOW_VOLTAGE);
 

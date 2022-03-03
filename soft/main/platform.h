@@ -42,10 +42,9 @@
 #define PLATFORM_SI4432_SPI_MODE              (0)
 #define PLATFORM_SI4432_IRQ_PIN               (GPIO_NUM_35)
 
-// TODO: So far the battery measure divider is too low, we overflow the ADC VRef voltage even with low battery
-// cf https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/adc.html#adc-attenuation
+#define PLATFORM_ADC_VREF                     (1075)
 
 #define PLATFORM_BATTERY_ADC_UNIT             (Adc::UNIT_1)
 #define PLATFORM_BATTERY_ADC_CHANNEL          (Adc::CHANNEL_6)
 #define PLATFORM_BATTERY_CELLS                (3)
-#define PLATFORM_BATTERY_DIVIDER              (4.0f)
+#define PLATFORM_BATTERY_DIVIDER              (6.13f)

@@ -2,6 +2,8 @@
 
 #include <hal/log.h>
 
+#include <platform.h>
+
 Adc::Adc(Adc::Unit unit)
 {
     _unit = unit;
@@ -37,7 +39,7 @@ float Adc::sample(Adc::Channel channel)
         adc2_get_raw((adc2_channel_t)channel, ADC_WIDTH_12Bit, &sample);
     }
 
-    esp_adc_cal_characterize((adc_unit_t)_unit, ADC_ATTEN_11db, ADC_WIDTH_12Bit, 1100, &_characteristics);
+    esp_adc_cal_characterize((adc_unit_t)_unit, ADC_ATTEN_11db, ADC_WIDTH_12Bit, PLATFORM_ADC_VREF, &_characteristics);
 
     return (float)esp_adc_cal_raw_to_voltage(sample, &_characteristics) / 1000;
 }

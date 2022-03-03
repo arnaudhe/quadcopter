@@ -61,4 +61,6 @@ public:
     esp_err_t read_irq(void);
 
     esp_err_t clear_irq(void);
+
+    esp_err_t read_rssi(int * rssi);
 };

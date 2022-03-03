@@ -339,3 +339,15 @@ esp_err_t Si4432::clear_irq(void)
 
     return ESP_OK;
 }
+
+esp_err_t Si4432::read_rssi(int * rssi)
+{
+    esp_err_t ret;
+    uint8_t rssi_lsb;
+    
+    ret = _spi->read_byte(SI4432_REG_RSSI, &rssi_lsb);
+
+    *rssi = ((int)rssi_lsb / 2) - 130;
+
+    return ret;
+}

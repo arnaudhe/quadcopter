@@ -17,6 +17,11 @@ void Motor::arm(void)
     _dshot->init();
 }
 
+void Motor::beep(void)
+{
+    _dshot->beep();
+}
+
 void Motor::set_speed(float speed)
 {
     uint16_t width = (uint16_t)(speed * (float)(PULSE_MAX_VALUE_us - PULSE_MIN_VALUE_us)) + PULSE_MIN_VALUE_us;

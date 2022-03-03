@@ -156,6 +156,11 @@ extern "C" void app_main(void)
             uint8_t length;
             uint8_t packet[16];
             transceiver->receive_packet(packet, &length);
+            if (length)
+            {
+                LOG_DEBUG("Received (%d) : \"%.*s\"", length, length, packet);
+                front_left->beep();
+            }
             Task::delay_ms(50);
         }
         udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);

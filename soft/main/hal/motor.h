@@ -19,4 +19,6 @@ public:
 
     void set_zero(void);
 
+    void beep(void);
+
 };

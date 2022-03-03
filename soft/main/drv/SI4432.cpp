@@ -68,13 +68,19 @@ esp_err_t Si4432::reset(void)
 esp_err_t Si4432::write_modem_config(void)
 {
     /* Load capacitance */
-    _spi->write_byte(SI4432_REG_CRYSTAL_LOAD_CAPACITANCE, 0xa5);
+    _spi->write_byte(SI4432_REG_CRYSTAL_LOAD_CAPACITANCE, 0x7F);
+
+    /* filters */
+    _spi->write_byte(SI4432_REG_IF_FILTER_BW, 0x9A);
+    _spi->write_byte(SI4432_REG_AFC_LOOP_GEARSHIFT_OVERRIDE, 0x40);
 
     /* Modem low-level config */
-    _spi->write_byte(SI4432_REG_AFC_TIMING_CONTROL, 0x02);          // refer to AN440 for reasons
-    _spi->write_byte(SI4432_REG_AFC_LIMITER, 0xFF);                 // write max value - excel file did that.
-    _spi->write_byte(SI4432_REG_AGC_OVERRIDE, 0x60);                // max gain control
-    _spi->write_byte(SI4432_REG_AFC_LOOP_GEARSHIFT_OVERRIDE, 0x3C); // turn off AFC
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_OVERSAMPLING, 0x2C);
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_OFFSET2, 0x20);
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_OFFSET1, 0x36);
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_OFFSET0, 0x9D);
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_TIMING_GAIN1, 00);
+    _spi->write_byte(SI4432_REG_CLOCK_RECOVERY_TIMING_GAIN0, 0x39);
 
     /* Write config registers */
     _spi->write_byte(SI4432_REG_MODULATION_MODE1, SI4432_TX_DATARATE_SCALE | SI4432_MODEM_ENCODING);

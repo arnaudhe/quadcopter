@@ -5,16 +5,16 @@
 #define SI4432_MODEM_SOURCE         SI4432_MODULATION_SOURCE_FIFO
 #define SI4432_MODEM_TYPE           SI4432_MODULATION_TYPE_FSK
 #define SI4432_MODEM_ENCODING       SI4432_DATA_MANCHESTER_ENABLED | SI4432_DATA_MANCHESTER_INVERSION | SI4432_DATA_MANCHESTER_POLARITY
-#define SI4432_MODEM_FREQ           433.907
-#define SI4432_MODEM_DEVIATION      30000
-#define SI4432_MODEM_DATARATE       4800
+#define SI4432_MODEM_FREQ           433.92
+#define SI4432_MODEM_DEVIATION      40000
+#define SI4432_MODEM_DATARATE       10000
 #define SI4432_MODEM_TX_POWER       SI4432_TX_POWER_20dBm
 
 #define SI4432_PH_PATH              SI4432_PH_PATH_TXRX     // active tx and rx packet handling
 #define SI4432_PH_PREAMBLE_LENGTH   8                       // emit 8 * 4 bits of preamble
 #define SI4432_PH_PREAMBLE_DETECT   5                       // validate 5 * 4 bits of preamble
 #define SI4432_PH_SYNC_LENGTH       SI4432_PH_SYNC_2        // Use 2 bytes of sync word
-#define SI4432_PH_SYNC_BYTES        "\x5C\x22"              // Use 0x5C 0x22
+#define SI4432_PH_SYNC_BYTES        "\x55\x22"              // Use 0x55 0x22
 #define SI4432_PH_HEADER_LENGTH     SI4432_PH_HEADER_OFF
 #define SI4432_PH_CRC               SI4432_PH_CRC_OFF
 #define SI4432_PH_CRC_TYPE          SI4432_PH_CRC_TYPE_CITT

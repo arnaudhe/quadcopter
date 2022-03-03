@@ -212,12 +212,12 @@ esp_err_t Si4432::receive_packet(uint8_t * packet, uint8_t * length)
 
         if (_valid_preamble)
         {
-            LOG_DEBUG("Valid preamble");
+            LOG_VERBOSE("Valid preamble");
         }
 
         if (_valid_sync)
         {
-            LOG_DEBUG("Sync word detected");
+            LOG_VERBOSE("Sync word detected");
         }
 
         if (_rx_done)
@@ -229,7 +229,7 @@ esp_err_t Si4432::receive_packet(uint8_t * packet, uint8_t * length)
             _spi->read_byte(SI4432_REG_RX_PKT_LENGTH, length);
             if (*length > 0)
             {
-                LOG_INFO("Received packet, length %d", *length);
+                LOG_DEBUG("Received packet, length %d", *length);
                 _spi->read_bytes(SI4432_REG_FIFO, *length, packet);
             }
 
@@ -270,7 +270,7 @@ esp_err_t Si4432::start_tx(void)
         }
     }
 
-    LOG_DEBUG("TX Done");
+    LOG_VERBOSE("TX Done");
 
     this->clear_irq();
     this->start_rx();

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import  QWidget, QLabel, QApplication
 from PyQt5.QtCore import QThread, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QImage, QPixmap
 
-class Camera(QThread):
+class Video(QThread):
 
     GREY  = (120, 120, 120)
     WHITE = (255, 255, 255)
@@ -42,7 +42,7 @@ class Camera(QThread):
         rect_height  = char_height
         rect_width   = len(text) * char_width
         pos_x, pos_y = position
-        cv2.rectangle(image, (pos_x - rect_padding, pos_y - rect_height - rect_padding), (pos_x + rect_width + rect_padding, pos_y + rect_padding), Camera.GREY, -1)
+        cv2.rectangle(image, (pos_x - rect_padding, pos_y - rect_height - rect_padding), (pos_x + rect_width + rect_padding, pos_y + rect_padding), Video.GREY, -1)
         cv2.putText(image, text, position, cv2.FONT_HERSHEY_DUPLEX, font_size, color)
 
     def run(self):
@@ -52,7 +52,7 @@ class Camera(QThread):
             if ret:
                 # https://stackoverflow.com/a/55468544/6622587
                 rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                self.display_text(rgbImage, (420, 460), "BATTERY : 100 %", Camera.GREEN)
+                self.display_text(rgbImage, (420, 460), "BATTERY : 100 %", Video.GREEN)
                 h, w, ch = rgbImage.shape
                 bytesPerLine = ch * w
                 convertToQtFormat = QImage(rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
@@ -63,19 +63,19 @@ class Camera(QThread):
         self.running = False
         self.wait()
 
-class CameraApp(QWidget):
+class VideoApp(QWidget):
 
     def __init__(self, camera_id):
         super().__init__()
-        self.title = 'Camera'
+        self.title = 'Video'
         self.left = 100
         self.top = 100
         self.width = 1280
         self.height = 960
         self.initUI()
-        self.camera = Camera(self, (self.width, self.height), camera_id)
-        self.camera.changePixmap.connect(self.setImage)
-        self.camera.start()
+        self.video = Video(self, (self.width, self.height), camera_id)
+        self.video.changePixmap.connect(self.setImage)
+        self.video.start()
 
     @pyqtSlot(QImage)
     def setImage(self, image):
@@ -90,11 +90,11 @@ class CameraApp(QWidget):
         self.show()
 
     def stop(self):
-        self.camera.stop()
+        self.video.stop()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = CameraApp(1)
+    ex = VideoApp(1)
     exit_code = app.exec_()
     ex.stop()
     sys.exit(exit_code)

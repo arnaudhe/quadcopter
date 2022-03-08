@@ -35,7 +35,7 @@ class TelemetryReader(Thread, QObject):
         self.output_file = None
 
     def output(self, channels):
-        print('[TELEMETRY] output data to ' + TelemetryReader.OUTPUT_FILE)
+        print('[telemetry] output data to ' + TelemetryReader.OUTPUT_FILE)
         self.output_file = open(TelemetryReader.OUTPUT_FILE, 'w')
         self.output_file.write(';'.join(channels) + '\n')
 
@@ -68,7 +68,7 @@ class TelemetryReader(Thread, QObject):
         self.join()
         if self.output_file:
             self.output_file.close()
-            print('[TELEMETRY] ' + TelemetryReader.OUTPUT_FILE + ' closed')
+            print('[telemetry] ' + TelemetryReader.OUTPUT_FILE + ' closed')
 
 class TelemetryReaderUdp(TelemetryReader):
 
@@ -77,7 +77,7 @@ class TelemetryReaderUdp(TelemetryReader):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', port))
         self.sock.settimeout(1.0)
-        print('[TELEMETRY] Socket bound on port {}'.format(port))
+        print('[telemetry] Socket bound on port {}'.format(port))
 
     def read(self):
         try:
@@ -87,7 +87,7 @@ class TelemetryReaderUdp(TelemetryReader):
         return data
 
     def close(self):
-        print('[TELEMETRY] Socket closed')
+        print('[telemetry] Socket closed')
         self.sock.close()
 
 class TelemetryReaderSerial(TelemetryReader):
@@ -95,13 +95,13 @@ class TelemetryReaderSerial(TelemetryReader):
     def __init__(self, port, baudrate = 115200, **kwargs):
         super(TelemetryReaderSerial, self).__init__(**kwargs)
         self.ser = serial.Serial(port, baudrate, timeout=1.0)  # open serial port
-        print('[TELEMETRY]  Serial port {} opened'.format(port))
+        print('[telemetry]  Serial port {} opened'.format(port))
 
     def read(self):
         return self.ser.readline()
 
     def close(self):
-        print('[TELEMETRY] Serial closed')
+        print('[telemetry] Serial closed')
         self.ser.close()
 
 if __name__ == '__main__':

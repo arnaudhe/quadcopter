@@ -355,6 +355,7 @@ class Radio(Thread):
     def stop_rx(self):
         if self.rx_running:
             self.rx_running = False
+            self.join()
             self.goto_standby()
 
     def transmit(self, frame):
@@ -399,14 +400,68 @@ class Radio(Thread):
         else:
             return self.queue.get()
 
+class RadioBroker(Radio):
+
+    CHANNELS = dict(heartbeat=0, control=1, radio_command=2, telemetry=3, logs=4)
+
+    RADIO_FRAME = Struct (
+        'length'  / Byte,
+        "inner"   / BitStruct(
+            'direction' / Enum(BitsInteger(1), uplink=1, downlink=0),
+            'address'   / BitsInteger(7),
+        ),
+        'channel' / Enum(Byte, **CHANNELS),
+        'payload' / Bytes(this.length - 2)
+    )
+
+    def __init__(self, index = 0):
+        super().__init__(index)
+        self._registrations = {}
+
+    def register_channel(self, channel):
+        if channel in RadioBroker.CHANNELS:
+            self._registrations[channel] = Queue()
+
+    def get_received_frames(self):
+        while super().received_frame_pending():
+            length, frame_bytes, rssi = super().receive()
+            try:
+                frame = RadioBroker.RADIO_FRAME.parse(frame_bytes)
+            except ConstructError:
+                print('Invalid frame')
+                continue
+            if str(frame['direction']) == 'downlink':
+                if str(frame['channel']) in self._registrations:
+                    self._registrations[str(frame['channel'])].put((frame['address'], frame['payload']))
+
+    def receive(self, channel):
+        if self.received_frame_pending(channel):
+            return self._registrations[channel].get()
+
+    def received_frame_pending(self, channel):
+        self.get_received_frames()
+        if channel in self._registrations:
+            return not self._registrations[channel].empty()
+        else:
+            return False
+
+    def send(self, address: int, channel: str, payload: bytes):
+        frame_bytes = RadioBroker.RADIO_FRAME.build(dict(length=len(payload) + 2, inner=dict(direction='uplink', address=address), channel=channel, payload=payload))
+        print(frame_bytes.hex())
+        super().transmit(frame_bytes)
+
+    def stop(self):
+        self.stop_rx()
+        self.close()
+
 if __name__ == '__main__':
-    chip = Radio(0)
+    radio = RadioBroker(0)
     for i in range(3):
         print('transmit')
-        chip.transmit(bytes([11]) + b'Hello World')
+        radio.send(1, 'heartbeat', b'Hello World')
         time.sleep(1.0)
-    chip.start_rx()
+    radio.start_rx()
     print("wait 10s")
     for _ in range(10):
         time.sleep(1.0)
-    chip.stop_rx()
+    radio.stop()

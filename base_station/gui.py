@@ -193,11 +193,11 @@ class EnumRessourceWidget(DataRessourceWidget):
 
 class BaseStationGui(QMainWindow):
 
-    def __init__(self, controller):
+    def __init__(self, controller, data_model):
         super().__init__()
         self.controller = controller
         self.widgets = {}
-        self.setup_ui()
+        self.setup_ui(data_model)
 
     def load_model(self, data_model, container_layout, current_key = ''):
         for key, content in data_model.items():
@@ -256,7 +256,7 @@ class BaseStationGui(QMainWindow):
                         widget.setLayout(vbox)
                         container_layout.addWidget(widget)
 
-    def setup_ui(self):
+    def setup_ui(self, data_model):
         self.centralWidget = QWidget()
         layout = QVBoxLayout(self.centralWidget)
         self.scrollArea = QScrollArea(self.centralWidget)
@@ -268,7 +268,7 @@ class BaseStationGui(QMainWindow):
         self.setCentralWidget(self.centralWidget)
         self.centralWidget.setStyleSheet("QGroupBox { padding-top: 20px; font-size:14px; text-transform: uppercase; border: 1px solid rgb(100, 100, 100); }")
         self.setWindowTitle('Quadcopter base station')
-        self.load_model(self.controller.get_data_model(), layout)
+        self.load_model(data_model, layout)
         self.setCentralWidget(self.centralWidget)
         self.resize(1000, 800)
         self.show()

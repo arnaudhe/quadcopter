@@ -4,3 +4,5 @@ pyusb
 numpy
 pyqtgraph
 construct
+pyftdi
+opencv-python

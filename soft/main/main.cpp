@@ -13,6 +13,7 @@
 #include <app/data_recorder/telemetry.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
+#include <app/workers/heartbeat.h>
 
 #include <data_model/data_ressources_registry.h>
 #include <data_model/json_protocol.h>
@@ -69,6 +70,7 @@ extern "C" void app_main(void)
     RadioCommand            * radio_command;
     Adc                     * adc;
     Battery                 * battery;
+    Heartbeat               * heartbeat;
 #endif
 
     nvs_flash_init();
@@ -126,6 +128,7 @@ extern "C" void app_main(void)
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
     radio_command       = new RadioCommand(registry);
+    heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, transceiver, udp);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -146,6 +149,7 @@ extern "C" void app_main(void)
     motors_controller->start();
     telemetry->start();
     battery_supervisor->start();
+    heartbeat->start();
 #endif
 
     while (true)
@@ -163,8 +167,6 @@ extern "C" void app_main(void)
             }
             Task::delay_ms(50);
         }
-        udp->send_broadcast("{\"announcement\":\"kwadcopter\"}", 5001);
-        transceiver->send_packet((uint8_t *)"hello world", 11);
 #else
         Task::delay_ms(1000);
 #endif

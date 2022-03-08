@@ -18,6 +18,7 @@ set(COMPONENT_SRCS
     app/observers/position_observer.cpp
     app/workers/battery_supervisor.cpp
     app/workers/camera_controller.cpp
+    app/workers/heartbeat.cpp
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp

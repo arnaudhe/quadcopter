@@ -51,9 +51,9 @@
         "attitude" : {
             "id" : 4,
             "roll" : {
-                "id": 2,
+                "id": 1,
                 "mode": {
-                    "id": 5,
+                    "id": 1,
                     "type": "enum",
                     "values": {
                         "off": 1,
@@ -66,7 +66,7 @@
                     ]
                 },
                 "position": {
-                    "id": 1,
+                    "id": 2,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -155,7 +155,7 @@
                     }
                 },
                 "speed": {
-                    "id": 2,
+                    "id": 3,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -245,9 +245,9 @@
                 }
             },
             "pitch" : {
-                "id" : 3,
+                "id" : 2,
                 "mode": {
-                    "id": 5,
+                    "id": 1,
                     "type": "enum",
                     "values": {
                         "off": 1,
@@ -260,7 +260,7 @@
                     ]
                 },
                 "position": {
-                    "id": 1,
+                    "id": 2,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -349,7 +349,7 @@
                     }
                 },
                 "speed": {
-                    "id": 2,
+                    "id": 3,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -439,9 +439,9 @@
                 }
             },
             "yaw" : {
-                "id" : 4,
+                "id" : 3,
                 "mode": {
-                    "id": 5,
+                    "id": 1,
                     "type": "enum",
                     "values": {
                         "off": 1,
@@ -454,7 +454,7 @@
                     ]
                 },
                 "position": {
-                    "id": 1,
+                    "id": 2,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -543,7 +543,7 @@
                     }
                 },
                 "speed": {
-                    "id": 2,
+                    "id": 3,
                     "current": {
                         "id": 1,
                         "type": "float",
@@ -633,7 +633,7 @@
                 }
             },
             "height" : {
-                "id" : 5,
+                "id" : 4,
                 "mode": {
                     "id": 5,
                     "type": "enum",

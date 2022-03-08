@@ -1,7 +1,7 @@
 #include <esp_log.h>
 #include <hal/log.h>
 
-#define LOGGER_DEST_PORT    5002
+#define LOGGER_DEST_PORT    5004
 
 Logger * _logger = NULL;
 

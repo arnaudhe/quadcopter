@@ -87,7 +87,7 @@ void RadioCommand::run()
             _registry->internal_set<string>("control.mode", packet.armed ? "attitude" : "off");
             _registry->internal_set<float>("control.attitude.roll.position.target",  packet.roll);
             _registry->internal_set<float>("control.attitude.pitch.position.target", packet.pitch);
-            _registry->internal_set<float>("control.attitude.height.manual.throttle", packet.throttle);
+            _registry->internal_set<float>("control.attitude.height.speed.target", packet.throttle);
             _registry->internal_set<float>("control.attitude.yaw.speed.target", packet.yaw);
         }
 

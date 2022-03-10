@@ -19,7 +19,7 @@ HeightController::HeightController(float period, DataRessourcesRegistry * regist
 
     _observer = new HeightObserver(period);
 
-    _registry->internal_set<string>("control.attitude.height.mode", "manual");
+    _registry->internal_set<string>("control.attitude.height.mode", "speed");
 
     _registry->internal_set<float>("control.attitude.height.manual.throttle", 0.4f);
 

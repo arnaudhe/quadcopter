@@ -8,7 +8,7 @@ HIDDEN_RESOURCES = [
     "control.position",
     "control.attitude.yaw.speed",
     "control.attitude.yaw.position",
-    "control.attitude.height.speed",
+    "control.attitude.height.position",
     "sensors",
     "camera"
 ]

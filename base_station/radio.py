@@ -1,5 +1,4 @@
 import time
-import datetime
 from queue import Queue
 from threading import Thread
 
@@ -113,7 +112,7 @@ class RadioConfig:
         "preamble_size"  / Enum(BitsInteger(2), bytes_1=0, bytes_2=1, bytes_3=2, bytes_4=3),
         "whitening_on"   / Flag,
         "crc_on"         / Flag,
-        "address_filter" / BitsInteger(2),
+        "address_filter" / Enum(BitsInteger(2), off=0, on=1, on_00=2, on_00_ff=3),
         "crc_status"     / Flag
     )
 
@@ -348,7 +347,6 @@ class Radio(Thread):
             self.goto_fs()
             time.sleep(0.005)
             self.goto_rx()
-            time.sleep(0.1)
             self.rx_running = True
             self.start()
 
@@ -371,22 +369,19 @@ class Radio(Thread):
         self.goto_fs()
         time.sleep(0.001)
         self.goto_tx()
-        start = datetime.datetime.now()
         while self.read_irq1() == 0:
             time.sleep(0.001)
-        duration = (datetime.datetime.now() - start).microseconds / 1000
-        print('tx done, duration', duration)
         self.goto_standby()
         if need_to_start_rx:
             self.start_rx()
 
     def run(self):
+        rssi = -130
         while self.rx_running:
             if self.read_irq0():
                 length = int(self.spi_data.exchange([], readlen=1)[0])
                 if (length > 0) and (length < 64):
                     frame = bytes([self.spi_data.exchange([], readlen=1)[0] for _ in range(length)])
-                    print(f'Received ({length}) {frame} with rssi {rssi} dB')
                     self.queue.put((length, frame, rssi))
             rssi = self.read_rssi()
             time.sleep(0.003)
@@ -417,6 +412,7 @@ class RadioBroker(Radio):
     def __init__(self, index = 0):
         super().__init__(index)
         self._registrations = {}
+        self.start_rx()
 
     def register_channel(self, channel):
         if channel in RadioBroker.CHANNELS:
@@ -430,9 +426,9 @@ class RadioBroker(Radio):
             except ConstructError:
                 print('Invalid frame')
                 continue
-            if str(frame['direction']) == 'downlink':
+            if str(frame['inner']['direction']) == 'downlink':
                 if str(frame['channel']) in self._registrations:
-                    self._registrations[str(frame['channel'])].put((frame['address'], frame['payload']))
+                    self._registrations[str(frame['channel'])].put((frame['inner']['address'], frame['payload']))
 
     def receive(self, channel):
         if self.received_frame_pending(channel):
@@ -447,7 +443,6 @@ class RadioBroker(Radio):
 
     def send(self, address: int, channel: str, payload: bytes):
         frame_bytes = RadioBroker.RADIO_FRAME.build(dict(length=len(payload) + 2, inner=dict(direction='uplink', address=address), channel=channel, payload=payload))
-        print(frame_bytes.hex())
         super().transmit(frame_bytes)
 
     def stop(self):

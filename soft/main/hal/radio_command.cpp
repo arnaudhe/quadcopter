@@ -23,10 +23,11 @@ typedef struct
     float   throttle;
 } __attribute__((packed)) RadioCommandPacket;
 
-RadioCommand::RadioCommand(DataRessourcesRegistry * registry) :
+RadioCommand::RadioCommand(DataRessourcesRegistry * registry, RadioBroker * radio) :
     Task("rc", Task::Priority::LOW, 4096, false)
 {
     _registry = registry;
+    _radio = radio;
 
     struct sockaddr_in destAddr;
     destAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -51,6 +52,10 @@ RadioCommand::RadioCommand(DataRessourcesRegistry * registry) :
     int flags = fcntl(_socket, F_GETFL);
     fcntl(_socket, F_SETFL, flags | O_NONBLOCK);
 
+    _radio->register_channel(RADIO_COMMAND_CHANNEL);
+
+    LOG_INFO("Radio channel registered");
+
     LOG_INFO("Radio command ready");
 }
 
@@ -62,11 +67,20 @@ RadioCommand::~RadioCommand()
 void RadioCommand::run()
 {
     RadioCommandPacket packet;
-    int                len;
+    uint8_t            len;
 
     while (1)
     {
-        len = ::recv(_socket, &packet, sizeof(RadioCommandPacket), 0);
+        if (_radio->received_frame_pending(RADIO_COMMAND_CHANNEL))
+        {
+            /* Get the received radio frame */
+            _radio->receive(RADIO_COMMAND_CHANNEL, (uint8_t *)&packet, &len);
+        }
+        else
+        {
+            /* Get any pending UDP received frame */
+            len = (uint8_t)::recv(_socket, &packet, sizeof(RadioCommandPacket), O_NONBLOCK);
+        }
 
         if (len == sizeof(RadioCommandPacket))
         {

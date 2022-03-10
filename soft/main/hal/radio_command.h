@@ -7,6 +7,8 @@
 
 #include <data_model/data_ressources_registry.h>
 
+#include <hal/radio.h>
+
 using namespace std;
 
 class RadioCommand : public Task
@@ -15,12 +17,13 @@ class RadioCommand : public Task
 
     int                      _socket;
     DataRessourcesRegistry * _registry;
+    RadioBroker            * _radio;
 
     void run();
 
   public:
 
-    RadioCommand(DataRessourcesRegistry * registry);
+    RadioCommand(DataRessourcesRegistry * registry, RadioBroker * radio);
     ~RadioCommand();
 
 };

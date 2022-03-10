@@ -129,8 +129,8 @@ extern "C" void app_main(void)
     battery_supervisor  = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
-    radio_command       = new RadioCommand(registry);
     radio_broker        = new RadioBroker(RADIO_PERIOD, PLATFORM_RADIO_ADDRESS, transceiver);
+    radio_command       = new RadioCommand(registry, radio_broker);
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, radio_broker, udp, front_left);
 
     registry->internal_set<string>("control.mode", "off");

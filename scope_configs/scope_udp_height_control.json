@@ -6,16 +6,13 @@
         }
     },
     "channels": {
-        "control.attitude.height.position.current": {
+        "control.attitude.height.speed.target": {
             "unit": "m"
         },
         "control.attitude.height.speed.current": {
             "unit": "m"
         },
-        "control.attitude.height.position.target": {
-            "unit": "m"
-        },
-        "control.attitude.height.position.command": {
+        "control.attitude.height.speed.command": {
             "unit": "m"
         }
     },

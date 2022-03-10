@@ -13,6 +13,7 @@
 
 #define RADIO_COMMAND_UDP_PORT      PLATFORM_UDP_PORT_BASE + RADIO_COMMAND_CHANNEL
 
+#define RADIO_COMMAND_FAILSAFE      1500
 
 typedef struct
 {
@@ -68,6 +69,7 @@ void RadioCommand::run()
 {
     RadioCommandPacket packet;
     uint8_t            len;
+    TickType_t         last_command_tick = 0;
 
     while (1)
     {
@@ -84,11 +86,27 @@ void RadioCommand::run()
 
         if (len == sizeof(RadioCommandPacket))
         {
+            last_command_tick = xTaskGetTickCount();
+
             _registry->internal_set<string>("control.mode", packet.armed ? "attitude" : "off");
             _registry->internal_set<float>("control.attitude.roll.position.target",  packet.roll);
             _registry->internal_set<float>("control.attitude.pitch.position.target", packet.pitch);
             _registry->internal_set<float>("control.attitude.height.speed.target", packet.throttle);
             _registry->internal_set<float>("control.attitude.yaw.speed.target", packet.yaw);
+        }
+        else if ((last_command_tick > 0) && ((TickType_t)(xTaskGetTickCount() - last_command_tick) > RADIO_COMMAND_FAILSAFE))
+        {
+            LOG_ERROR("Signal Lost ! Set failsafe commands");
+
+            last_command_tick = xTaskGetTickCount();
+
+            if (_registry->internal_get<string>("control.mode") == "attitude")
+            {
+                _registry->internal_set<float>("control.attitude.roll.position.target",  0.0);
+                _registry->internal_set<float>("control.attitude.pitch.position.target", 0.0);
+                _registry->internal_set<float>("control.attitude.height.speed.target", -0.5);
+                _registry->internal_set<float>("control.attitude.yaw.speed.target", 0.0);
+            }
         }
 
         Task::delay_ms(50);

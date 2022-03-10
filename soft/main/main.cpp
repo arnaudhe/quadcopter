@@ -116,7 +116,7 @@ extern "C" void app_main(void)
 #else
     registry            = new DataRessourcesRegistry("data_model.json");
     wifi                = new Wifi(registry);
-    udp                 = new UdpServer("quadcopter_control", 5001);
+    udp                 = new UdpServer("quadcopter_control", PLATFORM_UDP_PORT_BASE + CONTROL_CHANNEL);
     logger              = new Logger(udp);
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);

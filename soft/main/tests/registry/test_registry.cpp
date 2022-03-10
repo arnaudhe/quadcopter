@@ -4,7 +4,7 @@
 
 int main(int argc, char ** argv)
 {
-    UdpServer * server = new UdpServer("control_server", 5000);
+    UdpServer * server = new UdpServer("control_server", 5001);
     DataRessourcesRegistry * registry = new DataRessourcesRegistry("../../../../../data_model/data_model.json");
     JsonDataProtocol * protocol = new JsonDataProtocol(server, registry);
 

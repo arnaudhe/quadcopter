@@ -9,7 +9,10 @@
 
 #include <hal/log.h>
 
-#define RADIO_COMMAND_UDP_PORT      5002
+#include <platform.h>
+
+#define RADIO_COMMAND_UDP_PORT      PLATFORM_UDP_PORT_BASE + RADIO_COMMAND_CHANNEL
+
 
 typedef struct
 {

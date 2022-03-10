@@ -48,6 +48,9 @@ RadioCommand::RadioCommand(DataRessourcesRegistry * registry) :
         LOG_ERROR("Socket unable to bind: errno %d", errno);
     }
 
+    int flags = fcntl(_socket, F_GETFL);
+    fcntl(_socket, F_SETFL, flags | O_NONBLOCK);
+
     LOG_INFO("Radio command ready");
 }
 
@@ -73,5 +76,7 @@ void RadioCommand::run()
             _registry->internal_set<float>("control.attitude.height.manual.throttle", packet.throttle);
             _registry->internal_set<float>("control.attitude.yaw.speed.target", packet.yaw);
         }
+
+        Task::delay_ms(50);
     }
 }

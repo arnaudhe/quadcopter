@@ -4,9 +4,35 @@ import math
 import threading
 import time
 
-class XBoxController:
+class XboxStickValue(construct.Adapter):
 
     STICK_DEAD_ZONE = 8000
+    STICK_MAX_VALUE = 32768
+
+    def __init__(self):
+        super().__init__(construct.Int16sl)
+
+    def _encode(self, obj, context, path):
+        if obj > 0.0:
+            return (int)(obj * XboxStickValue.STICK_MAX_VALUE) + XboxStickValue.STICK_DEAD_ZONE
+        else:
+            return (int)(obj * XboxStickValue.STICK_MAX_VALUE) - XboxStickValue.STICK_DEAD_ZONE
+
+    def _decode(self, obj, context, path):
+        value = obj
+        if value < 0:
+            if value > -XboxStickValue.STICK_DEAD_ZONE:
+                value = 0
+            else:
+                value = value + XboxStickValue.STICK_DEAD_ZONE
+        else:
+            if value < XboxStickValue.STICK_DEAD_ZONE:
+                value = 0
+            else:
+                value = value - XboxStickValue.STICK_DEAD_ZONE
+        return value / XboxStickValue.STICK_MAX_VALUE
+
+class XBoxController:
 
     PACKET = construct.Struct(
         'type' / construct.Byte,
@@ -31,12 +57,12 @@ class XBoxController:
         'left_push' / construct.Int8ub,
         'right_push' / construct.Int8ub,
         'left_stick' / construct.Struct (
-            'horizontal' / construct.Int16sl,
-            'vertical' / construct.Int16sl,
+            'horizontal' / XboxStickValue(),
+            'vertical' / XboxStickValue(),
         ),
         'right_stick' / construct.Struct (
-            'horizontal' / construct.Int16sl,
-            'vertical' / construct.Int16sl,
+            'horizontal' / XboxStickValue(),
+            'vertical' / XboxStickValue(),
         )
     )
 
@@ -63,10 +89,6 @@ class XBoxController:
                 data = self.dev.read(self.read_end_point.bEndpointAddress, self.read_end_point.wMaxPacketSize, 100)
                 if len(data) == 20:
                     packet = XBoxController.PACKET.parse(data)
-                    packet['left_stick']['horizontal']  = 0 if (math.fabs(packet['left_stick']['horizontal'])  < XBoxController.STICK_DEAD_ZONE) else packet['left_stick']['horizontal']
-                    packet['left_stick']['vertical']    = 0 if (math.fabs(packet['left_stick']['vertical'])    < XBoxController.STICK_DEAD_ZONE) else packet['left_stick']['vertical']
-                    packet['right_stick']['horizontal'] = 0 if (math.fabs(packet['right_stick']['horizontal']) < XBoxController.STICK_DEAD_ZONE) else packet['right_stick']['horizontal']
-                    packet['right_stick']['vertical']   = 0 if (math.fabs(packet['right_stick']['vertical'])   < XBoxController.STICK_DEAD_ZONE) else packet['right_stick']['vertical']
                     self.lock.acquire()
                     self.state = packet
                     del self.state['type']

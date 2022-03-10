@@ -5,6 +5,14 @@ from protocol import JsonProtocol, BinaryProtocol, ProtocolDecodeError
 
 class Controller:
 
+    """
+    This class implement data-model oriented commands, to remotely write and read quadcopter ressources.
+    It relies on a UDP or radio broker, and register to their 'control' channel to send and receive commands.
+    This base class must not instanciated, refer to UdpController and RadioController, depending
+    on the broker kind we are using.
+    Refer to Heartbeat to be able to dynamically detect quadcopter address from advertising.
+    """
+
     CHANNEL = 'control'
 
     def __init__(self, broker, quadcopter_address):
@@ -58,11 +66,19 @@ class Controller:
 
 class UdpController(Controller):
 
+    """
+    UDP specification of base class Controller
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol = JsonProtocol()
 
 class RadioController(Controller):
+
+    """
+    Radio specification of base class Controller
+    """
 
     def __init__(self, data_model, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -3,6 +3,13 @@ import time
 
 class Hearbeat(Thread):
 
+    """
+    This class implement quadcopter detection and address retrieving, based on heartbeat frames periodically sent
+    by the quadcopter.
+    It relies on a UDP or radio broker, and register to their 'heartbeat' channel to receive quadcopter advertisement heartbeats.
+    When quadcopter detected, use this class to get the quacopter address to be able to send it commands
+    """
+
     CHANNEL = 'heartbeat'
     PERIOD = 1.0
 

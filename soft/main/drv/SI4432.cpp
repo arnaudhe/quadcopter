@@ -229,7 +229,7 @@ esp_err_t Si4432::receive_packet(uint8_t * packet, uint8_t * length)
             _spi->read_byte(SI4432_REG_RX_PKT_LENGTH, length);
             if (*length > 0)
             {
-                LOG_DEBUG("Received packet, length %d", *length);
+                LOG_VERBOSE("Received packet, length %d", *length);
                 _spi->read_bytes(SI4432_REG_FIFO, *length, packet);
             }
 

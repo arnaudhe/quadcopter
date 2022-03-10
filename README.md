@@ -49,15 +49,14 @@ Two communications media are supported by the quadcopter:
 ```mermaid
   flowchart TD;
       subgraph Flight controller
-      ESP32-->WIFI;
-      ESP32-->FSK;
+      ESP32<-->WIFI;
+      ESP32<-->RADIO;
       end
       WIFI--TCP/JSON-->CAMERA;
       CAMERA--Analog Video-->VTX
       VTX-->BASE_STATION
-      CAMERA-->BASE_STATION
-      WIFI-->BASE_STATION
-      FSK-->BASE_STATION
+      WIFI<--UDP/JSON-->BASE_STATION
+      RADIO<--FSK/BINARY-->BASE_STATION
 ```
 
 ## Ressources

@@ -32,6 +32,7 @@ set(COMPONENT_SRCS
     hal/imu.cpp
     hal/led.cpp
     hal/motor.cpp
+    hal/radio.cpp
     hal/radio_command.cpp
     hal/wifi.cpp
     hal/wifi_config.c 

@@ -29,6 +29,7 @@
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
 #include <hal/radio_command.h>
+#include <hal/radio.h>
 #include <drv/SI4432.h>
 
 #include <os/task.h>
@@ -71,6 +72,7 @@ extern "C" void app_main(void)
     Adc                     * adc;
     Battery                 * battery;
     Heartbeat               * heartbeat;
+    RadioBroker             * radio_broker;
 #endif
 
     nvs_flash_init();
@@ -129,6 +131,7 @@ extern "C" void app_main(void)
     telemetry           = new Telemetry(registry, 100, udp);
     radio_command       = new RadioCommand(registry);
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, transceiver, udp);
+    radio_broker        = new RadioBroker(RADIO_PERIOD, PLATFORM_RADIO_ADDRESS, transceiver);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -150,25 +153,11 @@ extern "C" void app_main(void)
     telemetry->start();
     battery_supervisor->start();
     heartbeat->start();
+    radio_broker->start();
 #endif
 
     while (true)
     {
-#ifndef DATA_RECORDING
-        for (int i = 0; i < 20; i++)
-        {
-            uint8_t length;
-            uint8_t packet[16];
-            transceiver->receive_packet(packet, &length);
-            if (length)
-            {
-                LOG_DEBUG("Received (%d) : \"%.*s\"", length, length, packet);
-                front_left->beep();
-            }
-            Task::delay_ms(50);
-        }
-#else
         Task::delay_ms(1000);
-#endif
     }
 }

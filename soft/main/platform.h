@@ -22,6 +22,10 @@
 #define BATTERY_SUPERVISOR_PERIOD             (5.0)
 #define CAMERA_SUPERVISOR_PERIOD              (0.05)
 #define HEARTBEAT_PERIOD                      (1.0)
+#define RADIO_PERIOD                          (0.02)
+
+#define PLATFORM_RADIO_ADDRESS                (31)
+
 
 #define PLATFORM_HCSR04_ECHO_PIN              (5)
 #define PLATFORM_HCSR04_TRIG_CHANNEL          (4)

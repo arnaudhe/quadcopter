@@ -130,8 +130,8 @@ extern "C" void app_main(void)
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
     radio_command       = new RadioCommand(registry);
-    heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, transceiver, udp);
     radio_broker        = new RadioBroker(RADIO_PERIOD, PLATFORM_RADIO_ADDRESS, transceiver);
+    heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, radio_broker, udp);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");

@@ -46,19 +46,18 @@ Two communications media are supported by the quadcopter:
 * FSK (longer range, low bandwidth)
 
 
-```
-    +---------+--------+
-    |         |  WIFI  |==== UDP (json) ====
-    |  ESP32  |--------+        OR         ||
-    |         | SI4432 |=== FSK (binary) ===
-    +---------+--------+                   ||
-         ||                                ||
-        wifi                               ||
-     TCP (json)                            ||
-         ||                                ||
-    +----------+                   +----------------+
-    |  CAMERA  |======= wifi =====>|  BASE STATION  |
-    +----------+        RTSP       +----------------+
+```mermaid
+  flowchart TD;
+      subgraph Flight controller
+      ESP32-->WIFI;
+      ESP32-->FSK;
+      end
+      WIFI--TCP/JSON-->CAMERA;
+      CAMERA--Analog Video-->VTX
+      VTX-->BASE_STATION
+      CAMERA-->BASE_STATION
+      WIFI-->BASE_STATION
+      FSK-->BASE_STATION
 ```
 
 ## Ressources

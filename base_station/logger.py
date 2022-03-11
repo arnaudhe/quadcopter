@@ -1,32 +1,30 @@
-import socket
 import time
 from datetime import datetime
-from threading import Thread
+from worker import ThreadedWorker
 
-class Logger(Thread):
+class Logger(ThreadedWorker):
+
+    """
+    This class registers to logs channel, and displays received logs
+    """
 
     CHANNEL = 'logs'
 
     def __init__(self, broker):
         super().__init__()
-        self.broker = broker
-        self.running = True
-        self.broker.register_channel(Logger.CHANNEL)
-        self.start()
+        self._broker = broker
+        self._broker.register_channel(Logger.CHANNEL)
 
-    def run(self):
-        print(f'[{Logger.CHANNEL}] Started')
-        while self.running:
-            if self.broker.received_frame_pending(Logger.CHANNEL):
-                _, data = self.broker.receive(Logger.CHANNEL)
+    def _run(self):
+        """Internal read loop"""
+        print('[logger] Started')
+        while self.running():
+            if self._broker.received_frame_pending(Logger.CHANNEL):
+                data = self._broker.receive(Logger.CHANNEL)
                 print(f'[{Logger.CHANNEL}] {datetime.now()} {data.decode("utf-8")}')
             else:
                 time.sleep(0.1)
-        print(f'[{Logger.CHANNEL}] Stopped')
-
-    def stop(self):
-        self.running = False
-        self.join()
+        print('[logger] Stopped')
 
 if __name__ == '__main__':
 
@@ -34,6 +32,7 @@ if __name__ == '__main__':
 
     broker = UdpBroker()
     logger = Logger(broker)
+    logger.start()
     while True:
         try:
             time.sleep(0.1)

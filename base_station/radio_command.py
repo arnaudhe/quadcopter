@@ -1,82 +1,87 @@
 from xbox import XBoxController
-from threading import Thread
-import time
+from worker import PeriodicWorker
+from broker import Broker
 import struct
 
-class RadioCommand(Thread):
+class RadioCommand(PeriodicWorker):
+
+    """
+    This class get user commands from a remote controller (xbox) and
+    stream those commands to the quadcopter through the "radio_command"
+    broker channel
+    """
 
     CHANNEL = 'radio_command'
 
     TRIM_STEP = 0.01
 
     RATES = {
-        'roll' : (-1, 0.2, 50, 140),
-        'pitch' : (-1, 0.2, 50, 140),
-        'yaw' : (-1, 1.0, 50, 140),
-        'throttle' : (1, 1.2, 50, 140)
+        'roll'     : (-1, 0.2, 50, 140),
+        'pitch'    : (-1, 0.2, 50, 140),
+        'yaw'      : (-1, 1.0, 50, 140),
+        'throttle' : ( 1, 1.2, 50, 140)
     }
 
-    def __init__(self, xbox_controller, broker, quadcopter_address):
-        super().__init__()
-        self.xbox_controller = xbox_controller
-        self.broker = broker
-        self.broker.register_channel(RadioCommand.CHANNEL)
-        self.quadcopter_address = quadcopter_address
-        self.running = True
-        self.start()
+    def __init__(self, xbox_controller: XBoxController, broker: Broker):
+        super().__init__(0.1)
+        self._xbox_controller = xbox_controller
+        self._broker          = broker
+        self._armed           = False
+        self._arming          = False
+        self._roll_trim       = -0.03
+        self._pitch_trim      = 0.02
+        self._yaw_trim        = 0.0
+        self._throttle_trim   = 0.0
+        self._broker.register_channel(RadioCommand.CHANNEL)
 
-    def compute_rate(self, raw, axis):
+    def _compute_rate(self, raw: float, axis: str):
+        """
+        Transform the raw stick position to a quadcopter, by applying a
+        non-linear rate to be more sensitive on small sticks moves 
+        """
         sens, rate, expo, acro = RadioCommand.RATES[axis]
         command = sens * ((1 + 0.01 * expo * (raw * raw - 1.0)) * raw)
         return (command * (rate + (abs(command) * rate * acro * 0.01)))
-
-    def run(self):
-        print('[radio_command] Started')
-        armed           = False
-        arming          = False
-        roll_trim       = -0.03
-        pitch_trim      = 0.02
-        yaw_trim        = 0.0
-        throttle_trim   = 0.0
-        while self.running:
-            state = self.xbox_controller.get_state()
-            if state:
-                if state['keys']['X']:
-                    roll_trim = roll_trim - RadioCommand.TRIM_STEP
-                if state['keys']['B']:
-                    roll_trim = roll_trim + RadioCommand.TRIM_STEP
-                if state['keys']['A']:
-                    pitch_trim = pitch_trim - RadioCommand.TRIM_STEP
-                if state['keys']['Y']:
-                    pitch_trim = pitch_trim + RadioCommand.TRIM_STEP
-                if state['keys']['left']:
-                    yaw_trim = yaw_trim - RadioCommand.TRIM_STEP
-                if state['keys']['right']:
-                    yaw_trim = yaw_trim + RadioCommand.TRIM_STEP
-                if state['keys']['down']:
-                    throttle_trim = throttle_trim - RadioCommand.TRIM_STEP
-                if state['keys']['up']:
-                    throttle_trim = throttle_trim + RadioCommand.TRIM_STEP
-                if state['keys']['left_trigger'] and state['keys']['right_trigger']:
-                    if not arming:
-                        arming = True
-                        armed = not armed
-                else:
-                    if arming:
-                        arming = False
-                roll     = self.compute_rate(roll_trim + state['right_stick']['horizontal'], 'roll')
-                pitch    = self.compute_rate(pitch_trim + state['right_stick']['vertical'], 'pitch')
-                yaw      = self.compute_rate(yaw_trim + state['left_stick']['horizontal'], 'yaw')
-                throttle = self.compute_rate(throttle_trim + state['left_stick']['vertical'], 'throttle')
-                print(armed, roll, pitch, yaw, throttle)
-                self.send(armed, roll, pitch, yaw, throttle)
-            time.sleep(0.05)
-        print('[radio_command] Stopped')
-
-    def stop(self):
-        self.running = False
-        self.join()
-
-    def send(self, armed, roll, pitch, yaw, throttle):
+    
+    def _send(self, armed: bool, roll: float, pitch: float, yaw: float, throttle: float):
+        """
+        Serialize setpoints into radio command frame and send it through radio command broker channel
+        """
         payload = bytes([int(armed)]) + struct.pack("ffff", roll, pitch, yaw, throttle)
-        self.broker.send(self.quadcopter_address, RadioCommand.CHANNEL, payload)
+        self._broker.send(RadioCommand.CHANNEL, payload)
+
+    def _run(self):
+        """
+        Internal periodic run. Get remote controller commands, compute setpoints and send them
+        through radio command broker channel
+        """
+        state = self._xbox_controller.get_state()
+        if state:
+            if state['keys']['X']:
+                self._roll_trim = self._roll_trim - RadioCommand.TRIM_STEP
+            if state['keys']['B']:
+                self._roll_trim = self._roll_trim + RadioCommand.TRIM_STEP
+            if state['keys']['A']:
+                self._pitch_trim = self._pitch_trim - RadioCommand.TRIM_STEP
+            if state['keys']['Y']:
+                self._pitch_trim = self._pitch_trim + RadioCommand.TRIM_STEP
+            if state['keys']['left']:
+                self._yaw_trim = self._yaw_trim - RadioCommand.TRIM_STEP
+            if state['keys']['right']:
+                self._yaw_trim = self._yaw_trim + RadioCommand.TRIM_STEP
+            if state['keys']['down']:
+                self._throttle_trim = self._throttle_trim - RadioCommand.TRIM_STEP
+            if state['keys']['up']:
+                self._throttle_trim = self._throttle_trim + RadioCommand.TRIM_STEP
+            if state['keys']['left_trigger'] and state['keys']['right_trigger']:
+                if not self._arming:
+                    self._arming = True
+                    self._armed = not self._armed
+            else:
+                if self._arming:
+                    self._arming = False
+            roll = self._compute_rate(self._roll_trim + state['right_stick']['horizontal'], 'roll')
+            pitch = self._compute_rate(self._pitch_trim + state['right_stick']['vertical'], 'pitch')
+            yaw = self._compute_rate(self._yaw_trim + state['left_stick']['horizontal'], 'yaw')
+            throttle = self._compute_rate(self._throttle_trim + state['left_stick']['vertical'], 'throttle')
+            self._send(self._armed, roll, pitch, yaw, throttle)

@@ -25,7 +25,6 @@ class BinaryConvertionTypeError(BinaryConvertionError):
         super().__init__('Type mismatch :', type_1, type_2)
 
 class KeyStruct(Adapter):
-
     """
     This class handles adaptation between string key ("attitude.control.mode") and binary id ([0, 1, 2])
     To do so, its contructor receives a dictionary (str, list[int]) of keys to id translation 
@@ -52,9 +51,8 @@ class KeyStruct(Adapter):
         return dict(length=len(ressource_id), fields=ressource_id)
 
 class RessourcesStruct(Adapter):
-
     """
-    This class handles ressources tree format adapatation
+    This class handles ressources tree format adaptation
     """
 
     STATUS_ENUM = Enum(Byte, success=0, not_found=1, bad_type=2, bad_value=3, bad_permissions=4)
@@ -109,7 +107,6 @@ class RessourcesStruct(Adapter):
             return [dict(key=key, type=self._ressources_type[key], value=obj[key]) for key in obj]
 
 class BinaryProtocolStruct(Adapter):
-
     """
     This class is the higher level for binary frame building and parsing
     It defines the global frame structure and performs adaptation between binary-level structure and

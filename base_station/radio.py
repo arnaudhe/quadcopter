@@ -1,11 +1,14 @@
 import time
 from queue import Queue
-from threading import Thread
+from threading import Thread, Lock
 
 from construct import *
 from pyftdi.gpio import *
 from pyftdi.spi import *
 from pyftdi.usbtools import *
+
+from broker import Broker, ChannelListener
+from worker import PeriodicWorker
 
 class RadioConfig:
 
@@ -395,9 +398,27 @@ class Radio(Thread):
         else:
             return self.queue.get()
 
-class RadioBroker(Radio):
+class RadioChannelListener(ChannelListener):
+    """
+    This class implements a channel listener for a given communication channel
+    Radio listener does not manage internally data receiving, as channel multiplexing
+    is performed by radio frame serialization
+    It thus expects data received for a specific listener, ie channel, to be externally
+    enqueue in its reception queue
+    """
 
-    CHANNELS = dict(heartbeat=0, control=1, radio_command=2, telemetry=3, logs=4)
+    def __init__(self, channel: int, name: str, address_filtering: str = None):
+        super().__init__(address_filtering)
+        self._channel = channel
+        self._name    = name
+
+class RadioBroker(Broker, PeriodicWorker):
+    """
+    The class is the specification of broker for radio-based communication
+    As channels multiplexing is done with radio frame serialization, the broker
+    handles global radio reception, demux and dipatching to registered listeners queue.
+    It also handles data sending to radio medium 
+    """
 
     RADIO_FRAME = Struct (
         'length'  / Byte,
@@ -405,55 +426,62 @@ class RadioBroker(Radio):
             'direction' / Enum(BitsInteger(1), uplink=1, downlink=0),
             'address'   / BitsInteger(7),
         ),
-        'channel' / Enum(Byte, **CHANNELS),
+        'channel' / Enum(Byte, **Broker.CHANNELS),
         'payload' / Bytes(this.length - 2)
     )
 
     def __init__(self, index = 0):
-        super().__init__(index)
-        self._registrations = {}
-        self.start_rx()
+        Broker.__init__(self)
+        PeriodicWorker.__init__(self, 0.05)
+        self._radio = Radio(index)
+        self._radio_lock = Lock()
 
-    def register_channel(self, channel):
-        if channel in RadioBroker.CHANNELS:
-            self._registrations[channel] = Queue()
+    def start(self):
+        """Broker start routine"""
+        if not self.running():
+            self._radio.start_rx()
+            PeriodicWorker.start(self)
 
-    def get_received_frames(self):
-        while super().received_frame_pending():
-            length, frame_bytes, rssi = super().receive()
+    def _run(self):
+        """Radio listening main loop"""
+        self._radio_lock.acquire()
+        if self._radio.received_frame_pending():
+            length, frame_bytes, rssi = self._radio.receive()
             try:
                 frame = RadioBroker.RADIO_FRAME.parse(frame_bytes)
+                direction = str(frame['inner']['direction'])
+                channel   = str(frame['channel'])
+                address   = frame['inner']['address']
+                data      = frame['payload']
+                if direction == 'downlink' and self.is_registered(channel):
+                    self._listeners[channel].enqueue(address, data)
             except ConstructError:
                 print('Invalid frame')
-                continue
-            if str(frame['inner']['direction']) == 'downlink':
-                if str(frame['channel']) in self._registrations:
-                    self._registrations[str(frame['channel'])].put((frame['inner']['address'], frame['payload']))
+        self._radio_lock.release()
 
-    def receive(self, channel):
-        if self.received_frame_pending(channel):
-            return self._registrations[channel].get()
-
-    def received_frame_pending(self, channel):
-        self.get_received_frames()
-        if channel in self._registrations:
-            return not self._registrations[channel].empty()
-        else:
-            return False
-
-    def send(self, address: int, channel: str, payload: bytes):
-        frame_bytes = RadioBroker.RADIO_FRAME.build(dict(length=len(payload) + 2, inner=dict(direction='uplink', address=address), channel=channel, payload=payload))
-        super().transmit(frame_bytes)
+    def _send_to(self, address: int, channel: str, data: bytes):
+        """Format and send a frame to the requested destination address"""
+        frame_bytes = RadioBroker.RADIO_FRAME.build(dict(length=len(data) + 2, 
+                                                         inner=dict(direction='uplink', 
+                                                                    address=address),
+                                                         channel=channel,
+                                                         payload=data))
+        self._radio_lock.acquire()
+        self._radio.transmit(frame_bytes)
+        self._radio_lock.release()
 
     def stop(self):
-        self.stop_rx()
-        self.close()
+        """Broker stop routine"""
+        if self.running():
+            self._radio.stop_rx()
+            PeriodicWorker.stop(self)
 
 if __name__ == '__main__':
     radio = RadioBroker(0)
+    radio.set_quadcopter_address(31)
     for i in range(3):
         print('transmit')
-        radio.send(1, 'heartbeat', b'Hello World')
+        radio.Send('heartbeat', b'Hello World')
         time.sleep(1.0)
     radio.start_rx()
     print("wait 10s")

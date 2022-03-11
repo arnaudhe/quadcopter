@@ -1,77 +1,69 @@
 import socket
 from queue import Queue
-from threading import Thread
+from worker import ThreadedWorker
+from broker import Broker, ChannelListener
+from typing import Tuple
 
-class Udp(Thread):
+class UdpChannelListener(ThreadedWorker, ChannelListener):
+    """
+    This class implements a channel listener for a given communication channel
+    It listens data on a UDP socket and expects data specific to the corresponding
+    channel to be sent on corresponding UDP port
+    Listener does not manage data sending 
+    """
 
-    def __init__(self, channel, port, read = True):
-        super().__init__(target=self.read_loop)
-        self.channel = channel
-        self.port    = port
-        self.sock    = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.queue   = Queue()
-        self.running = False
-        if read:
-            self.sock.settimeout(1.0)
-            self.sock.bind(('', port))
-            print(f'[{self.channel}] Socket bound on port {port}')
-            self.running = True
-            self.start()
+    def __init__(self, name: str, port: int, address_filtering: str = None):
+        ThreadedWorker.__init__(self)
+        ChannelListener.__init__(self, address_filtering)
+        self._name = name
+        self._port = port
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def read_loop(self):
-        while self.running:
+    def _run(self):
+        """Internal read loop"""
+        while self.running():
             try:
-                data, address = self.sock.recvfrom(1024)
-                if len(data):
-                    self.queue.put((address[0], data))
+                data, remote = self._sock.recvfrom(1024)
+                if data:
+                    self.enqueue(remote[0], data)
             except socket.timeout:
                 pass
-
-    def receive(self):
-        if self.received_frame_pending():
-            return self.queue.get()
-
-    def received_frame_pending(self):
-        return not self.queue.empty()
-
-    def send(self, address, data):
-        try:
-            self.sock.sendto(data, (address, self.port))
-        except:
-            print(f'[{self.channel}] Send error')
+    
+    def start(self):
+        """Start UDP listener"""
+        self._sock.settimeout(0.1)
+        self._sock.bind(('', self._port))
+        print(f'[{self._name}] Socket bound on port {self._port}')
+        ThreadedWorker.start(self)
 
     def stop(self):
-        if self.running:
-            self.running = False
-            self.join()
-        self.sock.close()
-        print(f'[{self.channel}] Socket closed')
+        """Stop UDP listener"""
+        ThreadedWorker.stop(self)
+        self._sock.close()
+        print(f'[{self._name}] Socket closed')
 
-class UdpBroker:
+class UdpBroker(Broker):
+    """
+    The class is the specification of broker for UDP-based communication
+    Listeners and sending are based on UDP sockets (a listening socket per registered channel)
+    Channel multiplexing is done with UDP sockets port
+    """
 
-    CHANNELS = dict(heartbeat=5000, control=5001, radio_command=5002, telemetry=5003, logs=5004)
+    PORT_BASE = 5000
 
     def __init__(self):
-        self._registrations = {}
+        super().__init__()
+        self._send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def register_channel(self, channel, read = True):
-        if channel in UdpBroker.CHANNELS:
-            self._registrations[channel] = Udp(channel, UdpBroker.CHANNELS[channel], read)
+    def _create_listener(self, channel: str) -> UdpChannelListener:
+        """Create a UDP listener"""
+        udp_port = UdpBroker.PORT_BASE + Broker.CHANNELS[channel]
+        return UdpChannelListener(channel, udp_port, self._quadcopter_address)
 
-    def receive(self, channel):
-        if self.received_frame_pending(channel):
-            return self._registrations[channel].receive()
-
-    def received_frame_pending(self, channel):
-        if channel in self._registrations:
-            return self._registrations[channel].received_frame_pending()
-        else:
-            return False
-
-    def send(self, address: str, channel: str, data: bytes):
-        if channel in self._registrations:
-            self._registrations[channel].send(address, data)
-
-    def stop(self):
-        for udp in self._registrations:
-            self._registrations[udp].stop()
+    def _send_to(self, address: str, channel: str, data: bytes):
+        """Send a frame to the requested destination address"""
+        udp_port = UdpBroker.PORT_BASE + Broker.CHANNELS[channel]
+        try:
+            self._send_sock.sendto(data, (address, udp_port))
+        except:
+            print('[UDP Broker] Send error')

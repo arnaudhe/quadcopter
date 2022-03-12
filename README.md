@@ -6,6 +6,47 @@ DIY quadcopter based on ESP32-WROOM
 
 ## Overview
 
+### Architecture overview
+
+```mermaid
+  flowchart LR;
+    subgraph QUADCOPTER
+      BATTERY--supply-->Flight_controller
+      BATTERY--supply-->GIMBAL
+      HCSR04<--pulse-->ESP32
+      subgraph Flight_controller
+        MPU6050--I2C-->ESP32
+        HMC5883L--I2C-->ESP32
+        BMP280--I2C-->ESP32
+        ESP32--DSHOT-->ESC
+        ESP32--SPI-->SI4432
+      end
+      subgraph Motors
+        ESC--3-->FRONT_RIGHT_MOTOR
+        ESC--3-->FRONT_LEFT_MOTOR
+        ESC--3-->REAR_RIGHT_MOTOR
+        ESC--3-->REAR_LEFT_MOTOR
+      end
+      subgraph Video
+        direction TB
+        ESP32--PWM-->GIMBAL
+        ESP32--TCP-->CAMERA
+        CAMERA--Analog-->VIDEO_TX
+        GIMBAL--supply-->VIDEO_TX
+      end
+      GPS--UART-->ESP32
+    end
+      subgraph Base_Station
+        XBOX_REMOTE--USB-->LAPTOP
+        LAPTOP<--USB-->RADIO_DONGLE
+        VIDEO_RX--USB-->LAPTOP
+      end
+      RADIO_DONGLE-.433 MHz FSK.->SI4432
+      LAPTOP-.WIFI.->ESP32
+      VIDEO_TX-.5,8GHz.->VIDEO_RX
+```
+
+
 ### Sensors
 
 * Attitude sensing is based on MPU6050 (accelerometer + gyroscope) and HMC5883L (magnetometer), computed through a [Madgwick Filter](https://x-io.co.uk/open-source-imu-and-ahrs-algorithms/)

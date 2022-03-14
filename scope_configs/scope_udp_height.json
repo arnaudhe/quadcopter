@@ -17,6 +17,9 @@
         },
         "control.attitude.height.position.current": {
             "unit": "m"
+        },
+        "control.attitude.height.speed.current": {
+            "unit": "m"
         }
     },
     "scope": {

@@ -9,8 +9,11 @@ class ThreadedWorker(Thread):
     Worker can inherit from this class and implement the "_run" method
     """
 
-    def __init__(self):
-        super().__init__(target=self._run)
+    def __init__(self, target = None):
+        if target:
+            super().__init__(target=target)
+        else:
+            super().__init__(target=self._run)
         self._running = False
 
     def _run(self):

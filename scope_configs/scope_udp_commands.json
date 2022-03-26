@@ -1,0 +1,30 @@
+{
+    "source": {
+        "type": "udp",
+        "params": {
+            "port": 5003
+        }
+    },
+    "channels": {
+        "control.attitude.roll.position.target": {
+            "unit": "rad"
+        },
+        "control.attitude.pitch.position.target": {
+            "unit": "rad"
+        },
+        "control.attitude.yaw.speed.target": {
+            "unit": "rad"
+        },
+        "control.attitude.height.speed.target": {
+            "unit": "rad"
+        }
+    },
+    "scope": {
+        "width": 1280,
+        "height": 800,
+        "x_depth": 2000,
+        "y_min": -0.8,
+        "y_max": 0.8
+    },
+    "period": 0.01
+}

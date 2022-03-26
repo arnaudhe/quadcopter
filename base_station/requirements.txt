@@ -6,3 +6,4 @@ pyqtgraph
 construct
 pyftdi
 opencv-python
+crc16

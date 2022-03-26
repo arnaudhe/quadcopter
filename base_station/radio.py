@@ -10,6 +10,8 @@ from pyftdi.usbtools import *
 from broker import Broker, ChannelListener
 from worker import PeriodicWorker
 
+from crc16 import crc16xmodem
+
 class RadioConfig:
 
     CONFIG_VALUES = [ (0x00, 0x10), (0x01, 0xA4), (0x02, 0x09), (0x03, 0x0F), (0x04, 0x13),
@@ -412,6 +414,36 @@ class RadioChannelListener(ChannelListener):
         self._channel = channel
         self._name    = name
 
+class RadioFrame(Adapter):
+
+    STRUCT = RawCopy(Struct(
+        'fields' / RawCopy(Struct(
+            'length'  / Byte,
+            'inner'   / BitStruct(
+                'direction' / Enum(BitsInteger(1), uplink=1, downlink=0),
+                'address'   / BitsInteger(7),
+            ),
+            'channel' / Enum(Byte, **Broker.CHANNELS),
+            'payload' / Bytes(this.length - 4))),
+        'crc' / Checksum(Int16ub, lambda data: crc16xmodem(data), this.fields.data)
+    ))
+
+    def __init__(self):
+        super().__init__(RadioFrame.STRUCT)
+
+    def _encode(self, obj, context, path):
+        """Overload of construct.Adapter "_encode" method"""
+        return  dict(value=dict(fields=dict(value=dict(length=len(obj['data']) + 4,
+                                                       inner=dict(direction=obj['direction'],
+                                                                  address=obj['address']),
+                                                       channel=obj['channel'],
+                                                       payload=obj['data']))))
+
+    def _decode(self, obj, context, path):
+        """Overload of construct.Adapter "_decode" method"""
+        return dict(direction=str(obj.value.fields.value.inner.direction), channel=str(obj.value.fields.value.channel),
+                    address=obj.value.fields.value.inner.address, data=obj.value.fields.value.payload)
+
 class RadioBroker(Broker, PeriodicWorker):
     """
     The class is the specification of broker for radio-based communication
@@ -419,16 +451,6 @@ class RadioBroker(Broker, PeriodicWorker):
     handles global radio reception, demux and dipatching to registered listeners queue.
     It also handles data sending to radio medium 
     """
-
-    RADIO_FRAME = Struct (
-        'length'  / Byte,
-        "inner"   / BitStruct(
-            'direction' / Enum(BitsInteger(1), uplink=1, downlink=0),
-            'address'   / BitsInteger(7),
-        ),
-        'channel' / Enum(Byte, **Broker.CHANNELS),
-        'payload' / Bytes(this.length - 2)
-    )
 
     def __init__(self, index = 0):
         Broker.__init__(self)
@@ -447,25 +469,14 @@ class RadioBroker(Broker, PeriodicWorker):
         self._radio_lock.acquire()
         if self._radio.received_frame_pending():
             length, frame_bytes, rssi = self._radio.receive()
-            try:
-                frame = RadioBroker.RADIO_FRAME.parse(frame_bytes)
-                direction = str(frame['inner']['direction'])
-                channel   = str(frame['channel'])
-                address   = frame['inner']['address']
-                data      = frame['payload']
-                if direction == 'downlink' and self.is_registered(channel):
-                    self._listeners[channel].enqueue(address, data)
-            except ConstructError:
-                print('Invalid frame')
+            frame = RadioFrame().parse(frame_bytes)
+            if frame['direction'] == 'downlink' and self.is_registered(frame['channel']):
+                self._listeners[frame['channel']].enqueue(frame['address'], frame['data'])
         self._radio_lock.release()
 
     def _send_to(self, address: int, channel: str, data: bytes):
         """Format and send a frame to the requested destination address"""
-        frame_bytes = RadioBroker.RADIO_FRAME.build(dict(length=len(data) + 2, 
-                                                         inner=dict(direction='uplink', 
-                                                                    address=address),
-                                                         channel=channel,
-                                                         payload=data))
+        frame_bytes = RadioFrame().build(dict(direction='uplink', address=address, channel=channel, data=data))
         self._radio_lock.acquire()
         self._radio.transmit(frame_bytes)
         self._radio_lock.release()

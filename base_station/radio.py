@@ -449,7 +449,7 @@ class RadioBroker(Broker, PeriodicWorker):
     The class is the specification of broker for radio-based communication
     As channels multiplexing is done with radio frame serialization, the broker
     handles global radio reception, demux and dipatching to registered listeners queue.
-    It also handles data sending to radio medium 
+    It also handles data sending to radio medium
     """
 
     def __init__(self, index = 0):
@@ -457,6 +457,7 @@ class RadioBroker(Broker, PeriodicWorker):
         PeriodicWorker.__init__(self, 0.05)
         self._radio = Radio(index)
         self._radio_lock = Lock()
+        self._link_quality = 0
 
     def start(self):
         """Broker start routine"""
@@ -464,14 +465,30 @@ class RadioBroker(Broker, PeriodicWorker):
             self._radio.start_rx()
             PeriodicWorker.start(self)
 
+    def _rssi_to_link_quality(self, rssi):
+        """Convert and stores current link quality from rssi"""
+        min_rssi = -100
+        max_rssi = -41
+        if rssi <= min_rssi:
+            self._link_quality = 0
+        elif rssi >= max_rssi:
+            self._link_quality = 100
+        else:
+            self._link_quality = int((100 / (max_rssi - min_rssi)) * rssi + 170)
+
     def _run(self):
         """Radio listening main loop"""
         self._radio_lock.acquire()
         if self._radio.received_frame_pending():
             length, frame_bytes, rssi = self._radio.receive()
-            frame = RadioFrame().parse(frame_bytes)
+            try:
+                frame = RadioFrame().parse(frame_bytes)
+            except ConstructError:
+                print('Invalid frame')
             if frame['direction'] == 'downlink' and self.is_registered(frame['channel']):
+                self._rssi_to_link_quality(rssi)
                 self._listeners[frame['channel']].enqueue(frame['address'], frame['data'])
+                print(self._link_quality)
         self._radio_lock.release()
 
     def _send_to(self, address: int, channel: str, data: bytes):
@@ -486,6 +503,10 @@ class RadioBroker(Broker, PeriodicWorker):
         if self.running():
             self._radio.stop_rx()
             PeriodicWorker.stop(self)
+
+    def get_link_quality(self):
+        """Returns current link quality"""
+        return self._link_quality
 
 if __name__ == '__main__':
     radio = RadioBroker(0)

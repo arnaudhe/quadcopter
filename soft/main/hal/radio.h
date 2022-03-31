@@ -2,44 +2,25 @@
 
 #include <drv/SI4432.h>
 #include <os/mutex.h>
-#include <os/periodic_task.h>
-#include <os/queue.h>
+#include <stdint.h>
+#include <tuple>
+#include <utils/byte_array.h>
 
-#define RADIO_REGISTRATION_COUNT    3
-
-class RadioBroker : public PeriodicTask
+class Radio
 {
-
-public:
-
-    struct Registration
-    {
-        bool    registered;
-        uint8_t channel;
-        bool    received_frame_pending;
-        uint8_t received_frame_length;
-        uint8_t received_frame[64];
-    };
 
 private:
 
-    Si4432          * _transceiver;
-    Mutex           * _mutex;
-    uint8_t           _address;
-    Registration      _registrations[RADIO_REGISTRATION_COUNT];
-
-    void run();
+    Si4432 * _transceiver;
+    uint8_t  _address;
+    Mutex  * _mutex;
 
 public:
 
-    RadioBroker(float period, uint8_t address, Si4432 * transceiver);
+    Radio(Si4432 * si4432);
 
-    void register_channel(uint8_t channel);
+    void send(uint8_t channel, ByteArray payload);
 
-    bool received_frame_pending(uint8_t channel);
-
-    bool receive(uint8_t channel, uint8_t * data, uint8_t * length);
-
-    void send(uint8_t channel, uint8_t * data, uint8_t length);
+    tuple<uint8_t, ByteArray> receive(void);
 
 };

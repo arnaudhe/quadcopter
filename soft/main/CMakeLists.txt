@@ -19,6 +19,7 @@ set(COMPONENT_SRCS
     app/workers/battery_supervisor.cpp
     app/workers/camera_controller.cpp
     app/workers/heartbeat.cpp
+    app/workers/broker.cpp
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp

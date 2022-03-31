@@ -30,6 +30,7 @@
 #include <hal/wifi.h>
 #include <hal/radio_command.h>
 #include <hal/radio.h>
+#include <hal/radio.h>
 #include <drv/SI4432.h>
 
 #include <os/task.h>
@@ -61,6 +62,7 @@ extern "C" void app_main(void)
     MotorsController        * motors_controller;
     Wifi                    * wifi;
     UdpServer               * udp;
+    Radio                   * radio;
     DataRessourcesRegistry  * registry;
     JsonDataProtocol        * protocol;
     BatterySupervisor       * battery_supervisor;
@@ -72,7 +74,6 @@ extern "C" void app_main(void)
     Adc                     * adc;
     Battery                 * battery;
     Heartbeat               * heartbeat;
-    RadioBroker             * radio_broker;
 #endif
 
     nvs_flash_init();
@@ -129,9 +130,9 @@ extern "C" void app_main(void)
     battery_supervisor  = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
     telemetry           = new Telemetry(registry, 100, udp);
-    radio_broker        = new RadioBroker(RADIO_PERIOD, PLATFORM_RADIO_ADDRESS, transceiver);
     radio_command       = new RadioCommand(registry, radio_broker);
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, radio_broker, udp, front_left);
+    radio               = new Radio(transceiver);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -153,7 +154,6 @@ extern "C" void app_main(void)
     telemetry->start();
     battery_supervisor->start();
     heartbeat->start();
-    radio_broker->start();
 #endif
 
     while (true)

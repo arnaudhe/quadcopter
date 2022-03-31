@@ -9,7 +9,7 @@
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
 #include <app/controllers/motors_controller.h>
-#include <app/data_recorder/data_recorder.h>
+#include <app/workers/data_recorder.h>
 #include <app/workers/telemetry.h>
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
@@ -29,8 +29,8 @@
 #include <hal/motor.h>
 #include <hal/udp_server.h>
 #include <hal/wifi.h>
-#include <hal/radio_command.h>
 #include <hal/radio.h>
+#include <app/workers/radio_command.h>
 #include <hal/radio.h>
 #include <drv/SI4432.h>
 
@@ -130,11 +130,11 @@ extern "C" void app_main(void)
     gps                 = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
     battery_supervisor  = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
     camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
-    radio_command       = new RadioCommand(registry, radio_broker);
     radio               = new Radio(transceiver);
     broker              = new Broker(BROKER_PERIOD, radio);
     logger              = new Logger(broker);
     telemetry           = new Telemetry(registry, 100, broker);
+    radio_command       = new RadioCommand(registry, broker);
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, broker, front_left);
 
     registry->internal_set<string>("control.mode", "off");

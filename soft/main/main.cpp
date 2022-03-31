@@ -65,7 +65,7 @@ extern "C" void app_main(void)
     UdpServer               * udp;
     Radio                   * radio;
     DataRessourcesRegistry  * registry;
-    JsonDataProtocol        * protocol;
+    JsonDataProtocol        * json_protocol;
     BatterySupervisor       * battery_supervisor;
     CameraController        * camera;
     UltrasoundSensor        * ultrasound;
@@ -118,9 +118,9 @@ extern "C" void app_main(void)
     data_recorder       = new DataRecorder(front_left, front_right, rear_left, rear_right, marg);
 #else
     registry            = new DataRessourcesRegistry("data_model.json");
+    json_protocol       = new JsonDataProtocol(registry);
     wifi                = new Wifi(registry);
     udp                 = new UdpServer("quadcopter_control", PLATFORM_UDP_PORT_BASE + CONTROL_CHANNEL);
-    protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
     motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
     rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer, registry);

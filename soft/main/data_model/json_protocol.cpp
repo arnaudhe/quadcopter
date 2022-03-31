@@ -5,12 +5,9 @@
 
 using json = nlohmann::json;
 
-JsonDataProtocol::JsonDataProtocol(UdpServer * udp, DataRessourcesRegistry * registry)
+JsonDataProtocol::JsonDataProtocol(DataRessourcesRegistry * registry)
 {
-    _udp      = udp;
     _registry = registry;
-
-    _udp->register_callback(std::bind(&JsonDataProtocol::on_received_packet, this, placeholders::_1, placeholders::_2));
 }
 
 void JsonDataProtocol::on_received_packet(string request, string &response)

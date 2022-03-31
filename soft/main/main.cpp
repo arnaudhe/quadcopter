@@ -82,6 +82,9 @@ extern "C" void app_main(void)
 
     nvs_flash_init();
 
+    (void)logger;
+    (void)position_controller;
+
     adc = new Adc(PLATFORM_BATTERY_ADC_UNIT);
     battery = new Battery(adc, PLATFORM_BATTERY_ADC_CHANNEL, PLATFORM_BATTERY_CELLS, PLATFORM_BATTERY_DIVIDER);
 

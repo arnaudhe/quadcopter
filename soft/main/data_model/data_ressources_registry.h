@@ -5,9 +5,9 @@
 #include <cassert>
 #include <functional>
 #include <data_model/data_ressource.h>
-#include <hal/udp_server.h>
 #include <utils/json.hpp>
 #include <os/mutex.h>
+#include <utils/byte_array.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -64,8 +64,8 @@ class DataRessourcesRegistry
   private:
 
     map<string, DataRessource*> _map;
+    map<ByteArray, string>      _key_lookup;
     Mutex                       _mutex;
-    function<void(string, DataRessource *)> _callback;
 
   public:
 
@@ -91,9 +91,9 @@ class DataRessourcesRegistry
     template <typename T>
     void internal_set_fast(T * handle, T value);
 
-    void load_data_model(json * node, string current_key = "");
+    void load_data_model(json * node, string current_key = "", ByteArray current_id = ByteArray());
 
-    void register_callback(function<void(string, DataRessource *)>);
+    Status get_key_from_id(ByteArray id, string &key);
 
 };
 

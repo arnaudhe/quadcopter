@@ -9,9 +9,8 @@
 
 #include <hal/log.h>
 
-DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) : 
-    _mutex(),
-    _callback(NULL)
+DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
+    _mutex()
 {
     bool aborted = false;
 
@@ -85,16 +84,18 @@ DataRessourcesRegistry::DataRessourcesRegistry(string data_model_file) :
 
 }
 
-void DataRessourcesRegistry::load_data_model(json * node, string current_key)
+void DataRessourcesRegistry::load_data_model(json * node, string current_key, ByteArray current_id)
 {
-    for (json::iterator it = node->begin(); it != node->end(); ++it) 
+    for (json::iterator it = node->begin(); it != node->end(); ++it)
     {
         string new_key = current_key + it.key();
         if (it.value().is_object())
         {
+            ByteArray new_id = ByteArray(current_id) + ByteArray(it.value().at("id").get<int>());
             if (it.value().contains("type"))
             {
-                LOG_INFO("Load value %s", new_key.c_str());
+                LOG_INFO("Load value %s %s", new_key.c_str(), new_id.hex().c_str());
+                _key_lookup[new_id] = new_key;
                 if (it.value().at("type").get<string>() == "integer")
                 {
                     _map[new_key] = new DataRessource(0);
@@ -179,7 +180,7 @@ void DataRessourcesRegistry::load_data_model(json * node, string current_key)
             }
             else
             {
-                load_data_model(&it.value(), new_key + '.');
+                load_data_model(&it.value(), new_key + '.', new_id);
             }
         }
     }
@@ -197,7 +198,15 @@ DataRessource::Type DataRessourcesRegistry::type(string key)
     }
 }
 
-void DataRessourcesRegistry::register_callback(function<void(string, DataRessource *)> callback)
+DataRessourcesRegistry::Status DataRessourcesRegistry::get_key_from_id(ByteArray id, string &key)
 {
-    _callback = callback;
+    if (_map.count(key) == 1)
+    {
+        key = _key_lookup[id];
+        return Status::SUCCESS;
+    }
+    else 
+    {
+        return Status::BAD_RESSOURCE;
+    }
 }

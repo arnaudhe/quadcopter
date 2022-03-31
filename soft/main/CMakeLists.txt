@@ -26,7 +26,6 @@ set(COMPONENT_SRCS
     data_model/data_ressources_registry.cpp
     data_model/json_protocol.cpp
     hal/battery.cpp
-    hal/udp_server.cpp
     hal/ultrasound.cpp
     hal/log.cpp
     hal/mdns.cpp

@@ -14,6 +14,7 @@
 #include <app/workers/battery_supervisor.h>
 #include <app/workers/camera_controller.h>
 #include <app/workers/heartbeat.h>
+#include <app/workers/data_model_controller.h>
 #include <app/workers/broker.h>
 
 #include <data_model/data_ressources_registry.h>
@@ -76,6 +77,7 @@ extern "C" void app_main(void)
     Battery                 * battery;
     Heartbeat               * heartbeat;
     Broker                  * broker;
+    DataModelController     * data_model_controller;
 #endif
 
     nvs_flash_init();
@@ -136,6 +138,7 @@ extern "C" void app_main(void)
     telemetry           = new Telemetry(registry, 100, broker);
     radio_command       = new RadioCommand(registry, broker);
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, broker, front_left);
+    data_model_controller = new DataModelController(DATA_MODEL_CONTROLLER_PERIOD, broker, json_protocol, binary_protocol);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");
@@ -157,6 +160,7 @@ extern "C" void app_main(void)
     telemetry->start();
     battery_supervisor->start();
     heartbeat->start();
+    data_model_controller->start();
     broker->start();
 #endif
 

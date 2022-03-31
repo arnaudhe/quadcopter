@@ -21,6 +21,7 @@ set(COMPONENT_SRCS
     app/workers/heartbeat.cpp
     app/workers/radio_command.cpp
     app/workers/broker.cpp
+    app/workers/data_model_controller.cpp
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp

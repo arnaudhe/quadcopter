@@ -120,7 +120,6 @@ extern "C" void app_main(void)
     registry            = new DataRessourcesRegistry("data_model.json");
     wifi                = new Wifi(registry);
     udp                 = new UdpServer("quadcopter_control", PLATFORM_UDP_PORT_BASE + CONTROL_CHANNEL);
-    logger              = new Logger(udp);
     protocol            = new JsonDataProtocol(udp, registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
     motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
@@ -136,6 +135,7 @@ extern "C" void app_main(void)
     heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, radio_broker, udp, front_left);
     radio               = new Radio(transceiver);
     broker              = new Broker(BROKER_PERIOD, radio);
+    logger              = new Logger(broker);
 
     registry->internal_set<string>("control.mode", "off");
     registry->internal_set<string>("control.phase", "landed");

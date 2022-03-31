@@ -1,8 +1,8 @@
 #pragma once
 
-#include <hal/udp_server.h>
 #include <stdarg.h>
 #include <string.h>
+#include <app/workers/broker.h>
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -51,11 +51,11 @@ class Logger
 {
   private:
 
-    UdpServer * _udp;
+    Broker * _broker;
 
   public:
 
-    Logger(UdpServer * udp);
+    Logger(Broker * broker);
 
     static void Verbose(const char * filename, const char * fmt, ...);
     static void Debug(const char * filename, const char * fmt, ...);

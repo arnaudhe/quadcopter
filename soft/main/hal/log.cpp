@@ -5,9 +5,9 @@
 
 Logger * _logger = NULL;
 
-Logger::Logger(UdpServer *udp)
+Logger::Logger(Broker * broker)
 {
-    _udp = udp;
+    _broker = broker;
     _logger = this;
 }
 
@@ -26,7 +26,7 @@ void IRAM_ATTR Logger::Verbose(const char * filename, const char * fmt, ...)
 
         if (_logger)
         {
-            _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+            _logger->_broker->send(Broker::Channel::LOGS, Broker::Medium::UDP, ByteArray((uint8_t *)buffer, strlen(buffer)));
         }
     }
 }
@@ -43,7 +43,7 @@ void IRAM_ATTR Logger::Debug(const char * filename, const char * fmt, ...)
 
     if (_logger)
     {
-        _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+        _logger->_broker->send(Broker::Channel::LOGS, Broker::Medium::UDP, ByteArray((uint8_t *)buffer, strlen(buffer)));
     }
 }
 
@@ -59,7 +59,7 @@ void IRAM_ATTR Logger::Info(const char * filename, const char * fmt, ...)
 
     if (_logger)
     {
-        _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+        _logger->_broker->send(Broker::Channel::LOGS, Broker::Medium::UDP, ByteArray((uint8_t *)buffer, strlen(buffer)));
     }
 }
 
@@ -75,7 +75,7 @@ void IRAM_ATTR Logger::Warning(const char * filename, const char * fmt, ...)
 
     if (_logger)
     {
-        _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+        _logger->_broker->send(Broker::Channel::LOGS, Broker::Medium::UDP, ByteArray((uint8_t *)buffer, strlen(buffer)));
     }
 }
 
@@ -91,6 +91,6 @@ void IRAM_ATTR Logger::Error(const char * filename, const char * fmt, ...)
 
     if (_logger)
     {
-        _logger->_udp->send_broadcast(buffer, LOGGER_DEST_PORT);
+        _logger->_broker->send(Broker::Channel::LOGS, Broker::Medium::UDP, ByteArray((uint8_t *)buffer, strlen(buffer)));
     }
 }

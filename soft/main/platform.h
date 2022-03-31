@@ -31,7 +31,6 @@
 #define CONTROL_CHANNEL                       (1)
 #define RADIO_COMMAND_CHANNEL                 (2)
 #define TELEMETRY_CHANNEL                     (3)
-#define LOGS_CHANNEL                          (4)
 
 #define PLATFORM_HCSR04_ECHO_PIN              (5)
 #define PLATFORM_HCSR04_TRIG_CHANNEL          (4)

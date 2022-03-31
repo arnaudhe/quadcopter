@@ -37,7 +37,7 @@ set(COMPONENT_SRCS
     hal/motor.cpp
     hal/radio.cpp
     hal/wifi.cpp
-    hal/wifi_config.c 
+    hal/wifi_config.c
     hal/marg.cpp
     hal/gps.cpp
     os/mutex.cpp

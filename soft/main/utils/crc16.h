@@ -14,6 +14,7 @@ public:
     Crc16(uint16_t initial_crc = 0);
 
     uint16_t update(const uint8_t * data, int length);
+    uint16_t update(uint8_t data);
 
     uint16_t get_crc(void);
 

@@ -54,6 +54,11 @@ uint16_t Crc16::update(const uint8_t* data, int length)
     return _crc;
 }
 
+uint16_t Crc16::update(uint8_t data)
+{
+    return update(&data, 1);
+}
+
 uint16_t Crc16::get_crc(void)
 {
     return _crc;

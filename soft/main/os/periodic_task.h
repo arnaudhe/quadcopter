@@ -9,6 +9,7 @@
 #include <map>
 
 #include <os/semaphore.h>
+#include <os/task.h>
 
 using namespace std;
 

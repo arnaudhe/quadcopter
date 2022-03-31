@@ -3,6 +3,7 @@
 #include <drv/BMP180_conf.h>
 #include <hal/log.h>
 #include <math.h>
+#include <os/task.h>
 
 BMP180::BMP180(I2cMaster * i2c)
 {

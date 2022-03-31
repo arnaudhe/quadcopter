@@ -1,5 +1,6 @@
 #include <app/workers/battery_supervisor.h>
 #include <hal/log.h>
+#include <os/task.h>
 
 BatterySupervisor::BatterySupervisor(float period, Battery * battery, DataRessourcesRegistry * registry):
     PeriodicTask("battery_supervisor", Task::Priority::VERY_LOW, (int)(period * 1000), false)

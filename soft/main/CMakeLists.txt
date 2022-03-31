@@ -6,7 +6,7 @@ set(COMPONENT_SRCS
     drv/HCSR04.cpp
     drv/DShotRMT.cpp
     drv/SI4432.cpp
-    app/data_recorder/data_recorder.cpp
+    app/workers/data_recorder.cpp
     app/workers/telemetry.cpp
     app/controllers/position_controller.cpp
     app/controllers/attitude_controller.cpp
@@ -19,6 +19,7 @@ set(COMPONENT_SRCS
     app/workers/battery_supervisor.cpp
     app/workers/camera_controller.cpp
     app/workers/heartbeat.cpp
+    app/workers/radio_command.cpp
     app/workers/broker.cpp
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
@@ -34,7 +35,6 @@ set(COMPONENT_SRCS
     hal/led.cpp
     hal/motor.cpp
     hal/radio.cpp
-    hal/radio_command.cpp
     hal/wifi.cpp
     hal/wifi_config.c 
     hal/marg.cpp

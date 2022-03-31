@@ -27,10 +27,8 @@
 #define PLATFORM_RADIO_ADDRESS                (31)
 
 #define PLATFORM_UDP_PORT_BASE                (5000)
-#define HEARTBEAT_CHANNEL                     (0)
 #define CONTROL_CHANNEL                       (1)
 #define RADIO_COMMAND_CHANNEL                 (2)
-#define TELEMETRY_CHANNEL                     (3)
 
 #define PLATFORM_HCSR04_ECHO_PIN              (5)
 #define PLATFORM_HCSR04_TRIG_CHANNEL          (4)

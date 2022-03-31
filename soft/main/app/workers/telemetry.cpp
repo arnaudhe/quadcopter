@@ -1,4 +1,4 @@
-#include <app/data_recorder/telemetry.h>
+#include <app/workers/telemetry.h>
 
 #include <hal/log.h>
 #include <utils/string_utils.h>
@@ -10,11 +10,11 @@
 
 using namespace std;
 
-Telemetry::Telemetry(DataRessourcesRegistry * registry, int period, UdpServer * udp) :
+Telemetry::Telemetry(DataRessourcesRegistry * registry, int period, Broker * broker) :
     Task("telemetry", Task::Priority::VERY_LOW, 4096, false)
 {
     _registry = registry;
-    _udp = udp;
+    _broker   = broker;
 
     _registry->internal_set<int>("telemetry.period", period);
     _registry->internal_set<bool>("telemetry.enable", false);
@@ -88,7 +88,7 @@ void IRAM_ATTR Telemetry::run(void)
             if ((unsigned int)(xTaskGetTickCount() - tick) > TELEMETRY_SEND_PERIOD)
             {
                 /* Send telemetry data through udp */
-                _udp->send_broadcast(telemetry_data.str(), TELEMETRY_DEST_PORT);
+                _broker->send(Broker::Channel::TELEMETRY, Broker::Medium::UDP, ByteArray(telemetry_data.str()));
                 tick = xTaskGetTickCount();
                 telemetry_data.str(string());
             }

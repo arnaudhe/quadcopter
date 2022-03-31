@@ -7,7 +7,7 @@ set(COMPONENT_SRCS
     drv/DShotRMT.cpp
     drv/SI4432.cpp
     app/data_recorder/data_recorder.cpp
-    app/data_recorder/telemetry.cpp
+    app/workers/telemetry.cpp
     app/controllers/position_controller.cpp
     app/controllers/attitude_controller.cpp
     app/controllers/height_controller.cpp

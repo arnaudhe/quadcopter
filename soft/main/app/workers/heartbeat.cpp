@@ -2,29 +2,25 @@
 #include <platform.h>
 #include <os/task.h>
 
-Heartbeat::Heartbeat(float period, RadioBroker * radio, UdpServer * udp, Motor * motor):
+Heartbeat::Heartbeat(float period, Broker * broker, Motor * motor):
     PeriodicTask("camera_controller", Task::Priority::VERY_LOW, (int)(period * 1000), false)
 {
-    _radio = radio;
-    _udp = udp;
-    _motor = motor;
+    _broker = broker;
+    _motor  = motor;
 
     /* Register uplink heartbeat for range test */ 
-    _radio->register_channel(HEARTBEAT_CHANNEL);
+    _broker->register_channel(Broker::Channel::HEARTBEAT, Broker::Medium::RADIO);
 }
 
 void Heartbeat::run()
 {
-    uint8_t heartbeat[16];
-    uint8_t heartbeat_length = 0;
-
-    _udp->send_broadcast("kwadcopter", PLATFORM_UDP_PORT_BASE + HEARTBEAT_CHANNEL);
-    _radio->send(HEARTBEAT_CHANNEL, (uint8_t *)"kwadcopter", 10);
+    _broker->send(Broker::Channel::HEARTBEAT, Broker::Medium::UDP_AND_RADIO, ByteArray("kwadcopter"));
 
     /* Range test */
-    if (_radio->received_frame_pending(HEARTBEAT_CHANNEL))
+    if (_broker->received_frame_pending(Broker::Channel::HEARTBEAT))
     {
-        if (_radio->receive(HEARTBEAT_CHANNEL, heartbeat, &heartbeat_length))
+        ByteArray packet = _broker->receive(Broker::Channel::HEARTBEAT);
+        if (packet.length())
         {
             _motor->beep();
         }

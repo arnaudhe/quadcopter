@@ -1,5 +1,6 @@
 #include <app/workers/heartbeat.h>
 #include <platform.h>
+#include <os/task.h>
 
 Heartbeat::Heartbeat(float period, RadioBroker * radio, UdpServer * udp, Motor * motor):
     PeriodicTask("camera_controller", Task::Priority::VERY_LOW, (int)(period * 1000), false)

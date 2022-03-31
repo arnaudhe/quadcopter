@@ -1,5 +1,6 @@
 #include <app/workers/camera_controller.h>
 #include <hal/log.h>
+#include <os/task.h>
 
 CameraController::CameraController(float period, DataRessourcesRegistry * registry):
     PeriodicTask("camera_controller", Task::Priority::VERY_LOW, (int)(period * 1000), false)

@@ -18,6 +18,7 @@
 
 #include <data_model/data_ressources_registry.h>
 #include <data_model/json_protocol.h>
+#include <data_model/binary_protocol.h>
 
 #include <periph/i2c_master.h>
 #include <periph/uart.h>
@@ -64,6 +65,7 @@ extern "C" void app_main(void)
     Radio                   * radio;
     DataRessourcesRegistry  * registry;
     JsonDataProtocol        * json_protocol;
+    BinaryDataProtocol      * binary_protocol;
     BatterySupervisor       * battery_supervisor;
     CameraController        * camera;
     UltrasoundSensor        * ultrasound;
@@ -117,6 +119,7 @@ extern "C" void app_main(void)
 #else
     registry            = new DataRessourcesRegistry("data_model.json");
     json_protocol       = new JsonDataProtocol(registry);
+    binary_protocol     = new BinaryDataProtocol(registry);
     wifi                = new Wifi(registry);
     mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
     motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);

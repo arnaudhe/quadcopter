@@ -24,6 +24,7 @@ set(COMPONENT_SRCS
     data_model/ressource_enum.cpp
     data_model/data_ressource.cpp
     data_model/data_ressources_registry.cpp
+    data_model/binary_protocol.cpp
     data_model/json_protocol.cpp
     hal/battery.cpp
     hal/ultrasound.cpp

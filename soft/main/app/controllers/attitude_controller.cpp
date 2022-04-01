@@ -5,7 +5,7 @@
 #include <esp_attr.h>
 
 AttitudeController::AttitudeController(float period, DataRessourcesRegistry * registry, RateController * rate_controller, Marg * marg):
-    PeriodicTask("attitude_ctlr", Task::Priority::HIGH, (int)(period * 1000), false)
+    PeriodicTask("attitude_ctlr", Task::Priority::HIGH, 16 * 1024, (int)(period * 1000), false)
 {
     _period          = period;
     _registry        = registry;

@@ -26,6 +26,7 @@ class Task
 
     TaskHandle_t _handle;
     bool         _auto_start;
+    string       _name;
 
     static void run_static(void *);
 

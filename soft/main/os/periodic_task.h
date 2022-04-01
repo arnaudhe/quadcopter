@@ -23,6 +23,7 @@ class PeriodicTask
     string            _name;
     Semaphore       * _semaphore;
     int               _priority;
+    int               _stack_size;
     int               _measure_count;
     TickType_t        _measure_tick;
 
@@ -33,7 +34,7 @@ class PeriodicTask
 
     static map<TimerHandle_t, PeriodicTask *> timers_map;
 
-    PeriodicTask(string name, int priority, int period, bool auto_start = true);
+    PeriodicTask(string name, int priority, int stack_size, int period, bool auto_start = true);
     virtual ~PeriodicTask() {}
 
     virtual void run() {}

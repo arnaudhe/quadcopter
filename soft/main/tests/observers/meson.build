@@ -1,25 +1,28 @@
-project('test_ahrs', 'cpp')
 
-includes = include_directories('.', '../../..')
-c_flags = ['-g', '-O0']
+observers_sources = files([
+    '../../app/observers/euler_observer.cpp',
+    '../../app/observers/height_observer.cpp',
+    '../../utils/madgwick.cpp',
+    '../../utils/kalman.cpp',
+    '../../utils/matrix.cpp',
+    '../../utils/quaternion.cpp',
+    '../../utils/vector.cpp',
+    '../../utils/csv_reader.cpp'
+])
 
-test_ahrs = executable('test_ahrs', 
-                       ['../../app/observers/euler_observer.cpp',
-                        '../../utils/madgwick.cpp', 
-                        '../../utils/matrix.cpp', 
-                        '../../utils/quaternion.cpp', 
-                        '../../utils/vector.cpp', 
-                        '../../utils/csv_reader.cpp', 
-                        'test_ahrs.cpp'], 
-                       include_directories : includes, 
-                       cpp_args : c_flags)
+observers_includes = include_directories([
+    '../../'
+])
 
-test_height = executable('test_height', 
-                         ['../../app/observers/height_observer.cpp', 
-                          '../../utils/kalman.cpp',
-                          '../../utils/matrix.cpp', 
-                          '../../utils/vector.cpp', 
-                          '../../utils/csv_reader.cpp', 
-                          'test_height.cpp'], 
-                          include_directories : includes, 
-                          cpp_args : c_flags)
+observers_dep = declare_dependency(
+    sources : observers_sources,
+    include_directories : observers_includes
+)
+
+test_ahrs = executable('test_ahrs',
+                       sources: ['test_ahrs.cpp'],
+                       dependencies : [espressif_mock_dep, os_mock_dep, logs_mock_dep, observers_dep])
+
+test_height = executable('test_height',
+                         sources: ['test_height.cpp'],
+                         dependencies : [espressif_mock_dep, os_mock_dep, logs_mock_dep, observers_dep])

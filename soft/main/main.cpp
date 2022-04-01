@@ -153,18 +153,30 @@ extern "C" void app_main(void)
 #ifdef DATA_RECORDING
     data_recorder->start();
 #else
+
     wifi->connect();
-    radio_command->start();
+
+    /* Very High */
     rate_controller->start();
+
+    /* High */
     attitude_controller->start();
     height_controller->start();
+
+    /* Medium */
+    broker->start();
+    radio_command->start();
+
+    /* Low */
+    data_model_controller->start();
     gps->start();
-    motors_controller->start();
+
+    /* Very Low */
+    heartbeat->start();
     telemetry->start();
     battery_supervisor->start();
-    heartbeat->start();
-    data_model_controller->start();
-    broker->start();
+    motors_controller->start();
+
 #endif
 
     while (true)

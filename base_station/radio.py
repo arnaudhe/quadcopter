@@ -376,6 +376,7 @@ class Radio(Thread):
         self.goto_tx()
         while self.read_irq1() == 0:
             time.sleep(0.001)
+        time.sleep(0.010)
         self.goto_standby()
         if need_to_start_rx:
             self.start_rx()

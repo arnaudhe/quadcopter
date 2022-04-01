@@ -15,7 +15,7 @@ typedef struct
 } __attribute__((packed)) RadioCommandPacket;
 
 RadioCommand::RadioCommand(DataRessourcesRegistry * registry, Broker * broker) :
-    Task("rc", Task::Priority::LOW, 4096, false)
+    Task("rc", Task::Priority::MEDIUM, 4096, false)
 {
     _registry = registry;
     _broker   = broker;

@@ -6,7 +6,7 @@
 #include <hal/log.h>
 
 HcSr04::HcSr04(int echo_pin, int trig_channel, int trig_pin):
-    Task("HCSR04", Task::Priority::HIGH, 2048, false),
+    Task("HCSR04", Task::Priority::HIGH, 4096, false),
     _sem_rising(),
     _sem_falling(),
     _mutex()

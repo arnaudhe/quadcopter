@@ -67,7 +67,7 @@ Change Activity:
 ****************************************************************************************************************************/
 
 Gps::Gps(DataRessourcesRegistry * registry, uart_port_t uart_port, int rx_pin, int tx_pin) :
-    Task("GPS", Task::Priority::LOW, 4608, true)
+    Task("GPS", Task::Priority::LOW, 4608, false)
 {
     uart_config_t uart_config = {
         .baud_rate              = 9600,
@@ -99,7 +99,6 @@ Gps::~Gps()
     _worker_enable = false;
     LOG_VERBOSE("GPS object destroyed.");
 }
-
 
 void Gps::parse(int len, string str)
 {
@@ -182,5 +181,6 @@ void Gps::start()
     _uart->enable_pattern_detect(pattern_config);
     _uart->register_pattern_detected_callback(bind(&Gps::parse, this, placeholders::_1, placeholders::_2));
     _uart->start_event_loop();
+
     Task::start();
 }

@@ -4,7 +4,7 @@
 #include <os/task.h>
 
 PositionController::PositionController(float period, DataRessourcesRegistry * registry):
-    PeriodicTask("attitude_ctlr", Task::Priority::MEDIUM, (int)(period * 1000), false)
+    PeriodicTask("attitude_ctlr", Task::Priority::MEDIUM, 16 * 1024, (int)(period * 1000), false)
 {
     _registry = registry;
 

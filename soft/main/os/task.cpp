@@ -2,7 +2,8 @@
 #include <hal/log.h>
 
 Task::Task(string name, Task::Priority priority, int stack_size, bool auto_start):
-    _auto_start(auto_start)
+    _auto_start(auto_start),
+    _name(name)
 {
     if (priority <= Task::MEDIUM)
     {
@@ -17,12 +18,14 @@ Task::Task(string name, Task::Priority priority, int stack_size, bool auto_start
 void Task::run_static(void * pvParameters)
 {
     Task * task = (Task *)pvParameters;
+
     if (!task->_auto_start)
     {
-        LOG_INFO("waiting to start task"); // task name could be good
+        LOG_INFO("Waiting to start %s task", task->_name.c_str());
         vTaskSuspend(task->_handle);
     }
-    LOG_INFO("start task"); // task name could be good
+
+    LOG_INFO("Entering %s task", task->_name.c_str());
     task->run();
     vTaskDelete(NULL);
 }

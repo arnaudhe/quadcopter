@@ -76,7 +76,7 @@ Change Activity:
 ****************************************************************************************************************************/
 
 Uart::Uart(uart_port_t port, uart_config_t uart_config, uart_pin_config_t uart_pin_config) :
-    Task("UART #" + port, Task::Priority::MEDIUM, 3072, false)
+    Task("UART " + std::to_string(port), Task::Priority::MEDIUM, 3072, false)
 {
     _port = port;
     _uart_config = uart_config;

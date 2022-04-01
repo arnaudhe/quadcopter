@@ -4,7 +4,7 @@
 #include <esp_attr.h>
 
 MotorsController::MotorsController(float period, DataRessourcesRegistry * registry, Mixer * mixer):
-    PeriodicTask("motors_ctlr", Task::Priority::LOW, (int)(period * 1000), false)
+    PeriodicTask("motors_ctlr", Task::Priority::VERY_LOW, 4 * 1024, (int)(period * 1000), false)
 {
     _period    = period;
     _registry  = registry;

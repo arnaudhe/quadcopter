@@ -3,7 +3,7 @@
 #include <os/task.h>
 
 CameraController::CameraController(float period, DataRessourcesRegistry * registry):
-    PeriodicTask("camera_controller", Task::Priority::VERY_LOW, (int)(period * 1000), false)
+    PeriodicTask("camera_controller", Task::Priority::VERY_LOW, 8 * 1024, (int)(period * 1000), false)
 {
     _registry = registry;
 

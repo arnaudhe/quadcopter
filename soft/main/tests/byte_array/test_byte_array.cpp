@@ -1,12 +1,8 @@
 #include <utils/byte_array.h>
 #include <iostream>
+#include <asserts.h>
 
 using namespace std;
-
-#define STRINGIFY(x) #x
-#define test_assert(condition, result)     if (!( condition == result )) { cout << "ASSERTION FAILED : " << STRINGIFY(condition) << endl; }
-#define assert_true(condition)             test_assert(condition, true)
-#define assert_false(condition)            test_assert(condition, false)
 
 int main(int argc, char ** argv)
 {

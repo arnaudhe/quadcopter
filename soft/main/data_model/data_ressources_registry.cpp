@@ -200,7 +200,7 @@ DataRessource::Type DataRessourcesRegistry::type(string key)
 
 DataRessourcesRegistry::Status DataRessourcesRegistry::get_key_from_id(ByteArray id, string &key)
 {
-    if (_map.count(key) == 1)
+    if (_key_lookup.count(id) == 1)
     {
         key = _key_lookup[id];
         return Status::SUCCESS;

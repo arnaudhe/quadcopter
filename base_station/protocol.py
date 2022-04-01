@@ -1,5 +1,5 @@
 import json
-from construct import Struct, BitStruct, BitsInteger, Adapter, Int8ul, Int32sl, Float32b, Enum, Byte, Flag, Float64b, Switch, Array, this
+from construct import Struct, BitStruct, BitsInteger, Adapter, Int8ul, Int32sl, Float32l, Enum, Byte, Flag, Float64l, Switch, Array, this
 
 class ProtocolEncodeError(Exception):
 
@@ -62,7 +62,7 @@ class RessourcesStruct(Adapter):
         self._ressources_struct = {}
         for key, value_enum in ressources_enum.items():
             enum = Enum(Byte, **value_enum)
-            value_struct = Switch(this.type, {'integer':Int32sl, 'float':Float32b, 'enum':enum, 'bool':Flag, 'status':RessourcesStruct.STATUS_ENUM, 'double':Float64b})
+            value_struct = Switch(this.type, {'integer':Int32sl, 'float':Float32l, 'enum':enum, 'bool':Flag, 'status':RessourcesStruct.STATUS_ENUM, 'double':Float64l})
             self._ressources_struct[key] = value_struct
         super().__init__(Array(this.header.count,
             Struct (

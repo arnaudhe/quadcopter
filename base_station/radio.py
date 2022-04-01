@@ -488,7 +488,6 @@ class RadioBroker(Broker, PeriodicWorker):
             if frame['direction'] == 'downlink' and self.is_registered(frame['channel']):
                 self._rssi_to_link_quality(rssi)
                 self._listeners[frame['channel']].enqueue(frame['address'], frame['data'])
-                print(self._link_quality)
         self._radio_lock.release()
 
     def _send_to(self, address: int, channel: str, data: bytes):

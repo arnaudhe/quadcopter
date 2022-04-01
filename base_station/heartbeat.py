@@ -12,7 +12,7 @@ class Heartbeat(ThreadedWorker):
     """
 
     CHANNEL = 'heartbeat'
-    PERIOD = 1.0
+    PERIOD = 3.0
     LOST_COUNT_MAX = 5
 
     def __init__(self, broker: Broker, quadcopter_name: str):

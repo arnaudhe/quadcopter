@@ -20,7 +20,7 @@
 #define HEIGHT_CONTROLLER_PERIOD              (0.025)
 #define POSITION_CONTROLLER_PERIOD            (0.1)
 #define BATTERY_SUPERVISOR_PERIOD             (5.0)
-#define CAMERA_SUPERVISOR_PERIOD              (0.05)
+#define CAMERA_SUPERVISOR_PERIOD              (3.0)
 #define HEARTBEAT_PERIOD                      (3.0)
 #define BROKER_PERIOD                         (0.05)
 #define DATA_MODEL_CONTROLLER_PERIOD          (0.05)

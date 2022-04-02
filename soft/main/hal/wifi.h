@@ -11,14 +11,16 @@ using namespace std;
 class Wifi
 {
 
-  private:
+  public:
 
-    typedef enum
+    enum State
     {
         OFF,
         STARTED,
         CONNECTED
-    }State;
+    };
+
+  private:
 
     State                    _state;
     bool                     _connection_request;
@@ -29,9 +31,11 @@ class Wifi
 
 public :
 
-    Wifi(DataRessourcesRegistry * registry);
+    Wifi();
 
     void connect();
 
     void disconnect();
+
+    State get_state();
 };

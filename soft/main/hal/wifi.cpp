@@ -14,33 +14,30 @@ void Wifi::event_handler(void *arg, esp_event_base_t event_base,
 {
     Wifi *wifi = (Wifi *)arg;
 
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) 
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
     {
-      LOG_INFO("Connect to the AP");
-      esp_wifi_connect();
+        LOG_INFO("Connect to the AP");
+        esp_wifi_connect();
+        wifi->_state = State::STARTED;
     } 
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) 
     {
-        wifi->_registry->internal_set<string>("wifi.status", "disconnected");
         esp_wifi_connect();
         LOG_INFO("retry to connect to the AP");
+        wifi->_state = State::STARTED;
     } 
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) 
     {
-        wifi->_registry->internal_set<string>("wifi.status", "connected");
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         LOG_INFO("Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
+        wifi->_state = State::CONNECTED;
     }
 }
 
-Wifi::Wifi(DataRessourcesRegistry * registry)
+Wifi::Wifi()
 {
     esp_event_handler_instance_t instance_any_id;
     esp_event_handler_instance_t instance_got_ip;
-
-    _registry = registry;
-
-    _registry->internal_set<string>("wifi.status", "off");
 
     _connection_request = false;
     _disconnection_request = false;
@@ -69,10 +66,15 @@ void Wifi::connect(void)
 {
     if (_state == State::STARTED)
     {
-        ESP_ERROR_CHECK(esp_wifi_connect());
+        esp_wifi_connect();
     }
     else if (_state == State::OFF)
     {
         _connection_request = true;
     }
+}
+
+Wifi::State Wifi::get_state(void)
+{
+    return _state;
 }

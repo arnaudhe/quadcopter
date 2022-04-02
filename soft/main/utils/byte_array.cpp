@@ -68,6 +68,29 @@ int ByteArray::length() const
     return _data.size();
 }
 
+void ByteArray::clear(void)
+{
+    _data.clear();
+}
+
+void ByteArray::set_data(const uint8_t * data, int length)
+{
+    clear();
+    append(data, length);
+}
+
+void ByteArray::set_data(uint8_t data)
+{
+    clear();
+    append(data);
+}
+
+void ByteArray::set_data(string str)
+{
+    clear();
+    append(str);
+}
+
 void ByteArray::append(uint8_t b)
 {
     _data.push_back(b);
@@ -76,6 +99,11 @@ void ByteArray::append(uint8_t b)
 void ByteArray::append(ByteArray ba)
 {
     append(ba.data(), ba.length());
+}
+
+void ByteArray::append(string str)
+{
+    append((const uint8_t *)str.c_str(), str.length());
 }
 
 void ByteArray::append(const uint8_t * data, int length)

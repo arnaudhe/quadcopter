@@ -1238,17 +1238,8 @@
             "permissions" : ["read", "notify"]
         }
     },
-    "wifi" : {
-        "id" : 3,
-        "status" : {
-            "id" : 1,
-            "type" : "enum",
-            "values" : {"off" : 1, "disconnected" : 2, "connected" : 3},
-            "permissions" : ["read", "notify"]
-        }
-    },
     "camera" : {
-        "id" : 4,
+        "id" : 3,
         "status" : {
             "id" : 1,
             "type" : "enum",
@@ -1268,7 +1259,7 @@
         }
     },
     "sensors" : {
-        "id" : 5,
+        "id" : 4,
         "gyroscope" : {
             "id" : 1,
             "x" : {
@@ -1590,7 +1581,7 @@
         }
     },
     "telemetry" : {
-        "id" : 6,
+        "id" : 5,
         "enable" : {
             "id" : 1,
             "type" : "bool",

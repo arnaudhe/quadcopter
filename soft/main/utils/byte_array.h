@@ -30,10 +30,19 @@ public:
     static ByteArray from_hex(string hex);
     string hex();
 
+    /* Clear operation */
+    void clear(void);
+
+    /* Erase operation */
+    void set_data(const uint8_t * data, int length);
+    void set_data(uint8_t);
+    void set_data(string str);
+
     /* Append data methods and operators */
     void append(uint8_t b);
     void append(const uint8_t * data, int length);
     void append(ByteArray ba);
+    void append(string str);
     ByteArray operator+(ByteArray);
     ByteArray operator+(uint8_t);
 

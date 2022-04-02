@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <functional>
 #include <tuple>
 #include <utils/byte_array.h>
 

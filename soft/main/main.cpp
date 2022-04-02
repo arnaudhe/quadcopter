@@ -9,6 +9,7 @@
 #include <app/controllers/position_controller.h>
 #include <app/controllers/rate_controller.h>
 #include <app/controllers/motors_controller.h>
+
 #include <app/workers/data_recorder.h>
 #include <app/workers/telemetry.h>
 #include <app/workers/battery_supervisor.h>
@@ -16,6 +17,7 @@
 #include <app/workers/heartbeat.h>
 #include <app/workers/data_model_controller.h>
 #include <app/workers/broker.h>
+#include <app/workers/radio_command.h>
 
 #include <data_model/data_ressources_registry.h>
 #include <data_model/json_protocol.h>
@@ -31,8 +33,9 @@
 #include <hal/motor.h>
 #include <hal/wifi.h>
 #include <hal/radio.h>
-#include <app/workers/radio_command.h>
 #include <hal/radio.h>
+#include <hal/camera.h>
+
 #include <drv/SI4432.h>
 
 #include <os/task.h>
@@ -68,7 +71,8 @@ extern "C" void app_main(void)
     JsonDataProtocol        * json_protocol;
     BinaryDataProtocol      * binary_protocol;
     BatterySupervisor       * battery_supervisor;
-    CameraController        * camera;
+    Camera                  * camera;
+    CameraController        * camera_controller;
     UltrasoundSensor        * ultrasound;
     Barometer               * barometer;
     Telemetry               * telemetry;
@@ -120,27 +124,28 @@ extern "C" void app_main(void)
     rear_right->set_speed(0.0f);
 
 #ifdef DATA_RECORDING
-    data_recorder       = new DataRecorder(front_left, front_right, rear_left, rear_right, marg);
+    data_recorder         = new DataRecorder(front_left, front_right, rear_left, rear_right, marg);
 #else
-    registry            = new DataRessourcesRegistry("data_model.json");
-    json_protocol       = new JsonDataProtocol(registry);
-    binary_protocol     = new BinaryDataProtocol(registry);
-    wifi                = new Wifi(registry);
-    mixer               = new Mixer(front_left, front_right, rear_left, rear_right);
-    motors_controller   = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
-    rate_controller     = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer, registry);
-    attitude_controller = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
-    height_controller   = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
-    position_controller = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
-    gps                 = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
-    battery_supervisor  = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
-    camera              = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry);
-    radio               = new Radio(transceiver);
-    broker              = new Broker(BROKER_PERIOD, radio);
-    logger              = new Logger(broker);
-    telemetry           = new Telemetry(registry, 100, broker);
-    radio_command       = new RadioCommand(registry, broker);
-    heartbeat           = new Heartbeat(HEARTBEAT_PERIOD, broker, front_left);
+    registry              = new DataRessourcesRegistry("data_model.json");
+    json_protocol         = new JsonDataProtocol(registry);
+    binary_protocol       = new BinaryDataProtocol(registry);
+    wifi                  = new Wifi();
+    mixer                 = new Mixer(front_left, front_right, rear_left, rear_right);
+    motors_controller     = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
+    rate_controller       = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer, registry);
+    attitude_controller   = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
+    height_controller     = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
+    position_controller   = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
+    gps                   = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
+    battery_supervisor    = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
+    camera                = new Camera(wifi);
+    camera_controller     = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry, camera);
+    radio                 = new Radio(transceiver);
+    broker                = new Broker(BROKER_PERIOD, radio);
+    logger                = new Logger(broker);
+    telemetry             = new Telemetry(registry, 100, broker);
+    radio_command         = new RadioCommand(registry, broker);
+    heartbeat             = new Heartbeat(HEARTBEAT_PERIOD, broker, front_left);
     data_model_controller = new DataModelController(DATA_MODEL_CONTROLLER_PERIOD, broker, json_protocol, binary_protocol);
 
     registry->internal_set<string>("control.mode", "off");
@@ -176,6 +181,8 @@ extern "C" void app_main(void)
     telemetry->start();
     battery_supervisor->start();
     motors_controller->start();
+    camera->start();
+    camera_controller->start();
 
 #endif
 

@@ -28,6 +28,7 @@ set(COMPONENT_SRCS
     data_model/binary_protocol.cpp
     data_model/json_protocol.cpp
     hal/battery.cpp
+    hal/camera.cpp
     hal/ultrasound.cpp
     hal/log.cpp
     hal/mdns.cpp

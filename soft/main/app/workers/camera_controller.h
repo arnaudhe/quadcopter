@@ -15,6 +15,8 @@ class CameraController : public PeriodicTask
 
     DataRessourcesRegistry  * _registry;
     Camera                  * _camera;
+    bool                      _recording;
+    uint32_t                  _battery_measure_time;
 
     void run();
 

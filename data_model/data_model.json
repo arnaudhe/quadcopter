@@ -1240,22 +1240,36 @@
     },
     "camera" : {
         "id" : 3,
-        "status" : {
+        "connected" : {
             "id" : 1,
-            "type" : "enum",
-            "values" : {"off" : 1, "disconnected" : 2, "connected" : 3},
+            "type" : "bool",
             "permissions" : ["read", "notify"]
         },
-        "recording" : {
+        "battery" : {
             "id" : 2,
-            "type" : "bool",
-            "permissions" : ["read", "write"]
+            "type" : "integer",
+            "permissions" : ["read", "notify"],
+            "unit": "percent",
+            "min" : 0,
+            "max" : 100
         },
-        "angle" : {
+        "recording_request": {
             "id" : 3,
+            "type" : "bool",
+            "permissions" : ["write"]
+        },
+        "recording" : {
+            "id" : 4,
+            "type" : "bool",
+            "permissions" : ["read", "notify"]
+        },
+        "tilt" : {
+            "id" : 5,
             "type" : "float",
             "permissions" : ["read", "write"],
-            "unit" : "deg"
+            "unit" : "deg",
+            "min" : 0.0,
+            "max" : 90.0
         }
     },
     "sensors" : {

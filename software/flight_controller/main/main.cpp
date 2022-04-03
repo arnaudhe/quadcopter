@@ -87,7 +87,6 @@ extern "C" void app_main(void)
     nvs_flash_init();
 
     (void)logger;
-    (void)position_controller;
 
     adc = new Adc(PLATFORM_BATTERY_ADC_UNIT);
     battery = new Battery(adc, PLATFORM_BATTERY_ADC_CHANNEL, PLATFORM_BATTERY_CELLS, PLATFORM_BATTERY_DIVIDER);
@@ -131,12 +130,12 @@ extern "C" void app_main(void)
     binary_protocol       = new BinaryDataProtocol(registry);
     wifi                  = new Wifi();
     mixer                 = new Mixer(front_left, front_right, rear_left, rear_right);
+    gps                   = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
     motors_controller     = new MotorsController(MOTORS_CONTROLLER_PERIOD, registry, mixer);
     rate_controller       = new RateController(RATE_CONTROLLER_PERIOD, marg, mixer, registry);
     attitude_controller   = new AttitudeController(ATTITUDE_CONTROLLER_PERIOD, registry, rate_controller, marg);
     height_controller     = new HeightController(HEIGHT_CONTROLLER_PERIOD, registry, marg, barometer, ultrasound, attitude_controller, rate_controller);
-    position_controller   = new PositionController(POSITION_CONTROLLER_PERIOD, registry);
-    gps                   = new Gps(registry, PLATFORM_GPS_UART, PLATFORM_GPS_RX_PIN, PLATFORM_GPS_TX_PIN);
+    position_controller   = new PositionController(POSITION_CONTROLLER_PERIOD, registry, gps, attitude_controller, rate_controller);
     battery_supervisor    = new BatterySupervisor(BATTERY_SUPERVISOR_PERIOD, battery, registry);
     camera                = new Camera(wifi);
     camera_controller     = new CameraController(CAMERA_SUPERVISOR_PERIOD, registry, camera);
@@ -169,6 +168,7 @@ extern "C" void app_main(void)
     height_controller->start();
 
     /* Medium */
+    position_controller->start();
     broker->start();
     radio_command->start();
 
@@ -188,6 +188,7 @@ extern "C" void app_main(void)
 
     while (true)
     {
+        LOG_INFO("%d", esp_get_free_heap_size());
         Task::delay_ms(1000);
     }
 }

@@ -7,7 +7,7 @@
 #define GRAVITATIONAL_ACCELERATION      9.80665
 
 HeightController::HeightController(float period, DataRessourcesRegistry * registry, Marg * marg, Barometer * baro, UltrasoundSensor * ultrasound, AttitudeController * attitude_controller, RateController * rate_controller):
-    PeriodicTask("height_ctlr", Task::Priority::HIGH, 16 * 1024, (int)(period * 1000), false)
+    PeriodicTask("height_ctlr", Task::Priority::HIGH, 12 * 1024, (int)(period * 1000), false)
 {
     _period              = period;
     _registry            = registry;

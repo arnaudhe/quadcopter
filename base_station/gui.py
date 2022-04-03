@@ -9,8 +9,7 @@ HIDDEN_RESOURCES = [
     "control.attitude.yaw.speed",
     "control.attitude.yaw.position",
     "control.attitude.height.position",
-    "sensors",
-    "camera"
+    "sensors"
 ]
 
 class FloatSlider(QSlider):

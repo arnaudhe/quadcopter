@@ -3,8 +3,8 @@
 #include <math.h>
 #include <platform.h>
 
-Barometer::Barometer(I2cMaster * i2c) : 
-    Task("barometer", Task::Priority::MEDIUM, 2048, false),
+Barometer::Barometer(I2cMaster * i2c) :
+    Task("barometer", Task::Priority::MEDIUM, 4096, false),
     _i2c(i2c),
     _mutex()
 {

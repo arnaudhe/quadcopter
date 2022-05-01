@@ -2,13 +2,13 @@
 matlab/*.m~
 
 # soft builds
-soft/build
+software/flight_controller/build
 
 # soft wifi_credentials
-soft/main/wifi_credentials.h
+software/flight_controller/main/wifi_credentials.h
 
 # soft tests build
-soft/main/tests/*/build
+software/flight_controller/main/tests/*/build
 
 # FreeCAD temp files
 meca/CAD/*.FCStd1
@@ -19,7 +19,7 @@ hardware/gerber
 hardware/quadcopter.xml
 
 # vscode
-soft/.vscode/ipch
+software/flight_controller/.vscode/ipch
 
 # python virtual env
 env/.venv
@@ -29,3 +29,24 @@ __pycache__
 
 # temporary build filesystem
 soft/main/storage_img
+software/flight_controller/main/storage_img
+
+# KICAD Temporary files
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*-backups
+*.kicad_prl
+*.sch-bak
+*~
+_autosave-*
+*.tmp
+*-save.pro
+*-save.kicad_pcb
+fp-info-cache
+rescue-backup
+
+# KICAD Netlist files (exported from Eeschema)
+*.net

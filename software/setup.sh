@@ -20,9 +20,11 @@ then
     exit 1
 fi
 
-git submodule update --init
+echo "Fetching ESP-IDF"
+git submodule update --init --recursive
 
-export IDF_PATH=$(pwd)/../soft/esp-idf
+echo "Adding SDK binaries to PATH"
+export IDF_PATH=$(pwd)/flight_controller/esp-idf
 
 echo "Installing ESP-IDF tools"
 python3 ${IDF_PATH}/tools/idf_tools.py install
@@ -31,13 +33,13 @@ echo "Installing Python environment and packages"
 python3 -m venv .venv
 . .venv/bin/activate
 pip install --upgrade pip
-pip install -r ../soft/esp-idf/requirements.txt
-pip install -r ../base_station/requirements.txt
-pip install -r ../tests/requirements.txt
-pip install -r ../tools/requirements.txt
+pip install -r flight_controller/esp-idf/requirements.txt
+pip install -r base_station/requirements.txt
+pip install -r tests/requirements.txt
+pip install -r tools/requirements.txt
 
 echo ""
-echo "All done! You can now run:"
+echo "All done! You can now activate the environment:"
 echo ""
 echo "  . env.sh"
 echo ""

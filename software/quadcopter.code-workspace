@@ -1,13 +1,10 @@
 {
     "folders": [
         {
-            "path": "soft"
+            "path": "flight_controller"
         },
         {
             "path": "base_station"
-        },
-        {
-            "path": "env"
         },
         {
             "path": "tests"
@@ -93,7 +90,7 @@
             "bit": "cpp",
             "netfwd": "cpp"
         },
-        "python.envFile": "${workspaceFolder}/env/.venv",
+        "python.envFile": "${workspaceFolder}/.venv",
         "python.pythonPath": "python3"
     }
 }

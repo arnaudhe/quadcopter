@@ -22,7 +22,7 @@ hardware/quadcopter.xml
 software/flight_controller/.vscode/ipch
 
 # python virtual env
-env/.venv
+software/.venv
 
 # python cache
 __pycache__

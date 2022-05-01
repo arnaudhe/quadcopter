@@ -28,7 +28,6 @@ software/.venv
 __pycache__
 
 # temporary build filesystem
-soft/main/storage_img
 software/flight_controller/main/storage_img
 
 # KICAD Temporary files

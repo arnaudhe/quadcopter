@@ -1,4 +1,3 @@
 (sym_lib_table
-  (lib (name quadcopter-rescue)(type Legacy)(uri ${KIPRJMOD}/quadcopter-rescue.lib)(options "")(descr ""))
-  (lib (name quadcopter)(type Legacy)(uri ${KIPRJMOD}/quadcopter.lib)(options "")(descr ""))
+  (lib (name "quadcopter")(type "KiCad")(uri "${KIPRJMOD}/../lib/symbols/quadcopter.kicad_sym")(options "")(descr ""))
 )

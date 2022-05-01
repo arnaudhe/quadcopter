@@ -4,14 +4,11 @@
             "name": "Mac",
             "includePath": [
             ],
-            "defines": [
-                "CONFIG_FREERTOS_HZ=1000"
-            ],
-            "compilerPath": "/Users/Arnaud/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc",
+            "compilerPath": "${env:HOME}/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64",
-            "compileCommands": "${workspaceFolder:soft}/build/compile_commands.json"
+            "intelliSenseMode": "gcc-arm",
+            "compileCommands": "${workspaceFolder:flight_controller}/build/compile_commands.json"
         }
     ],
     "version": 4

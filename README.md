@@ -99,34 +99,3 @@ Two communications media are supported by the quadcopter:
       WIFI<--UDP/JSON-->BASE_STATION
       RADIO<--FSK/BINARY-->BASE_STATION
 ```
-
-## Ressources
-
-#### `base_station`
-contains the 
-
-#### `data_model`
-contains :
-* the definition of communication data_model
-* the specification of the json and binary protocols which supports this data model
-* a python tools to convert a json frame to binary, or binary frame to json
-
-#### `documents`
-contains:
-* Misc datasheets of used components
-* Bill-of-materials of electronics and mecanics parts
-* Papers about operating mode of some modules (controllers, sensors fusion, ...)
-
-#### `hardware`
-contains the KiCad-based PCB design, and zip with the several versions of gerbers
-
-#### `matlab`
-contains a matlab script which simulates the quadcopter model
-
-#### `meca` 
-contains:
-* FreeCAD-based 3D-printed parts design.
-* Sizing estimation
-
-#### `soft`
-contains Espressif esp-idf-based embedded software

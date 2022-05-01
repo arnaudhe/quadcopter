@@ -1,0 +1,6 @@
+crc8
+pyserial
+construct
+pandas
+matplotlib
+filterpy

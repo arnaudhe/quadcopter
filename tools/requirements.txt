@@ -1,3 +1,0 @@
-crc8
-pyserial
-construct

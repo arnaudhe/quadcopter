@@ -11,8 +11,8 @@ software/flight_controller/main/wifi_credentials.h
 software/flight_controller/main/tests/*/build
 
 # FreeCAD temp files
-meca/CAD/*.FCStd1
-meca/CAD/*.fcstd1
+*.FCStd1
+*.fcstd1
 
 # Hardware PCB gerbers
 hardware/gerber

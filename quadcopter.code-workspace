@@ -13,9 +13,6 @@
             "path": "tests"
         },
         {
-            "path": "scope_configs"
-        },
-        {
             "path": "data_model"
         },
         {

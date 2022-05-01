@@ -15,8 +15,8 @@ software/flight_controller/main/tests/*/build
 *.fcstd1
 
 # Hardware PCB gerbers
-hardware/gerber
-hardware/quadcopter.xml
+hardware/PCB/flight_controller/gerber
+hardware/PCB/remote/gerber
 
 # vscode
 software/flight_controller/.vscode/ipch

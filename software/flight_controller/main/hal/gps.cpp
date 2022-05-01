@@ -75,7 +75,8 @@ Gps::Gps(DataRessourcesRegistry * registry, uart_port_t uart_port, int rx_pin, i
         .parity                 = UART_PARITY_DISABLE,
         .stop_bits              = UART_STOP_BITS_1,
         .flow_ctrl              = UART_HW_FLOWCTRL_DISABLE,
-        .source_clk             = UART_SCLK_APB
+        .rx_flow_ctrl_thresh    = 0,
+        .source_clk             = UART_SCLK_APB,
     };
 
     uart_pin_config_t uart_pin_config = {

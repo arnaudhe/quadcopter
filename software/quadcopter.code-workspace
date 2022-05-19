@@ -4,6 +4,10 @@
             "path": "flight_controller"
         },
         {
+            "path": "radio_command",
+            "name": "radio command"
+        },
+        {
             "path": "base_station"
         },
         {
@@ -21,6 +25,7 @@
             "*.c": "c",
             "*.h": "cpp",
             "*.cpp": "cpp",
+            "*.hpp": "cpp",
             "*.py": "python",
             "*.tcc": "cpp",
             "*.ipp": "cpp",
@@ -91,6 +96,6 @@
             "netfwd": "cpp"
         },
         "python.envFile": "${workspaceFolder}/.venv",
-        "python.pythonPath": "python3"
+        "python.pythonPath": "python3",
     }
 }

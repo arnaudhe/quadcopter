@@ -10,4 +10,12 @@ echo "      IDF_PATH : ${IDF_PATH}"
 source ${PYTHON_ENV}/bin/activate
 source ${IDF_PATH}/export.sh
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    export PATH="$(pwd)/radio_command/toolchain/mac/bin:$PATH"
+else
+    # Linux
+    export PATH="$(pwd)/radio_command/toolchain/linux/bin:$PATH"
+fi
+
 export PATH="$(pwd)/base_station:$(pwd)/tools:$PATH"

@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "command": "ninja",
+            "args": ["-C", "build", "radio_command"],
+            "group": "build",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceFolder}/build"]
+            },
+            "label": "build"
+        },
+        {
+            "type": "shell",
+            "command": "ninja",
+            "args": [
+                "-C", "build", "clean"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "label": "clean"
+        }
+    ]
+}

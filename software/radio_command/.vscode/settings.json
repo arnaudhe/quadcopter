@@ -1,0 +1,13 @@
+{
+    "mesonbuild.buildFolder": "build",
+    "mesonbuild.configureOptions": [
+        "--cross-file=cross_compile.conf",
+        "--buildtype=debug"
+    ],
+    "files.associations": {
+        "*.c": "c",
+        "*.h": "c",
+        "*.cpp": "cpp",
+        "*.hpp": "cpp"
+    }
+}

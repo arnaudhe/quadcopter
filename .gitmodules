@@ -1,3 +1,6 @@
 [submodule "software/flight_controller/esp-idf"]
 	path = software/flight_controller/esp-idf
 	url = https://github.com/espressif/esp-idf
+[submodule "software/radio_command/toolchain/mac"]
+	path = software/radio_command/toolchain/mac
+	url = https://github.com/tsandmann/armv6l-toolchain-mac

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 class I2C
 {

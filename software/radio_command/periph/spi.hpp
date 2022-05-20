@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
@@ -34,6 +35,10 @@ public:
     bool read_register(uint8_t reg_addr, uint8_t * value);
 
     bool write_register(uint8_t reg_addr, uint8_t value);
+
+    bool read_registers(uint8_t reg_addr, size_t len, uint8_t * value);
+
+    bool write_registers(uint8_t reg_addr, size_t len, uint8_t * value);
 
     bool close(void);
 

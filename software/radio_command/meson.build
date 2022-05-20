@@ -1,10 +1,17 @@
-project('hello_world', ['c', 'cpp'],
+project('radio_command', ['c', 'cpp'],
         version: '1.0.0',
         default_options: ['werror=true',
                           'buildtype=debug'])
 
 executable('radio_command',
+           include_directories: include_directories('.'),
            sources: ['main.cpp',
-                     'i2c.cpp',
-                     'spi.cpp',
-                     'gpio.cpp'])
+                     'periph/i2c.cpp',
+                     'periph/spi.cpp',
+                     'periph/gpio.cpp',
+                     'periph/adc.cpp',
+                     'drv/SI4432.cpp',
+                     'drv/ADS1115.cpp',
+                     'hal/button.cpp',
+                     'hal/stick.cpp',
+                     'hal/battery.cpp'])

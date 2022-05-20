@@ -1,7 +1,7 @@
 {
     "mesonbuild.buildFolder": "build",
     "mesonbuild.configureOptions": [
-        "--cross-file=cross_compile.conf",
+        "--cross-file=cross_compile_mac.conf",
         "--buildtype=debug"
     ],
     "files.associations": {

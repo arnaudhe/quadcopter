@@ -103,33 +103,53 @@ bool Spi::open(const char * port, Mode mode, uint32_t speed_hz)
 
 bool Spi::read_register(uint8_t reg_addr, uint8_t * value)
 {
-    uint8_t tx[2] = {reg_addr, 0x00};
-    uint8_t rx[2] = {0x00,     0x00};
+    return read_registers(reg_addr, 1, value);
+}
 
-    if (_transfer(tx, rx, 2) == false)
+bool Spi::write_register(uint8_t reg_addr, uint8_t value)
+{
+    return write_registers(reg_addr, 1, &value);
+}
+
+bool Spi::read_registers(uint8_t reg_addr, size_t len, uint8_t * value)
+{
+    uint8_t * tx = (uint8_t *)alloca(len + 1);
+    uint8_t * rx = (uint8_t *)alloca(len + 1);
+
+    memset(tx, 0, len);
+    memset(rx, 0, len);
+
+    tx[0] = reg_addr;
+
+    if (_transfer(tx, rx, len + 1) == false)
     {
         return false;
     }
-
-    printf("READ %02x %02x\n", rx[0], rx[1]);
 
     *value = rx[1];
 
     return true;
 }
 
-bool Spi::write_register(uint8_t reg_addr, uint8_t value)
+bool Spi::write_registers(uint8_t reg_addr, size_t len, uint8_t * value)
 {
-    uint8_t tx[2] = {(uint8_t)(reg_addr | 0x80), value};
-    uint8_t rx[2] = {0x00, 0x00};
+    uint8_t * tx = (uint8_t *)alloca(len + 1);
+    uint8_t * rx = (uint8_t *)alloca(len + 1);
 
-    if (_transfer(tx, rx, 2) == false)
+    memset(tx, 0, len);
+    memset(rx, 0, len);
+
+    tx[0] = reg_addr | 0x80;
+    memcpy(&tx[1], value, len);
+
+    if (_transfer(tx, rx, len + 1) == false)
     {
         return false;
     }
 
     return true;
 }
+
 
 bool Spi::close(void)
 {

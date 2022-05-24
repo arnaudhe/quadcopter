@@ -93,7 +93,9 @@
             "typeinfo": "cpp",
             "valarray": "cpp",
             "bit": "cpp",
-            "netfwd": "cpp"
+            "netfwd": "cpp",
+            "rope": "cpp",
+            "regex": "cpp"
         },
         "python.envFile": "${workspaceFolder}/.venv",
         "python.pythonPath": "python3",

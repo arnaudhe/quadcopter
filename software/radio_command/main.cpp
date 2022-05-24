@@ -32,10 +32,10 @@ int main(int argc, char ** argv)
 
     Si4432  si4432 = Si4432();
 
-    Stick   stick_throttle = Stick(PLATFORM_THROTTLE_STICK_ADC_CHANNEL, 16535, 8096);
-    Stick   stick_yaw      = Stick(PLATFORM_YAW_STICK_ADC_CHANNEL, 16535, 8096);
-    Stick   stick_roll     = Stick(PLATFORM_ROLL_STICK_ADC_CHANNEL, 16535, 8096);
-    Stick   stick_pitch    = Stick(PLATFORM_PITCH_STICK_ADC_CHANNEL, 16535, 8096);
+    Stick   stick_yaw      = Stick(PLATFORM_YAW_STICK_ADC_CHANNEL,      9638, 4200, 1.0, 1.0, 50.0, 140.0);
+    Stick   stick_throttle = Stick(PLATFORM_THROTTLE_STICK_ADC_CHANNEL, 8902, 4096, 1.0, 1.2, 50.0, 140.0);
+    Stick   stick_roll     = Stick(PLATFORM_ROLL_STICK_ADC_CHANNEL,     7585, 3924, 1.0, 0.2, 50.0, 140.0);
+    Stick   stick_pitch    = Stick(PLATFORM_PITCH_STICK_ADC_CHANNEL,    9711, 3535, 1.0, 0.2, 50.0, 140.0);
 
     for (int i = 0; i < 10; i++)
     {

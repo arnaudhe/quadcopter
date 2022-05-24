@@ -7,6 +7,8 @@ private:
 
     int _channel;
 
+    int _fd;
+
 public:
 
     Adc(int channel);

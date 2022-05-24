@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <platform.hpp>
+#include <iostream>
 
 Si4432::Si4432(void) :
     _spi(), _irq_gpio(PLATFORM_SI4432_IRQ, Gpio::INPUT)
@@ -209,7 +210,7 @@ bool Si4432::receive_packet(uint8_t * packet, uint8_t * length)
             _spi.read_register(SI4432_REG_RX_PKT_LENGTH, length);
             if (*length > 0)
             {
-                printf("Received packet, length %d\n", *length);
+                std::cout << "Received packet, length " << length << std::endl;
                 _spi.read_registers(SI4432_REG_FIFO, *length, packet);
             }
 
@@ -247,13 +248,13 @@ bool Si4432::start_tx(void)
 
         if (time > 50)
         {
-            printf("TX timed out\n");
+            std::cerr << "tx timed out" << std::endl;
             this->reset();
             break;
         }
     }
 
-    printf("TX Done\n");
+    std::cout << "tx done" << std::endl;
 
     this->clear_irq();
     this->start_rx();

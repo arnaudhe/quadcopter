@@ -48,10 +48,10 @@ int main(int argc, char ** argv)
         printf("button_bottom_right : %d\n", button_bottom_right.is_pressed());
         printf("   button_top_right : %d\n\n", button_top_right.is_pressed());
 
-        printf("     stick_throttle : %f\n", stick_throttle.get_state());
-        printf("          stick_yaw : %f\n", stick_yaw.get_state());
-        printf("         stick_roll : %f\n", stick_roll.get_state());
-        printf("        stick_pitch : %f\n\n", stick_pitch.get_state());
+        printf("     stick_throttle : %f\n", stick_throttle.get_command());
+        printf("          stick_yaw : %f\n", stick_yaw.get_command());
+        printf("         stick_roll : %f\n", stick_roll.get_command());
+        printf("        stick_pitch : %f\n\n", stick_pitch.get_command());
 
         si4432.read_rssi(&rssi);
 

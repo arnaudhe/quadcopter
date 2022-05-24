@@ -56,6 +56,8 @@ int main(int argc, char ** argv)
         si4432.read_rssi(&rssi);
 
         printf("        si4432 rssi : %d\n\n", rssi);
+
+        si4432.send_packet((uint8_t *)"Hello World", 11);
     }
 
     return 0;

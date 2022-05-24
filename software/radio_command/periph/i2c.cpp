@@ -86,17 +86,17 @@ bool I2C::read_registers(uint8_t slave_addr, uint8_t reg_addr, size_t len, uint8
 
 bool I2C::write_registers(uint8_t slave_addr, uint8_t reg_addr, size_t len, uint8_t * value)
 {
+    uint8_t * buffer = (uint8_t *)alloca(len + 1);
+
     if (_set_slave_addr(slave_addr) == false)
     {
         return false;
     }
 
-    if (_write_bus(&reg_addr, 1) == false)
-    {
-        return false;
-    }
+    buffer[0] = reg_addr;
+    memcpy(&buffer[1], value, len);
 
-    if (_write_bus(&value, 1) == false)
+    if (_write_bus(buffer, len + 1) == false)
     {
         return false;
     }

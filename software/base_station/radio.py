@@ -482,6 +482,7 @@ class RadioBroker(Broker, PeriodicWorker):
         self._radio_lock.acquire()
         if self._radio.received_frame_pending():
             length, frame_bytes, rssi = self._radio.receive()
+            print(frame_bytes, rssi)
             try:
                 frame = RadioFrame().parse(frame_bytes)
             except ConstructError:
@@ -513,9 +514,9 @@ if __name__ == '__main__':
     radio.set_quadcopter_address(31)
     for i in range(3):
         print('transmit')
-        radio.Send('heartbeat', b'Hello World')
+        radio.send('heartbeat', b'Hello World')
         time.sleep(1.0)
-    radio.start_rx()
+    radio.start()
     print("wait 10s")
     for _ in range(10):
         time.sleep(1.0)

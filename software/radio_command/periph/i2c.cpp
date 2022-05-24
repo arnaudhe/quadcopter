@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <alloca.h>
 
 #include "i2c.hpp"
 
@@ -63,7 +64,7 @@ bool I2C::open(const char * port)
     return true;
 }
 
-bool I2C::read_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t * value)
+bool I2C::read_registers(uint8_t slave_addr, uint8_t reg_addr, size_t len, uint8_t * value)
 {
     if (_set_slave_addr(slave_addr) == false)
     {
@@ -75,7 +76,7 @@ bool I2C::read_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t * value)
         return false;
     }
 
-    if (_read_bus(value, 1) == false)
+    if (_read_bus(value, len) == false)
     {
         return false;
     }
@@ -83,7 +84,7 @@ bool I2C::read_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t * value)
     return true;
 }
 
-bool I2C::write_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t value)
+bool I2C::write_registers(uint8_t slave_addr, uint8_t reg_addr, size_t len, uint8_t * value)
 {
     if (_set_slave_addr(slave_addr) == false)
     {
@@ -101,6 +102,16 @@ bool I2C::write_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t value)
     }
 
     return true;
+}
+
+bool I2C::read_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t * value)
+{
+    return read_registers(slave_addr, reg_addr, 1, value);
+}
+
+bool I2C::write_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t value)
+{
+    return write_registers(slave_addr, reg_addr, 1, &value);
 }
 
 bool I2C::close()

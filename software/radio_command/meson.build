@@ -14,4 +14,7 @@ executable('radio_command',
                      'drv/ADS1115.cpp',
                      'hal/button.cpp',
                      'hal/stick.cpp',
-                     'hal/battery.cpp'])
+                     'hal/battery.cpp',
+                     'hal/radio.cpp',
+                     'utils/byte_array.cpp',
+                     'utils/crc16.cpp'])

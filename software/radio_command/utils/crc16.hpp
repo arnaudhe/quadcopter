@@ -7,7 +7,7 @@ class Crc16
 
 private:
 
-    uint16_t _crc = 0;
+    uint16_t _crc;
 
 public:
 

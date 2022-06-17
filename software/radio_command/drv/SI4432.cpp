@@ -254,8 +254,6 @@ bool Si4432::start_tx(void)
         }
     }
 
-    std::cout << "tx done" << std::endl;
-
     this->clear_irq();
     this->start_rx();
 

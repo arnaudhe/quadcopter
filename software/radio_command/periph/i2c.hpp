@@ -19,7 +19,7 @@ private:
 
 public:
 
-    bool open(const char * port);
+    I2C(const char * port);
 
     bool read_register(uint8_t slave_addr, uint8_t reg_addr, uint8_t * value);
 

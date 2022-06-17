@@ -25,4 +25,6 @@ executable('radio_command',
                      'hal/radio.cpp',
                      'utils/byte_array.cpp',
                      'utils/crc16.cpp',
-                     'utils/pixmap.cpp'])
+                     'utils/jpeg_decoder.cpp',
+                     'utils/pixmap.cpp'],
+           dependencies : [jpeg_dep])

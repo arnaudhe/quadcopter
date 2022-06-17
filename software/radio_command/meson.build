@@ -1,7 +1,7 @@
 project('radio_command', ['c', 'cpp'],
         version: '1.0.0',
         default_options: ['werror=true',
-                          'buildtype=debug'])
+                          'buildtype=release'])
 
 jpeg_lib = meson.get_compiler('c').find_library('jpeg', dirs : [join_paths(meson.current_source_dir(), 'toolchain/sysroot/usr/lib')])
 

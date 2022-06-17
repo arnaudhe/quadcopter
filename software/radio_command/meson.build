@@ -18,6 +18,7 @@ pthread_dep = declare_dependency(
 executable('radio_command',
            include_directories: include_directories('.'),
            sources: ['main.cpp',
+                     'app/battery_monitor.cpp',
                      'app/radio_command.cpp',
                      'app/video_feedback.cpp',
                      'periph/i2c.cpp',

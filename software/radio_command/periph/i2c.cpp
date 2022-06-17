@@ -10,6 +10,19 @@
 
 #include "i2c.hpp"
 
+I2C::I2C(const char * port)
+{
+    this->fd = ::open(port, O_RDWR);
+
+    if (this->fd < 0)
+    {
+        fprintf(stderr, "Failed to open the i2c bus : %s\n", strerror(errno));
+        exit(1);
+    }
+
+    this->slave_addr = 0x00;
+}
+
 bool I2C::_set_slave_addr(uint8_t slave_addr)
 {
     if (this->slave_addr == slave_addr)
@@ -45,21 +58,6 @@ bool I2C::_write_bus(uint8_t * data, size_t len)
         fprintf(stderr, "Failed to write on bus : %s\n", strerror(errno));
         return false;
     }
-
-    return true;
-}
-
-bool I2C::open(const char * port)
-{
-    this->fd = ::open(port, O_RDWR);
-
-    if (this->fd < 0)
-    {
-        fprintf(stderr, "Failed to open the i2c bus : %s\n", strerror(errno));
-        return false;
-    }
-
-    this->slave_addr = 0x00;
 
     return true;
 }

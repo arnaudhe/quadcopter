@@ -3,6 +3,13 @@ project('radio_command', ['c', 'cpp'],
         default_options: ['werror=true',
                           'buildtype=debug'])
 
+jpeg_lib = meson.get_compiler('c').find_library('jpeg', dirs : [join_paths(meson.current_source_dir(), 'toolchain/sysroot/usr/lib')])
+
+jpeg_dep = declare_dependency(
+    include_directories : include_directories('toolchain/sysroot/usr/include'),
+    dependencies : jpeg_lib
+)
+
 executable('radio_command',
            include_directories: include_directories('.'),
            sources: ['main.cpp',

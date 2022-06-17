@@ -10,6 +10,11 @@ jpeg_dep = declare_dependency(
     dependencies : jpeg_lib
 )
 
+pthread_dep = declare_dependency(
+    link_args : ['-lpthread'],
+    compile_args : ['-D_REENTRANT']
+)
+
 executable('radio_command',
            include_directories: include_directories('.'),
            sources: ['main.cpp',
@@ -25,8 +30,9 @@ executable('radio_command',
                      'hal/radio.cpp',
                      'hal/video_capture.cpp',
                      'hal/framebuffer.cpp',
+                     'os/task.cpp',
                      'utils/byte_array.cpp',
                      'utils/crc16.cpp',
                      'utils/jpeg_decoder.cpp',
                      'utils/pixmap.cpp'],
-           dependencies : [jpeg_dep])
+           dependencies : [jpeg_dep, pthread_dep])

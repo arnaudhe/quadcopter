@@ -18,7 +18,7 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "${workspaceFolder}/toolchain/linux/bin/armv6l-unknown-linux-gnueabihf-gcc",
+            "compilerPath": "/usr/bin/arm-linux-gnueabihf-gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "linux-gcc-arm",

@@ -17,4 +17,5 @@ executable('radio_command',
                      'hal/battery.cpp',
                      'hal/radio.cpp',
                      'utils/byte_array.cpp',
-                     'utils/crc16.cpp'])
+                     'utils/crc16.cpp',
+                     'utils/pixmap.cpp'])

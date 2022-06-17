@@ -387,8 +387,8 @@ class Radio(Thread):
             if self.read_irq0():
                 length = int(self.spi_data.exchange([], readlen=1)[0])
                 if (length > 0) and (length < 64):
-                    frame = bytes([self.spi_data.exchange([], readlen=1)[0] for _ in range(length)])
-                    self.queue.put((length, frame, rssi))
+                    frame = bytes([length]) + bytes([self.spi_data.exchange([], readlen=1)[0] for _ in range(length)])
+                    self.queue.put((frame, rssi))
             rssi = self.read_rssi()
             time.sleep(0.003)
 
@@ -481,15 +481,15 @@ class RadioBroker(Broker, PeriodicWorker):
         """Radio listening main loop"""
         self._radio_lock.acquire()
         if self._radio.received_frame_pending():
-            length, frame_bytes, rssi = self._radio.receive()
+            frame_bytes, rssi = self._radio.receive()
             print(frame_bytes, rssi)
             try:
                 frame = RadioFrame().parse(frame_bytes)
+                if frame['direction'] == 'downlink' and self.is_registered(frame['channel']):
+                    self._rssi_to_link_quality(rssi)
+                    self._listeners[frame['channel']].enqueue(frame['address'], frame['data'])
             except ConstructError:
                 print('Invalid frame')
-            if frame['direction'] == 'downlink' and self.is_registered(frame['channel']):
-                self._rssi_to_link_quality(rssi)
-                self._listeners[frame['channel']].enqueue(frame['address'], frame['data'])
         self._radio_lock.release()
 
     def _send_to(self, address: int, channel: str, data: bytes):

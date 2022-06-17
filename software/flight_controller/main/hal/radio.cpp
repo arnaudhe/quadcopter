@@ -27,10 +27,10 @@ void Radio::send(uint8_t channel, ByteArray payload)
     if (payload.length() <= RADIO_MAX_PAYLOAD_LENGTH)
     {
         /* Add the radio header and CRC to build the packet */
-        packet.append(payload.length() + RADIO_OVERHEAD_LENGTH);
         packet.append(_address);
         packet.append(channel);
         packet.append(payload);
+        crc.update(payload.length() + RADIO_OVERHEAD_LENGTH);
         crc.update(packet.data(), packet.length());
         packet.append(crc.get_msb());
         packet.append(crc.get_lsb());
@@ -61,8 +61,6 @@ tuple<uint8_t, ByteArray> Radio::receive(void)
 
     if ((recv_length > RADIO_MIN_LENGTH) && (recv_length < RADIO_MAX_LENGTH))
     {
-        LOG_DEBUG("Received (%d) packet", recv_length);
-
         packet = ByteArray(recv_buffer, recv_length);
 
         direction = (bool)(packet(0) & 0x80);
@@ -70,6 +68,8 @@ tuple<uint8_t, ByteArray> Radio::receive(void)
 
         crc.update(recv_length);
         crc.update(packet.data(), packet.length() - 2);
+
+        LOG_DEBUG("Received (%d) packet, address %d, direction %d", recv_length, address, direction);
 
         if ((crc.get_msb() == packet(-2)) && (crc.get_lsb() == packet(-1)))
         {

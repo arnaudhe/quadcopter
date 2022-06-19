@@ -3,11 +3,21 @@
 #include <periph/spi.h>
 #include <periph/gpio.h>
 #include <drv/SI4432_defs.h>
+#include <os/periodic_task.h>
+#include <os/mutex.h>
+#include <utils/state_machine.h>
+#include <utils/byte_array.h>
 
-class Si4432
+class Si4432 : public PeriodicTask, public StateMachine
 {
 
 private:
+
+    enum State
+    {
+        RX,
+        TX
+    };
 
     SPIDevice * _spi;
     Gpio      * _irq_gpio;
@@ -15,10 +25,32 @@ private:
     bool        _rx_done;
     bool        _valid_preamble;
     bool        _valid_sync;
+    ByteArray   _rx_packet;
+    ByteArray   _tx_packet;
 
-public:
+    void on_irq(void);
 
-    Si4432(SPIHost * host);
+    void state_tx(void);
+
+    void state_rx(void);
+
+    void run(void);
+
+    esp_err_t start_tx(void);
+
+    esp_err_t start_rx(void);
+
+    esp_err_t clear_tx_fifo(void);
+
+    esp_err_t clear_rx_fifo(void);
+
+    esp_err_t clear_both_fifo(void);
+
+    esp_err_t read_irq(void);
+
+    esp_err_t clear_irq(void);
+
+    esp_err_t read_rssi(int * rssi);
 
     esp_err_t reset(void);
 
@@ -44,23 +76,11 @@ public:
 
     esp_err_t set_sync_bytes(uint8_t * bytes, uint8_t len);
 
-    esp_err_t send_packet(uint8_t * buf, uint8_t length);
+public:
 
-    esp_err_t receive_packet(uint8_t * packet, uint8_t * length);
+    Si4432(SPIHost * host);
 
-    esp_err_t start_tx(void);
+    bool send_packet(ByteArray packet);
 
-    esp_err_t start_rx(void);
-
-    esp_err_t clear_tx_fifo(void);
-
-    esp_err_t clear_rx_fifo(void);
-
-    esp_err_t clear_both_fifo(void);
-
-    esp_err_t read_irq(void);
-
-    esp_err_t clear_irq(void);
-
-    esp_err_t read_rssi(int * rssi);
+    bool receive_packet(ByteArray &packet);
 };

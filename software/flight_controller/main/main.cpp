@@ -169,6 +169,7 @@ extern "C" void app_main(void)
     height_controller->start();
 
     /* Medium */
+    transceiver->start();
     broker->start();
     radio_command->start();
 

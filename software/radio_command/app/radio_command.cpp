@@ -26,10 +26,10 @@ RadioCommand::RadioCommand(void):
 
 void RadioCommand::run(void)
 {
-    Payload payload;    
-    bool    armed = false;
-    bool    arming = false;
-    bool    range_test = false;
+    CommandsPayload payload;
+    bool            armed = false;
+    bool            arming = false;
+    bool            range_test = false;
 
     if (_button_bottom_left.is_pressed() && _button_bottom_right.is_pressed())
     {
@@ -67,11 +67,13 @@ void RadioCommand::run(void)
                 arming = false;
             }
 
-            payload.armed     = armed;
-            payload.roll      = _stick_roll.get_command();
-            payload.pitch     = _stick_pitch.get_command();
-            payload.yaw       = _stick_yaw.get_command();
-            payload.throttle  = _stick_throttle.get_command();
+            payload.armed       = armed;
+            payload.roll        = _stick_roll.get_command();
+            payload.pitch       = _stick_pitch.get_command();
+            payload.yaw         = _stick_yaw.get_command();
+            payload.throttle    = _stick_throttle.get_command();
+            payload.camera_tilt = 0;
+            payload.record      = false;
 
             _radio.send(RADIO_COMMAND_CHANNEL, ByteArray((const uint8_t *)&payload, (int)sizeof(payload)));
 

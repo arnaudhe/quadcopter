@@ -22,6 +22,16 @@ private:
         float   throttle;
     };
 
+    struct __attribute__((packed)) StatusPayload
+    {
+        uint8_t armed;
+        uint8_t battery;
+        uint8_t link_quality;
+        uint8_t recording;
+        uint8_t camera_connected;
+        uint8_t camera_battery;
+    };
+
     Button _button_top_left;
     Button _button_bottom_left;
     Button _button_bottom_right;

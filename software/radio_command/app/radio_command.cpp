@@ -63,3 +63,13 @@ void RadioCommand::run(void)
         Task::delay_ms(50);
     }
 }
+
+int RadioCommand::link_quality(void)
+{
+    return 74;
+}
+
+int RadioCommand::quadcopter_battery(void)
+{
+    return 42;
+}

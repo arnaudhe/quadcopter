@@ -10,11 +10,14 @@ class BatteryMonitor : public Task
 private:
 
     Battery _battery;
+    int     _level;
 
     void run(void);
 
 public:
 
     BatteryMonitor(ADS1115 * ads, int channel);
+
+    int level(void);
 
 };

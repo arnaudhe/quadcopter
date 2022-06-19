@@ -57,18 +57,28 @@ int FrameBuffer::size(void)
     return (_width * _height * _bytes_per_pixel);
 }
 
-void FrameBuffer::update(RGB565PixMap * image)
+void FrameBuffer::update(RGB565PixMap * image, int x_position)
 {
     unsigned int row;
     unsigned int location = 0;
+    unsigned int x_padding;
+    unsigned int y_padding;
 
     if (image == nullptr)
     {
         return;
     }
 
-    int x_padding = (this->width() - image->width()) / 2;
-    int y_padding = (this->height() - image->height()) / 2;
+    if (x_position == -1)
+    {
+        x_padding = (this->width() - image->width()) / 2;
+    }
+    else
+    {
+        x_padding = x_position;
+    }
+
+    y_padding = (this->height() - image->height()) / 2;
 
     for (row = y_padding; row < image->height(); row++)
     {

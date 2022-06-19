@@ -41,4 +41,8 @@ public:
 
     RadioCommand(void);
 
+    int link_quality(void);
+
+    int quadcopter_battery(void);
+
 };

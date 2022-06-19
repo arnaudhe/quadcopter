@@ -1,12 +1,23 @@
 #include "video_feedback.hpp"
 
-VideoFeedback::VideoFeedback(unsigned int width, unsigned int height) :
+VideoFeedback::VideoFeedback(unsigned int width, unsigned int height, BatteryMonitor * battery, RadioCommand * radio) :
     Task("video", false),
     _framebuffer("/dev/fb0"),
     _video_capture("/dev/video0", width, height, VideoCapture::MJPEG),
-    _image(width, height)
+    _camera_image(width, height),
+    _infos_image(_framebuffer.width() - width, height),
+    _battery(battery),
+    _radio(radio)
 {
     return;
+}
+
+void VideoFeedback::display_level(std::string name, int level, unsigned int row)
+{
+    _infos_image.display_text(row, 10, name, 255, 255, 255);
+    _infos_image.display_rectangle(row + 30, 10, row + 58, _infos_image.width() - 10, 10, 10, 10);
+    _infos_image.display_rectangle(row + 32, 12, row + 56, 12 + (level * (_infos_image.width() - 24)) / 100, 10, 128, 10);
+    _infos_image.display_text(row + 32, _infos_image.width() / 2 - 20, std::to_string(level), 255, 255, 255);
 }
 
 void VideoFeedback::run()
@@ -15,8 +26,14 @@ void VideoFeedback::run()
     {
         if (_video_capture.capture())
         {
-            _image.from_rgb(_video_capture.image());
-            _framebuffer.update(&_image);
+            _camera_image.from_rgb(_video_capture.image());
+            _infos_image.fill(50, 50, 50);
+            _infos_image.display_text(50, 10, "ARMED", 0, 255, 128);
+            display_level("BATTERY", _battery->level(), 150);
+            display_level("QUAD", _radio->quadcopter_battery(), 250);
+            display_level("LINK", _radio->link_quality(), 350);
+            _framebuffer.update(&_camera_image, _infos_image.width());
+            _framebuffer.update(&_infos_image, 0);
         }
     }
 }

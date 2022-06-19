@@ -11,8 +11,8 @@ int main(int argc, char ** argv)
     I2C            i2c     = I2C(PLATFORM_BATTERY_I2C);
     ADS1115        ads     = ADS1115(&i2c);
     BatteryMonitor battery = BatteryMonitor(&ads, PLATFORM_BATTERY_CHANNEL);
-    VideoFeedback  video   = VideoFeedback(640, 480);
     RadioCommand   rc      = RadioCommand();
+    VideoFeedback  video   = VideoFeedback(640, 480, &battery, &rc);
 
     video.start();
     rc.start();

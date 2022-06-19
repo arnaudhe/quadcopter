@@ -22,7 +22,7 @@ public:
     FrameBuffer(const char * device);
     ~FrameBuffer(void);
 
-    void update(RGB565PixMap * image);
+    void update(RGB565PixMap * image, int x_position = -1);
 
     int width();
 

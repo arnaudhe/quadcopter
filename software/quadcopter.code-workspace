@@ -95,7 +95,15 @@
             "bit": "cpp",
             "netfwd": "cpp",
             "rope": "cpp",
-            "regex": "cpp"
+            "regex": "cpp",
+            "cfenv": "cpp",
+            "csetjmp": "cpp",
+            "cuchar": "cpp",
+            "slist": "cpp",
+            "compare": "cpp",
+            "concepts": "cpp",
+            "ranges": "cpp",
+            "stop_token": "cpp"
         },
         "python.envFile": "${workspaceFolder}/.venv",
         "python.pythonPath": "python3",

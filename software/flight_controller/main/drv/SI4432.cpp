@@ -111,6 +111,7 @@ void Si4432::state_rx(void)
         if (_valid_sync)
         {
             LOG_VERBOSE("Sync word detected");
+            this->read_rssi(&_rx_rssi);
         }
 
         if (_rx_done)
@@ -122,7 +123,7 @@ void Si4432::state_rx(void)
             _spi->read_byte(SI4432_REG_RX_PKT_LENGTH, &rx_length);
             if (rx_length > 0)
             {
-                LOG_VERBOSE("Received packet, length %d" rx_length);
+                LOG_VERBOSE("Received packet, length %d, rssi %d dB", rx_length, _rx_rssi);
                 _spi->read_bytes(SI4432_REG_FIFO, rx_length, rx_packet);
                 _rx_packet.set_data(rx_packet, rx_length);
             }
@@ -399,11 +400,12 @@ bool Si4432::send_packet(ByteArray packet)
     }
 }
 
-bool Si4432::receive_packet(ByteArray &packet)
+bool Si4432::receive_packet(ByteArray &packet, int &rssi)
 {
     if (_rx_packet.length())
     {
         packet = _rx_packet;
+        rssi = _rx_rssi;
         _rx_packet.clear();
         return true;
     }

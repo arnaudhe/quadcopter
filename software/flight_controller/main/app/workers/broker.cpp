@@ -20,10 +20,12 @@ void Broker::run()
 {
     Channel   channel;
     ByteArray frame;
+    int       rssi;
 
-    tuple<uint8_t, ByteArray> radio_recv = _radio->receive();
+    tuple<uint8_t, ByteArray, int> radio_recv = _radio->receive();
     channel = (Channel)(get<0>(radio_recv));
     frame = get<1>(radio_recv);
+    rssi = get<2>(radio_recv);
 
     _mutex->lock();
 
@@ -35,6 +37,7 @@ void Broker::run()
                ((_registrations[i].medium == Medium::RADIO) || (_registrations[i].medium == Medium::UDP_AND_RADIO)))
             {
                 _registrations[i].received_frame_pending = true;
+                _registrations[i].received_frame_rssi    = rssi;
                 _registrations[i].received_frame         = frame;
                 _registrations[i].received_frame_medium  = Medium::RADIO;
                 _registrations[i].received_frame_address = "(radio)";
@@ -52,6 +55,7 @@ void Broker::run()
             if (frame.length())
             {
                 _registrations[i].received_frame_pending = true;
+                _registrations[i].received_frame_rssi    = 0;
                 _registrations[i].received_frame         = frame;
                 _registrations[i].received_frame_address = get<1>(udp_recv);
                 _registrations[i].received_frame_medium  = Medium::UDP;
@@ -124,6 +128,30 @@ ByteArray Broker::receive(Channel channel)
             {
                 _registrations[i].received_frame_pending = false;
                 ret = _registrations[i].received_frame;
+            }
+            break;
+        }
+    }
+
+    _mutex->unlock();
+
+    return ret;
+}
+
+tuple<ByteArray, int> Broker::receive_rssi(Channel channel)
+{
+    tuple<ByteArray, int> ret = {ByteArray(), 0};
+
+    _mutex->lock();
+
+    for (int i = 0; i < BROKER_REGISTRATION_COUNT; i++)
+    {
+        if (_registrations[i].registered && _registrations[i].channel == channel)
+        {
+            if (_registrations[i].received_frame_pending)
+            {
+                _registrations[i].received_frame_pending = false;
+                ret = tuple<ByteArray, int>{_registrations[i].received_frame, _registrations[i].received_frame_rssi};
             }
             break;
         }

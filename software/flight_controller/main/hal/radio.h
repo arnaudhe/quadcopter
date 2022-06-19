@@ -19,8 +19,10 @@ public:
 
     Radio(Si4432 * si4432);
 
+    /* (channel, payload) */
     void send(uint8_t channel, ByteArray payload);
 
-    tuple<uint8_t, ByteArray> receive(void);
+    /* (channel, payload, rssi) */
+    tuple<uint8_t, ByteArray, int> receive(void);
 
 };

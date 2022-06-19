@@ -25,6 +25,7 @@ private:
     bool        _rx_done;
     bool        _valid_preamble;
     bool        _valid_sync;
+    int         _rx_rssi;
     ByteArray   _rx_packet;
     ByteArray   _tx_packet;
 
@@ -82,5 +83,5 @@ public:
 
     bool send_packet(ByteArray packet);
 
-    bool receive_packet(ByteArray &packet);
+    bool receive_packet(ByteArray &packet, int &rssi);
 };

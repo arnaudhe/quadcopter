@@ -20,6 +20,23 @@ void IRAM_ATTR PeriodicTask::timer_function(TimerHandle_t timer)
     PeriodicTask::timers_map[timer]->_semaphore->notify();
 }
 
+void IRAM_ATTR PeriodicTask::on_demand_run(bool from_isr)
+{
+    if (from_isr)
+    {
+        bool must_yield = false;
+        this->_semaphore->notify_from_isr(must_yield);
+        if (must_yield)
+        {
+            this->_semaphore->yield_from_isr();
+        }
+    }
+    else
+    {
+        this->_semaphore->notify();
+    }
+}
+
 void IRAM_ATTR PeriodicTask::task_function(void * param)
 {
     PeriodicTask *task = (PeriodicTask *)param;

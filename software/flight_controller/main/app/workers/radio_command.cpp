@@ -47,6 +47,8 @@ void RadioCommand::run()
                 _registry->internal_set<float>("control.attitude.pitch.position.target", commands->pitch);
                 _registry->internal_set<float>("control.attitude.height.speed.target", commands->throttle);
                 _registry->internal_set<float>("control.attitude.yaw.speed.target", commands->yaw);
+                _registry->internal_set<bool>("camera.recording_request", (bool)commands->record);
+                _registry->internal_set<float>("camera.tilt", (float)commands->camera_tilt);
             }
             else if ((last_command_tick > 0) && ((TickType_t)(xTaskGetTickCount() - last_command_tick) > RADIO_COMMAND_FAILSAFE_TIMEOUT))
             {

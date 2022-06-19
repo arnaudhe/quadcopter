@@ -18,6 +18,8 @@ class RadioCommand : public Task
     struct __attribute__((packed)) CommandsPayload
     {
         uint8_t armed;
+        uint8_t record;
+        uint8_t camera_tilt;
         float   roll;
         float   pitch;
         float   yaw;

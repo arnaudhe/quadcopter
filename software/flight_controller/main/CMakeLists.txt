@@ -60,6 +60,7 @@ set(COMPONENT_SRCS
     utils/matrix.cpp
     utils/quaternion.cpp
     utils/filter.cpp
+    utils/state_machine.cpp
     utils/string_utils.cpp
     periph/adc.cpp 
     periph/i2c_master.cpp

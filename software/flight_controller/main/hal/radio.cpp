@@ -46,16 +46,17 @@ void Radio::send(uint8_t channel, ByteArray payload)
     }
 }
 
-tuple<uint8_t, ByteArray> Radio::receive(void)
+tuple<uint8_t, ByteArray, int> Radio::receive(void)
 {
     ByteArray packet;
     Crc16     crc(0);
     bool      direction;
     uint8_t   address;
     bool      packet_received;
+    int       rssi;
 
     _mutex->lock();
-    packet_received = _transceiver->receive_packet(packet);
+    packet_received = _transceiver->receive_packet(packet, rssi);
     _mutex->unlock();
 
     if (packet_received && (packet.length() > RADIO_MIN_LENGTH) && (packet.length() < RADIO_MAX_LENGTH))
@@ -72,7 +73,7 @@ tuple<uint8_t, ByteArray> Radio::receive(void)
         {
             if ((direction == true) && (_address == address))
             {
-                return tuple<int, ByteArray>{packet(1), packet.slice(2, packet.length() - RADIO_OVERHEAD_LENGTH)};
+                return tuple<uint8_t, ByteArray, int>{packet(1), packet.slice(2, packet.length() - RADIO_OVERHEAD_LENGTH), rssi};
             }
         }
         else
@@ -81,5 +82,5 @@ tuple<uint8_t, ByteArray> Radio::receive(void)
         }
     }
 
-    return tuple<int, ByteArray>{0, ByteArray()};
+    return tuple<uint8_t, ByteArray, int>{0, ByteArray(), 0};
 }

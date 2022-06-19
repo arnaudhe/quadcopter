@@ -30,13 +30,16 @@ void RadioCommand::run()
     ByteArray            packet;
     RadioCommandPacket * rc_packet;
     TickType_t           last_command_tick = 0;
+    int                  rssi = -100;
 
     while (1)
     {
         if (_broker->received_frame_pending(Broker::Channel::RADIO_COMMAND))
         {
             /* Get the received radio frame */
-            packet = _broker->receive(Broker::Channel::RADIO_COMMAND);
+            tuple<ByteArray, int> recv = _broker->receive_rssi(Broker::Channel::RADIO_COMMAND);
+            packet = get<0>(recv);
+            rssi   = get<1>(recv);
         }
 
         if (packet.length() == sizeof(RadioCommandPacket))

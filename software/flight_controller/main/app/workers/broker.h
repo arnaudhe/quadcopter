@@ -45,6 +45,7 @@ public:
         ByteArray  received_frame;
         Medium     received_frame_medium;
         string     received_frame_address;
+        int        received_frame_rssi;
     };
 
 private:
@@ -65,6 +66,8 @@ public:
     bool received_frame_pending(Channel channel);
 
     ByteArray receive(Channel channel);
+
+    tuple<ByteArray, int> receive_rssi(Channel channel);
 
     tuple<ByteArray, Medium, string> receive_from(Channel channel);
 

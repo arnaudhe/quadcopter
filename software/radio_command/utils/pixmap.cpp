@@ -68,6 +68,53 @@ const uint8_t * PixMap::operator()(unsigned int row, unsigned int column)
     return this->at(row, column);
 }
 
+void PixMap::fill(uint8_t red, uint8_t green, uint8_t blue)
+{
+    for (unsigned int row = 0; row < height(); row++)
+    {
+        for (unsigned int column = 0; column < width(); column++)
+        {
+            set(row, column, red, green, blue);
+        }
+    }
+}
+
+void PixMap::display_text(unsigned int row, unsigned int column, std::string text, uint8_t red, uint8_t green, uint8_t blue)
+{
+    for (unsigned int i = 0; i < text.length(); i++)
+    {
+        int c = int(text.at(i));
+        if ((c >= 32) && (c <= 126))
+        {
+            for (unsigned int y = 0; y < 13; y++)
+            {
+                for (unsigned int x = 0; x < 8; x++)
+                {
+                    if ((_letters[c - 32][y] >> x) & 0x1)
+                    {
+                        set(row + (2 * (13 - y)),     column + (i * 21) + (2 * (7 - x)),     red, green, blue);
+                        set(row + (2 * (13 - y)) + 1, column + (i * 21) + (2 * (7 - x)),     red, green, blue);
+                        set(row + (2 * (13 - y)),     column + (i * 21) + (2 * (7 - x)) + 1, red, green, blue);
+                        set(row + (2 * (13 - y)) + 1, column + (i * 21) + (2 * (7 - x)) + 1, red, green, blue);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void PixMap::display_rectangle(unsigned int from_row, unsigned int from_column, unsigned int to_row, unsigned int to_column,
+                               uint8_t red, uint8_t green, uint8_t blue)
+{
+    for (unsigned int row = from_row; row < to_row; row++)
+    {
+        for (unsigned int column = from_column; column < to_column; column++)
+        {
+            set(row, column, red, green, blue);
+        }
+    }
+}
+
 void RGBPixMap::set(unsigned int row, unsigned int column, uint8_t red, uint8_t green, uint8_t blue)
 {
     if ((row < _height) && (column < _width))

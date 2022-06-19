@@ -39,5 +39,9 @@ class PeriodicTask
 
     virtual void run() {}
 
+    /* Start periodic execution */
     void start();
+
+    /* Request asynchronous on-demand run */
+    void on_demand_run(bool from_isr);
 };

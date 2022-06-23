@@ -4,6 +4,7 @@
 #include <map>
 
 #include <os/task.h>
+#include <os/tick.h>
 
 using state_function = std::function<void()>;
 
@@ -18,7 +19,7 @@ private:
 
     bool _first_run_in_state;
 
-    TickType_t _state_tick;
+    Tick _state_tick;
 
 protected:
 
@@ -34,6 +35,6 @@ public:
 
     void run(void);
 
-    uint32_t time_in_state(void);
+    Tick time_in_state(void);
 
 };

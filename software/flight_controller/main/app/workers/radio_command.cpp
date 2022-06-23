@@ -22,7 +22,7 @@ void RadioCommand::run()
     int               rssi = -100;
     CommandsPayload * commands;
     StatusPayload     status;
-    TickType_t        last_command_tick = 0;
+    Tick              last_command_tick = Tick(0);
 
     while (1)
     {
@@ -38,7 +38,7 @@ void RadioCommand::run()
 
             if (packet.length() == sizeof(RadioCommand::CommandsPayload))
             {
-                last_command_tick = xTaskGetTickCount();
+                last_command_tick = Tick::now();
 
                 commands = (CommandsPayload *)(packet.data());
 
@@ -50,11 +50,11 @@ void RadioCommand::run()
                 _registry->internal_set<bool>("camera.recording_request", (bool)commands->record);
                 _registry->internal_set<float>("camera.tilt", (float)commands->camera_tilt);
             }
-            else if ((last_command_tick > 0) && ((TickType_t)(xTaskGetTickCount() - last_command_tick) > RADIO_COMMAND_FAILSAFE_TIMEOUT))
+            else if ((last_command_tick.ticks() > 0) && ((Tick::now() - last_command_tick).ticks() > RADIO_COMMAND_FAILSAFE_TIMEOUT))
             {
                 LOG_ERROR("Signal Lost ! Set failsafe commands");
 
-                last_command_tick = xTaskGetTickCount();
+                last_command_tick = Tick::now();
 
                 if (_registry->internal_get<string>("control.mode") == "attitude")
                 {

@@ -47,6 +47,7 @@ set(COMPONENT_SRCS
     os/semaphore.cpp
     os/task.cpp
     os/tcp.cpp
+    os/tick.cpp
     os/udp.cpp
     utils/byte_array.cpp
     utils/crc16.cpp

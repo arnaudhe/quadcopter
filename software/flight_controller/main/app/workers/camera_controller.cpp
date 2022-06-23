@@ -10,7 +10,7 @@ CameraController::CameraController(float period, DataRessourcesRegistry * regist
     _registry             = registry;
     _camera               = camera;
     _recording            = false;
-    _battery_measure_time = xTaskGetTickCount();
+    _battery_measure_time = Tick::now();
 
     registry->internal_set<bool>("camera.connected", false);
     registry->internal_set<int>("camera.battery", 0);
@@ -30,9 +30,9 @@ void CameraController::run(void)
         _registry->internal_set<bool>("camera.connected", true);
 
         /* Battery management */
-        if ((xTaskGetTickCount() - _battery_measure_time) > CAMERA_CONTROLLER_BATTERY_UPDATE_PERIOD)
+        if ((Tick::now() - _battery_measure_time).ticks() > CAMERA_CONTROLLER_BATTERY_UPDATE_PERIOD)
         {
-            _battery_measure_time = xTaskGetTickCount();
+            _battery_measure_time = Tick::now();
             battery_level = _camera->get_battery_level();
             if ((battery_level >= 0) && (battery_level <= 100))
             {

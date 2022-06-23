@@ -56,10 +56,12 @@ void Si4432::state_tx(void)
 
         this->clear_tx_fifo();
         this->clear_irq();
+        _mutex.lock();
         _spi->write_byte(SI4432_REG_TX_PKT_LEN, _tx_packet.length());
         _spi->write_bytes(SI4432_REG_FIFO, _tx_packet.length(), _tx_packet.data());
-        this->start_tx();
         _tx_packet.clear();
+        _mutex.unlock();
+        this->start_tx();
     }
 
     /* Check if IRQ is asserted */
@@ -90,6 +92,7 @@ void Si4432::state_rx(void)
 {
     uint8_t rx_length;
     uint8_t rx_packet[64];
+    uint8_t tx_length;
 
     if (first_run_in_state())
     {
@@ -97,6 +100,10 @@ void Si4432::state_rx(void)
         this->clear_irq();
         this->start_rx();
     }
+
+    _mutex.lock();
+    tx_length = (uint8_t)_tx_packet.length();
+    _mutex.unlock();
 
     /* Check if IRQ is asserted */
     if (_irq_gpio->read() == 0)
@@ -125,7 +132,9 @@ void Si4432::state_rx(void)
             {
                 LOG_VERBOSE("Received packet, length %d, rssi %d dB", rx_length, _rx_rssi);
                 _spi->read_bytes(SI4432_REG_FIFO, rx_length, rx_packet);
+                _mutex.lock();
                 _rx_packet.set_data(rx_packet, rx_length);
+                _mutex.unlock();
             }
 
             /* Clear rx FIFO as it may contain any residual bytes */
@@ -140,7 +149,7 @@ void Si4432::state_rx(void)
         _valid_sync = false;
         _rx_done = false;
     }
-    else if (_tx_packet.length())
+    else if (tx_length > 0)
     {
         change_state(State::TX);
     }
@@ -389,28 +398,36 @@ esp_err_t Si4432::read_rssi(int * rssi)
 
 bool Si4432::send_packet(ByteArray packet)
 {
+    bool ret = false;
+
+    _mutex.lock();
+
     if (_tx_packet.length() == 0)
     {
         _tx_packet = packet;
-        return true;
+        ret = true;
     }
-    else
-    {
-        return false;
-    }
+
+    _mutex.unlock();
+
+    return ret;
 }
 
 bool Si4432::receive_packet(ByteArray &packet, int &rssi)
 {
+    bool ret = false;
+
+    _mutex.lock();
+
     if (_rx_packet.length())
     {
         packet = _rx_packet;
         rssi = _rx_rssi;
         _rx_packet.clear();
-        return true;
+        ret = true;
     }
-    else
-    {
-        return false;
-    }
+    
+    _mutex.unlock();
+
+    return ret;
 }

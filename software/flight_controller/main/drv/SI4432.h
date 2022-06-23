@@ -7,6 +7,7 @@
 #include <os/mutex.h>
 #include <utils/state_machine.h>
 #include <utils/byte_array.h>
+#include <os/mutex.h>
 
 class Si4432 : public PeriodicTask, public StateMachine
 {
@@ -28,6 +29,8 @@ private:
     int         _rx_rssi;
     ByteArray   _rx_packet;
     ByteArray   _tx_packet;
+    Mutex       _mutex;
+
 
     void on_irq(void);
 

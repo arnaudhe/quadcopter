@@ -2,7 +2,7 @@
 #include <hal/log.h>
 
 DataModelController::DataModelController(float period, Broker * broker, JsonDataProtocol * json_protocol, BinaryDataProtocol * binary_protocol):
-    PeriodicTask("data_model_ctlr", Task::Priority::LOW, 16 * 1024, (int)(period * 1000), false)
+    PeriodicTask("data_model_ctlr", Task::Priority::LOW, 12 * 1024, (int)(period * 1000), false)
 {
     _broker          = broker;
     _json_protocol   = json_protocol;

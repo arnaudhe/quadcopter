@@ -5,7 +5,7 @@
 #define CAMERA_CONTROLLER_BATTERY_UPDATE_PERIOD     5000
 
 CameraController::CameraController(float period, DataRessourcesRegistry * registry, Camera * camera):
-    PeriodicTask("camera_controller", Task::Priority::VERY_LOW, 8 * 1024, (int)(period * 1000), false)
+    PeriodicTask("camera_controller", Task::Priority::VERY_LOW, 6 * 1024, (int)(period * 1000), false)
 {
     _registry             = registry;
     _camera               = camera;

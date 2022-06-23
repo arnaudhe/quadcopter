@@ -3,7 +3,7 @@
 #include <os/task.h>
 
 Heartbeat::Heartbeat(float period, Broker * broker, Motor * motor):
-    PeriodicTask("heartbeat", Task::Priority::VERY_LOW, 4 * 1024, (int)(period * 1000), false)
+    PeriodicTask("heartbeat", Task::Priority::VERY_LOW, 3 * 1024, (int)(period * 1000), false)
 {
     _broker = broker;
     _motor  = motor;

@@ -6,7 +6,7 @@
 #define RADIO_COMMAND_FAILSAFE_TIMEOUT      1500
 
 RadioCommand::RadioCommand(DataRessourcesRegistry * registry, Broker * broker) :
-    Task("rc", Task::Priority::MEDIUM, 4096, false)
+    Task("rc", Task::Priority::MEDIUM, 3 * 1024, false)
 {
     _registry = registry;
     _broker   = broker;

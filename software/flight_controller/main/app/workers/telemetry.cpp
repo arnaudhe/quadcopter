@@ -12,7 +12,7 @@
 using namespace std;
 
 Telemetry::Telemetry(DataRessourcesRegistry * registry, int period, Broker * broker) :
-    Task("telemetry", Task::Priority::VERY_LOW, 4096, false)
+    Task("telemetry", Task::Priority::VERY_LOW, 3 * 1024, false)
 {
     _registry = registry;
     _broker   = broker;

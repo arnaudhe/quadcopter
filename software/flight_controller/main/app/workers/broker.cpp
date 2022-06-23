@@ -4,7 +4,7 @@
 #include <platform.h>
 
 Broker::Broker(float period, Radio * radio):
-    PeriodicTask("broker", Task::Priority::MEDIUM, 16 * 1024, (int)(period * 1000), false)
+    PeriodicTask("broker", Task::Priority::MEDIUM, 12 * 1024, (int)(period * 1000), false)
 {
     _radio      = radio;
     _mutex      = new Mutex();

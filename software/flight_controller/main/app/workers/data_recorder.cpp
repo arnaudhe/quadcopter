@@ -6,7 +6,7 @@
 #define DATA_RECORDER_MOTORS_SPEED    0.50
 
 DataRecorder::DataRecorder(Motor * front_left, Motor * front_right, Motor * rear_left, Motor * rear_right, Marg * marg)
-    : PeriodicTask("data_recorder", Task::Priority::VERY_HIGH, 4 * 1024, 1, false)
+    : PeriodicTask("data_recorder", Task::Priority::VERY_HIGH, 3 * 1024, 1, false)
 {
     _marg        = marg;
     _front_left  = front_left;

@@ -7,7 +7,7 @@
 
 #include <hal/log.h>
 
-Si4432::Si4432(SPIHost * spi_host) : PeriodicTask("Si4432", Task::Priority::MEDIUM, 4096, 50, false), StateMachine()
+Si4432::Si4432(SPIHost * spi_host) : PeriodicTask("Si4432", Task::Priority::MEDIUM, 3 * 1024, 50, false), StateMachine()
 {
     uint8_t b;
 

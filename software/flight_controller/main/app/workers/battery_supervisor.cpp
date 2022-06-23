@@ -3,7 +3,7 @@
 #include <os/task.h>
 
 BatterySupervisor::BatterySupervisor(float period, Battery * battery, DataRessourcesRegistry * registry):
-    PeriodicTask("battery_supervisor", Task::Priority::VERY_LOW, 4 * 1024, (int)(period * 1000), false)
+    PeriodicTask("battery_supervisor", Task::Priority::VERY_LOW, 3 * 1024, (int)(period * 1000), false)
 {
     _registry = registry;
     _battery  = battery;

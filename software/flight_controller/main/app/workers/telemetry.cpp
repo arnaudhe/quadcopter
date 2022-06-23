@@ -2,6 +2,7 @@
 
 #include <hal/log.h>
 #include <utils/string_utils.h>
+#include <os/tick.h>
 #include <sstream>
 #include <esp_attr.h>
 
@@ -27,9 +28,9 @@ void IRAM_ATTR Telemetry::run(void)
     int  period = 100;
     vector<string> keys;
     stringstream telemetry_data;
-    TickType_t tick;
+    Tick tick;
 
-    tick = xTaskGetTickCount();
+    tick = Tick::now();
 
     /* Clear the stringstream content */
     telemetry_data.str(string());
@@ -85,11 +86,11 @@ void IRAM_ATTR Telemetry::run(void)
             telemetry_data.seekp(-1, std::ios_base::end);
             telemetry_data << '\n';
 
-            if ((unsigned int)(xTaskGetTickCount() - tick) > TELEMETRY_SEND_PERIOD)
+            if ((Tick::now() - tick).ticks() > TELEMETRY_SEND_PERIOD)
             {
                 /* Send telemetry data through udp */
                 _broker->send(Broker::Channel::TELEMETRY, Broker::Medium::UDP, ByteArray(telemetry_data.str()));
-                tick = xTaskGetTickCount();
+                tick = Tick::now();
                 telemetry_data.str(string());
             }
 

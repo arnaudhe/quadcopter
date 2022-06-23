@@ -6,7 +6,7 @@ StateMachine::StateMachine()
 {
     _current_state = 0;
     _first_run_in_state = false;
-    _state_tick = xTaskGetTickCount();
+    _state_tick = Tick::now();
 }
 
 void StateMachine::add_state(int state, state_function state_function)
@@ -18,7 +18,7 @@ void StateMachine::change_state(int new_state)
 {
     _current_state = new_state;
     _first_run_in_state = true;
-    _state_tick = xTaskGetTickCount();
+    _state_tick = Tick::now();
 }
 
 void StateMachine::run(void)
@@ -33,7 +33,7 @@ bool StateMachine::first_run_in_state(void)
     return ret;
 }
 
-uint32_t StateMachine::time_in_state(void)
+Tick StateMachine::time_in_state(void)
 {
-    return xTaskGetTickCount() - _state_tick;
+    return Tick::now() - _state_tick;
 }

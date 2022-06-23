@@ -3,6 +3,7 @@
 #include <string>
 
 #include <os/periodic_task.h>
+#include <os/tick.h>
 
 #include <data_model/data_ressources_registry.h>
 
@@ -16,7 +17,7 @@ class CameraController : public PeriodicTask
     DataRessourcesRegistry  * _registry;
     Camera                  * _camera;
     bool                      _recording;
-    uint32_t                  _battery_measure_time;
+    Tick                      _battery_measure_time;
 
     void run();
 

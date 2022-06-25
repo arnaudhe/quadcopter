@@ -7,7 +7,7 @@
 
 #include <hal/log.h>
 
-Si4432::Si4432(SPIHost * spi_host) : PeriodicTask("Si4432", Task::Priority::MEDIUM, 3 * 1024, 50, false), StateMachine()
+Si4432::Si4432(SPIHost * spi_host) : PeriodicTask("Si4432", Task::Priority::MEDIUM, 3 * 1024, 20, false), StateMachine()
 {
     uint8_t b;
 
@@ -57,33 +57,36 @@ void Si4432::state_tx(void)
         this->clear_tx_fifo();
         this->clear_irq();
         _mutex.lock();
-        _spi->write_byte(SI4432_REG_TX_PKT_LEN, _tx_packet.length());
+        _spi->write_byte(SI4432_REG_TX_PKT_LEN, (uint8_t)_tx_packet.length());
         _spi->write_bytes(SI4432_REG_FIFO, _tx_packet.length(), _tx_packet.data());
         _tx_packet.clear();
         _mutex.unlock();
         this->start_tx();
+        _tx_done = false;
     }
 
     /* Check if IRQ is asserted */
     if (_irq_gpio->read() == 0)
     {
         this->read_irq();
+    }
 
-        if (_tx_done)
-        {
-            LOG_VERBOSE("TX done");
-            this->clear_tx_fifo();
-            change_state(State::RX);
-        }
-
-        /* Clear flag */
+    if (_tx_done)
+    {
+        LOG_VERBOSE("TX done");
+        this->stop_tx();
+        this->clear_tx_fifo();
+        change_state(State::RX);
+        this->start_rx();
         _tx_done = false;
     }
 
-    if (time_in_state() > 200)
+    if (time_in_state() > 100)
     {
         LOG_WARNING("TX timeout");
+        this->stop_tx();
         this->clear_tx_fifo();
+        this->start_rx();
         change_state(State::RX);
     }
 }
@@ -97,7 +100,6 @@ void Si4432::state_rx(void)
     if (first_run_in_state())
     {
         LOG_VERBOSE("State RX");
-        this->clear_irq();
         this->start_rx();
     }
 
@@ -109,16 +111,17 @@ void Si4432::state_rx(void)
     if (_irq_gpio->read() == 0)
     {
         this->read_irq();
+    }
 
-        if (_valid_preamble)
-        {
-            LOG_VERBOSE("Valid preamble");
-        }
-
+    if (_valid_preamble)
+    {
         if (_valid_sync)
         {
             LOG_VERBOSE("Sync word detected");
+            /* Read RSSI during the frame */
             this->read_rssi(&_rx_rssi);
+            /* Clear the flag to latch rssi until frame received or timeout */
+            _valid_sync = false;
         }
 
         if (_rx_done)
@@ -142,16 +145,36 @@ void Si4432::state_rx(void)
 
             /* Go back to rx */
             _spi->write_byte(SI4432_REG_STATE, SI4432_OPERATION_MODE_RX | SI4432_OPERATION_MODE_READY);
-        }
 
-        /* Clear all the flags */
-        _valid_preamble = false;
-        _valid_sync = false;
-        _rx_done = false;
+            /* Clear the processed flag */
+            _valid_preamble = false;
+            _rx_done = false;
+            _valid_sync = false;
+
+            _rx_tick = Tick::now();
+        }
+        else if ((Tick::now() - _rx_tick).ticks() > 100)
+        {
+            LOG_DEBUG("rx timeout");
+
+            /* Clear the processed flag */
+            _valid_preamble = false;
+            _rx_done = false;
+            _valid_sync = false;
+
+            /* Clear rx FIFO as it may contain any residual bytes */
+            this->clear_rx_fifo();
+
+            _rx_tick = Tick::now();
+        }
     }
     else if (tx_length > 0)
     {
         change_state(State::TX);
+    }
+    else
+    {
+        _rx_tick = Tick::now();
     }
 }
 
@@ -322,9 +345,13 @@ esp_err_t Si4432::start_tx(void)
     return _spi->write_byte(SI4432_REG_STATE, SI4432_OPERATION_MODE_TX);
 }
 
+esp_err_t Si4432::stop_tx(void)
+{
+    return _spi->write_byte(SI4432_REG_STATE, SI4432_OPERATION_MODE_READY);
+}
+
 esp_err_t Si4432::start_rx(void)
 {
-    this->clear_irq();
     _spi->write_byte(SI4432_REG_STATE, SI4432_OPERATION_MODE_RX | SI4432_OPERATION_MODE_READY);
     return ESP_OK;
 }
@@ -362,11 +389,11 @@ esp_err_t Si4432::read_irq(void)
     _spi->read_byte(SI4432_REG_IRQ_STATUS_2, &irq2);
 
     /* Extract events we are working with */
-    _tx_done = (bool)(irq1 & SI4432_IRQ1_PACKET_SENT);
-    _rx_done = (bool)(irq1 & SI4432_IRQ1_VALID_PACKET_RECEIVED);
+    _tx_done |= (bool)(irq1 & SI4432_IRQ1_PACKET_SENT);
+    _rx_done |= (bool)(irq1 & SI4432_IRQ1_VALID_PACKET_RECEIVED);
 
-    _valid_preamble = (bool)(irq2 & SI4432_IRQ2_VALID_PREAMBLE_DETECT);
-    _valid_sync     = (bool)(irq2 & SI4432_IRQ2_SYNC_WORD_DETECT);
+    _valid_preamble |= (bool)(irq2 & SI4432_IRQ2_VALID_PREAMBLE_DETECT);
+    _valid_sync     |= (bool)(irq2 & SI4432_IRQ2_SYNC_WORD_DETECT);
 
     return ESP_OK;
 }

@@ -125,7 +125,7 @@ bool Spi::read_registers(uint8_t reg_addr, size_t len, uint8_t * value)
         return false;
     }
 
-    *value = rx[1];
+    memcpy(value, &rx[1], len);
 
     return true;
 }

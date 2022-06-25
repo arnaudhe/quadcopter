@@ -3,11 +3,20 @@
 #include <periph/spi.hpp>
 #include <periph/gpio.hpp>
 #include <drv/SI4432_defs.h>
+#include <os/task.hpp>
+#include <utils/state_machine.hpp>
+#include <utils/byte_array.hpp>
 
-class Si4432
+class Si4432 : public Task, public StateMachine
 {
 
 private:
+
+    enum State
+    {
+        RX,
+        TX
+    };
 
     Spi         _spi;
     Gpio        _irq_gpio;
@@ -15,10 +24,10 @@ private:
     bool        _rx_done;
     bool        _valid_preamble;
     bool        _valid_sync;
-
-public:
-
-    Si4432(void);
+    int         _rx_rssi;
+    ByteArray   _rx_packet;
+    ByteArray   _tx_packet;
+    Tick        _rx_tick;
 
     bool reset(void);
 
@@ -44,11 +53,9 @@ public:
 
     bool set_sync_bytes(uint8_t * bytes, uint8_t len);
 
-    bool send_packet(uint8_t * buf, uint8_t length);
-
-    bool receive_packet(uint8_t * packet, uint8_t * length);
-
     bool start_tx(void);
+
+    bool stop_tx(void);
 
     bool start_rx(void);
 
@@ -63,4 +70,18 @@ public:
     bool clear_irq(void);
 
     bool read_rssi(int * rssi);
+
+    void state_tx(void);
+
+    void state_rx(void);
+
+    void run(void);
+
+public:
+
+    Si4432(void);
+
+    bool send_packet(ByteArray packet);
+
+    bool receive_packet(ByteArray &packet);
 };

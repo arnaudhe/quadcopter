@@ -22,7 +22,7 @@
 #define BATTERY_SUPERVISOR_PERIOD             (5.0)
 #define CAMERA_SUPERVISOR_PERIOD              (0.2)
 #define HEARTBEAT_PERIOD                      (3.0)
-#define BROKER_PERIOD                         (0.05)
+#define BROKER_PERIOD                         (0.025)
 #define DATA_MODEL_CONTROLLER_PERIOD          (0.05)
 
 #define PLATFORM_RADIO_ADDRESS                (31)

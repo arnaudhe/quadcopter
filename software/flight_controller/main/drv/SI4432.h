@@ -30,6 +30,7 @@ private:
     ByteArray   _rx_packet;
     ByteArray   _tx_packet;
     Mutex       _mutex;
+    Tick        _rx_tick;
 
 
     void on_irq(void);
@@ -41,6 +42,8 @@ private:
     void run(void);
 
     esp_err_t start_tx(void);
+
+    esp_err_t stop_tx(void);
 
     esp_err_t start_rx(void);
 

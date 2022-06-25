@@ -28,10 +28,35 @@ void VideoFeedback::run()
         {
             _camera_image.from_rgb(_video_capture.image());
             _infos_image.fill(50, 50, 50);
-            _infos_image.display_text(50, 10, "ARMED", 0, 255, 128);
-            display_level("BATTERY", _battery->level(), 150);
-            display_level("QUAD", _radio->quadcopter_battery(), 250);
-            display_level("LINK", _radio->link_quality(), 350);
+
+            if (_radio->armed())
+            {
+                _infos_image.display_text(20, 10, "ARMED", 0, 255, 128);
+            }
+            else
+            {
+                _infos_image.display_text(20, 10, "DISARMD", 255, 0, 0);
+            }
+
+            display_level("LINK", _radio->link_quality(), 70);
+            display_level("QUAD", _radio->quadcopter_battery(), 170);
+            display_level("REMOTE", _battery->level(), 270);
+            display_level("CAMERA", _radio->camera_battery(), 370);
+
+            if (_radio->camera_connected())
+            {
+                _infos_image.display_text(440, 10, "UP", 0, 255, 128);
+            }
+            else
+            {
+                _infos_image.display_text(440, 10, "DOWN", 255, 0, 0);
+            }
+
+            if (_radio->camera_recording())
+            {
+                _infos_image.display_text(440, 100, "REC", 255, 0, 0);
+            }
+
             _framebuffer.update(&_camera_image, _infos_image.width());
             _framebuffer.update(&_infos_image, 0);
         }

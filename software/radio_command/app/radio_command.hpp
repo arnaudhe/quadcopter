@@ -47,14 +47,31 @@ private:
     Si4432  _si4432;
     Radio   _radio;
 
+    bool  _armed;
+    int   _link_quality;
+    int   _quadcopter_battery;
+    int   _camera_battery;
+    bool  _camera_connected;
+    bool  _camera_recording;
+
     void run(void);
 
 public:
 
     RadioCommand(void);
 
+    void start(void);
+
+    bool armed(void);
+
     int link_quality(void);
 
     int quadcopter_battery(void);
+
+    int camera_battery(void);
+
+    bool camera_connected(void);
+
+    bool camera_recording(void);
 
 };

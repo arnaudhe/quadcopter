@@ -82,7 +82,7 @@ void RadioCommand::run()
 
             status.armed            = (_registry->internal_get<string>("control.mode") == "attitude") ? 1 : 0;
             status.battery          = _registry->internal_get<int>("battery.level");
-            status.recording        = _registry->internal_get<int>("camera.recording");
+            status.recording        = _registry->internal_get<bool>("camera.recording");
             status.camera_connected = _registry->internal_get<bool>("camera.connected");
             status.camera_battery   = _registry->internal_get<int>("camera.battery");
 

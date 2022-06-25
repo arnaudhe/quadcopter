@@ -27,7 +27,7 @@ Gpio::Gpio(int pin, Direction direction)
     /* open /dev/mem */
     if ((mem_fd = open("/dev/gpiomem", O_RDWR | O_SYNC)) < 0)
     {
-        printf("can't open /dev/gpiomem \n");
+        fprintf(stderr, "can't open /dev/gpiomem \n");
         exit(-1);
     }
 

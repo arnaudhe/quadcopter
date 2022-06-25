@@ -47,6 +47,7 @@ private:
     Si4432  _si4432;
     Radio   _radio;
 
+    bool  _lost;
     bool  _armed;
     int   _link_quality;
     int   _quadcopter_battery;
@@ -61,6 +62,8 @@ public:
     RadioCommand(void);
 
     void start(void);
+
+    bool lost(void);
 
     bool armed(void);
 

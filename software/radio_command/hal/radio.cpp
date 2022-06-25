@@ -34,7 +34,7 @@ void Radio::send(uint8_t channel, ByteArray payload)
         packet.append(crc.get_lsb());
 
         /* Ask the driver to send the packet */
-        _transceiver->send_packet((uint8_t *)packet.data(), packet.length());
+        _transceiver->send_packet(packet);
     }
     else
     {
@@ -44,25 +44,19 @@ void Radio::send(uint8_t channel, ByteArray payload)
 
 tuple<uint8_t, ByteArray> Radio::receive(void)
 {
-    uint8_t   recv_buffer[RADIO_MAX_LENGTH];
-    uint8_t   recv_length = 0;
     ByteArray packet;
     Crc16     crc(0);
     bool      direction;
     uint8_t   address;
 
-    _transceiver->receive_packet(recv_buffer, &recv_length);
+    _transceiver->receive_packet(packet);
 
-    if ((recv_length > RADIO_MIN_LENGTH) && (recv_length < RADIO_MAX_LENGTH))
+    if ((packet.length() > RADIO_MIN_LENGTH) && (packet.length() < RADIO_MAX_LENGTH))
     {
-        std::cout << "Received packet, length: " << recv_length << std::endl;
-
-        packet = ByteArray(recv_buffer, recv_length);
-
         direction = (bool)(packet(0) & 0x80);
         address   = packet(0) & 0x7f;
 
-        crc.update(recv_length);
+        crc.update(packet.length());
         crc.update(packet.data(), packet.length() - 2);
 
         if ((crc.get_msb() == packet(-2)) && (crc.get_lsb() == packet(-1)))

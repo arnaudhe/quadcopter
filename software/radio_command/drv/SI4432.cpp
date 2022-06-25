@@ -7,8 +7,14 @@
 #include <iostream>
 
 Si4432::Si4432(void) :
-    _spi(), _irq_gpio(PLATFORM_SI4432_IRQ, Gpio::INPUT)
+    Task("Si4432", false), StateMachine(), _spi(), _irq_gpio(PLATFORM_SI4432_IRQ, Gpio::INPUT)
 {
+    add_state(State::RX, std::bind(&Si4432::state_rx, this));
+    add_state(State::TX, std::bind(&Si4432::state_tx, this));
+
+    _tx_packet.clear();
+    _rx_packet.clear();
+
     _spi.open(PLATFORM_SI4432_SPI, Spi::MODE_0, PLATFORM_SI4432_SPI_SPEED);
 
     _tx_done        = false;
@@ -182,87 +188,18 @@ bool Si4432::set_sync_bytes(uint8_t * bytes, uint8_t len)
     }
 }
 
-bool Si4432::send_packet(uint8_t * packet, uint8_t length)
-{
-    this->clear_tx_fifo();
-    this->clear_irq();
-    _spi.write_register(SI4432_REG_TX_PKT_LEN, length);
-    _spi.write_registers(SI4432_REG_FIFO, length, packet);
-    return this->start_tx();
-}
-
-bool Si4432::receive_packet(uint8_t * packet, uint8_t * length)
-{
-    /* Set no data received as default result */
-    *length = 0;
-
-    /* Check if IAR is asserted */
-    if (_irq_gpio.read() == 0)
-    {
-        this->read_irq();
-
-        if (_rx_done)
-        {
-            /* If packet received, exit rx mode untill the packet is read out. Keep PLL on for faster reaction */
-            _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_TUNE | SI4432_OPERATION_MODE_READY);
-
-            /* Retrieve received packet from FIFO */
-            _spi.read_register(SI4432_REG_RX_PKT_LENGTH, length);
-            if (*length > 0)
-            {
-                std::cout << "Received packet, length " << length << std::endl;
-                _spi.read_registers(SI4432_REG_FIFO, *length, packet);
-            }
-
-            /* Clear rx FIFO as it may contain any residual bytes */
-            this->clear_rx_fifo();
-
-            /* Go back to rx */
-            _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_RX | SI4432_OPERATION_MODE_READY);
-        }
-
-        /* Clear all the flags */
-        _valid_preamble = false;
-        _valid_sync = false;
-        _rx_done = false;
-    }
-
-    return true;
-}
-
 bool Si4432::start_tx(void)
 {
-    uint8_t time = 0;
+    return _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_TX);
+}
 
-    _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_TX);
-
-    while (!_tx_done)
-    {
-        if (_irq_gpio.read() == false)
-        {
-            this->read_irq();
-        }
-
-        usleep(1000 * 5);
-        time += 5;
-
-        if (time > 50)
-        {
-            std::cerr << "tx timed out" << std::endl;
-            this->reset();
-            break;
-        }
-    }
-
-    this->clear_irq();
-    this->start_rx();
-
-    return true;
+bool Si4432::stop_tx(void)
+{
+    return _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_READY);
 }
 
 bool Si4432::start_rx(void)
 {
-    this->clear_irq();
     _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_RX | SI4432_OPERATION_MODE_READY);
     return true;
 }
@@ -300,11 +237,11 @@ bool Si4432::read_irq(void)
     _spi.read_register(SI4432_REG_IRQ_STATUS_2, &irq2);
 
     /* Extract events we are working with */
-    _tx_done = (bool)(irq1 & SI4432_IRQ1_PACKET_SENT);
-    _rx_done = (bool)(irq1 & SI4432_IRQ1_VALID_PACKET_RECEIVED);
+    _tx_done |= (bool)(irq1 & SI4432_IRQ1_PACKET_SENT);
+    _rx_done |= (bool)(irq1 & SI4432_IRQ1_VALID_PACKET_RECEIVED);
 
-    _valid_preamble = (bool)(irq2 & SI4432_IRQ2_VALID_PREAMBLE_DETECT);
-    _valid_sync     = (bool)(irq2 & SI4432_IRQ2_SYNC_WORD_DETECT);
+    _valid_preamble |= (bool)(irq2 & SI4432_IRQ2_VALID_PREAMBLE_DETECT);
+    _valid_sync     |= (bool)(irq2 & SI4432_IRQ2_SYNC_WORD_DETECT);
 
     return true;
 }
@@ -330,6 +267,157 @@ bool Si4432::read_rssi(int * rssi)
     ret = _spi.read_register(SI4432_REG_RSSI, &rssi_lsb);
 
     *rssi = ((int)rssi_lsb / 2) - 130;
+
+    return ret;
+}
+
+void Si4432::run(void)
+{
+    while (running())
+    {
+        StateMachine::run();
+        Task::delay_ms(10);
+    }
+}
+
+void Si4432::state_tx(void)
+{
+    if (first_run_in_state())
+    {
+        this->clear_tx_fifo();
+        _tx_done = false;
+        _spi.write_register(SI4432_REG_TX_PKT_LEN, (uint8_t)_tx_packet.length());
+        _spi.write_registers(SI4432_REG_FIFO, _tx_packet.length(), (uint8_t *)_tx_packet.data());
+        _tx_packet.clear();
+        this->start_tx();
+    }
+
+    /* Check if IRQ is asserted */
+    if (_irq_gpio.read() == 0)
+    {
+        this->read_irq();
+    }
+
+    if (_tx_done)
+    {
+        this->stop_tx();
+        this->clear_tx_fifo();
+        this->start_rx();
+        change_state(State::RX);
+        _tx_done = false;
+    }
+
+    if (time_in_state() > 100)
+    {
+        std::cerr << "tx timeout" << std::endl;
+        this->stop_tx();
+        this->clear_tx_fifo();
+        this->start_rx();
+        change_state(State::RX);
+    }
+}
+
+void Si4432::state_rx(void)
+{
+    uint8_t rx_length;
+    uint8_t rx_packet[64];
+
+    if (first_run_in_state())
+    {
+        this->start_rx();
+    }
+
+    /* Check if IRQ is asserted */
+    if (_irq_gpio.read() == 0)
+    {
+        this->read_irq();
+    }
+
+    if (_valid_preamble)
+    {
+        if (_valid_sync)
+        {
+            /* Read RSSI during the frame */
+            this->read_rssi(&_rx_rssi);
+            /* Clear the flag to latch rssi until frame received or timeout */
+            _valid_sync = false;
+        }
+
+        if (_rx_done)
+        {
+            /* If packet received, exit rx mode untill the packet is read out. Keep PLL on for faster reaction */
+            _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_TUNE | SI4432_OPERATION_MODE_READY);
+
+            /* Retrieve received packet from FIFO */
+            _spi.read_register(SI4432_REG_RX_PKT_LENGTH, &rx_length);
+            if (rx_length > 0)
+            {
+                std::cout << "Received packet, length " << (int)rx_length << ", rssi " << _rx_rssi << std::endl;
+                _spi.read_registers(SI4432_REG_FIFO, rx_length, rx_packet);
+                _rx_packet.set_data(rx_packet, rx_length);
+            }
+
+            /* Clear rx FIFO as it may contain any residual bytes */
+            this->clear_rx_fifo();
+
+            /* Go back to rx */
+            _spi.write_register(SI4432_REG_STATE, SI4432_OPERATION_MODE_RX | SI4432_OPERATION_MODE_READY);
+
+            /* Clear the processed flag */
+            _valid_preamble = false;
+            _rx_done = false;
+            _valid_sync = false;
+
+            _rx_tick = Tick::now();
+        }
+        else if ((Tick::now() - _rx_tick).ticks() > 100)
+        {
+            std::cout << "rx timeout" << std::endl;
+
+            /* Clear the processed flag */
+            _valid_preamble = false;
+            _rx_done = false;
+            _valid_sync = false;
+
+            /* Clear rx FIFO as it may contain any residual bytes */
+            this->clear_rx_fifo();
+
+            _rx_tick = Tick::now();
+        }
+    }
+    else if (_tx_packet.length() > 0)
+    {
+        change_state(State::TX);
+    }
+    else
+    {
+        _rx_tick = Tick::now();
+    }
+}
+
+bool Si4432::send_packet(ByteArray packet)
+{
+    bool ret = false;
+
+    if (_tx_packet.length() == 0)
+    {
+        _tx_packet = packet;
+        ret = true;
+    }
+
+    return ret;
+}
+
+bool Si4432::receive_packet(ByteArray &packet)
+{
+    bool ret = false;
+
+    if (_rx_packet.length())
+    {
+        packet = _rx_packet;
+        _rx_packet.clear();
+        ret = true;
+    }
 
     return ret;
 }

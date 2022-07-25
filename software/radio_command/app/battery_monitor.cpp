@@ -12,8 +12,8 @@ void BatteryMonitor::run(void)
 {
     while (running())
     {
-        Task::delay_ms(10 * 1000);
-        _level =  _battery.get_level_percent();
+        Task::delay_ms(3 * 1000);
+        _level =  (int)_battery.get_level_percent();
         std::cout << "battery : " << _level << "%" << std::endl;
     }
 }

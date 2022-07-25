@@ -66,7 +66,7 @@ bool ADS1115::_is_busy()
 
 bool ADS1115::_is_ready()
 {
-    uint16_t config;
+    uint16_t config = 0x00;
 
     if (_read_register(ADS1X15_REG_CONFIG, &config) == false)
     {

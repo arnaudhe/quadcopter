@@ -14,10 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: ls
-      run: ls
-    - name: Set env
-      run: source $IDF_PATH/export.sh
+    - name: path
+      run: echo $PATH
     - name: build
       run: idf.py build
       working-directory: software/flight_controller

@@ -1,0 +1,21 @@
+name: flight-controller-build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: espressif/idf:v4.2
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+    - name: build
+      run: idf.py build
+      working-directory: software/flight_controller

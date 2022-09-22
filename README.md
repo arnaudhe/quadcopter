@@ -2,6 +2,8 @@
 
 DIY quadcopter based on ESP32-WROOM
 
+![example workflow](https://github.com/arnaudhe/quadcopter/actions/workflows/flight-controller-build.yml/badge.svg)
+
 ![Quadcopter picture](pictures/quadcopter.png?raw=true "Quadcopter")
 
 ## Overview
